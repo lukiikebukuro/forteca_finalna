@@ -20,7 +20,24 @@ from logging.handlers import RotatingFileHandler
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address  # Po linii 13
 
-
+# Sprawdź czy baza istnieje, jeśli nie - stwórz
+if not os.path.exists('dashboard.db'):
+    print("[CRITICAL] Baza nie istnieje! Tworzę od zera...")
+    try:
+        # Importuj i uruchom createdb
+        import createdb
+        print("[CRITICAL] Baza utworzona, teraz hasła...")
+        
+        # Uruchom skrypt haseł
+        import subprocess
+        result = subprocess.run([sys.executable, 'skrypthasla.py'], 
+                              capture_output=True, text=True)
+        print(result.stdout)
+        if result.returncode != 0:
+            print(f"[ERROR] Skrypt haseł failed: {result.stderr}")
+    except Exception as e:
+        print(f"[CRITICAL ERROR] Nie udało się stworzyć bazy: {e}")
+        sys.exit(1)
 
 # Flask app configuration
 app = Flask(__name__)
