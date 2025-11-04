@@ -22,20 +22,23 @@ from flask_limiter.util import get_remote_address  # Po linii 13
 
 # Sprawdź czy baza istnieje i czy ma tabele
 def init_database():
-    if not os.path.exists('dashboard.db'):
-        print("[STARTUP] Baza nie istnieje - tworzę strukturę...")
-    
-    # Stwórz podstawowe tabele jeśli nie istnieją
+    """Inicjalizuje bazę danych przy starcie"""
     conn = sqlite3.connect('dashboard.db')
     cursor = conn.cursor()
     
     # Sprawdź czy tabela users istnieje
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")
     if not cursor.fetchone():
-        print("[STARTUP] Tworzę tabele...")
-        # Stwórz tabele ręcznie tutaj zamiast importować
+        print("[STARTUP] Tworzę WSZYSTKIE tabele...")
+        conn.close()
+        
+        # Import funkcji które tworzą tabele
         from auth_manager import ensure_tables_exist
-        ensure_tables_exist()
+        ensure_tables_exist()  # Tabele users + clients
+        
+        # Stwórz tabele dla visitor tracking
+        DatabaseManager.init_events_table()  # Tabela events
+        DatabaseManager.init_visitor_tables()  # Tabele visitor_sessions itp.
         
         # Uruchom skrypt haseł
         print("[STARTUP] Ustawiam hasła...")
@@ -44,8 +47,8 @@ def init_database():
         result = subprocess.run([sys.executable, 'skrypthasla.py'], 
                               capture_output=True, text=True)
         print(result.stdout)
-    
-    conn.close()
+    else:
+        conn.close()
 
 # Uruchom inicjalizację
 init_database()
