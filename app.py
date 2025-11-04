@@ -20,24 +20,37 @@ from logging.handlers import RotatingFileHandler
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address  # Po linii 13
 
-# Sprawdź czy baza istnieje, jeśli nie - stwórz
-if not os.path.exists('dashboard.db'):
-    print("[CRITICAL] Baza nie istnieje! Tworzę od zera...")
-    try:
-        # Importuj i uruchom createdb
-        import createdb
-        print("[CRITICAL] Baza utworzona, teraz hasła...")
+# Sprawdź czy baza istnieje i czy ma tabele
+def init_database():
+    if not os.path.exists('dashboard.db'):
+        print("[STARTUP] Baza nie istnieje - tworzę strukturę...")
+    
+    # Stwórz podstawowe tabele jeśli nie istnieją
+    conn = sqlite3.connect('dashboard.db')
+    cursor = conn.cursor()
+    
+    # Sprawdź czy tabela users istnieje
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")
+    if not cursor.fetchone():
+        print("[STARTUP] Tworzę tabele...")
+        # Stwórz tabele ręcznie tutaj zamiast importować
+        from auth_manager import ensure_tables_exist
+        ensure_tables_exist()
         
         # Uruchom skrypt haseł
+        print("[STARTUP] Ustawiam hasła...")
         import subprocess
+        import sys
         result = subprocess.run([sys.executable, 'skrypthasla.py'], 
                               capture_output=True, text=True)
         print(result.stdout)
-        if result.returncode != 0:
-            print(f"[ERROR] Skrypt haseł failed: {result.stderr}")
-    except Exception as e:
-        print(f"[CRITICAL ERROR] Nie udało się stworzyć bazy: {e}")
-        sys.exit(1)
+    
+    conn.close()
+
+# Uruchom inicjalizację
+init_database()
+
+# ========== KONIEC INICJALIZACJI ==========
 
 # Flask app configuration
 app = Flask(__name__)
