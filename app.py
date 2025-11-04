@@ -2015,7 +2015,23 @@ if __name__ == '__main__':
         print("   📊 Metrics: Only final queries counted")
         print("=" * 70)
         ensure_tables_exist()
-    # setup_default_users()
+
+        # Inicjalizuj hasła przy pierwszym uruchomieniu
+        try:
+            conn = sqlite3.connect('dashboard.db')
+            cursor = conn.cursor()
+            cursor.execute('SELECT COUNT(*) FROM users')
+            user_count = cursor.fetchone()[0]
+            conn.close()
+            
+            if user_count == 0:
+                print("[STARTUP] Baza pusta - tworzę użytkowników...")
+                import subprocess
+                subprocess.run(['python', 'skrypthasla.py'])
+        except:
+            print("[STARTUP] Tabela users nie istnieje - tworzę...")
+            import subprocess
+            subprocess.run(['python', 'skrypthasla.py'])
         
         print("🔐 Sistema Autoryzacji aktywny")
         print("👤 Default admin: admin / admin123")
