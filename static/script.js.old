@@ -1,0 +1,1010 @@
+// Universal Soldier E-commerce Bot - JavaScript Frontend
+class EcommerceBotUI {
+    constructor() {
+        // Initialize properties
+        this.cartCount = 0;
+        this.chatInterface = document.getElementById('chat-interface');
+        this.messagesContainer = document.getElementById('messages-container');
+        this.buttonContainer = document.getElementById('button-container');
+        this.textInputContainer = document.getElementById('text-input-container');
+        this.userInput = document.getElementById('user-input');
+        this.sendBtn = document.getElementById('send-btn');
+        this.loadingOverlay = document.getElementById('loading-overlay');
+        this.cartCounter = document.getElementById('cart-counter');
+        
+        // Initialize GA4 session
+        this.trackEvent('session_initialized', {
+            timestamp: new Date().toISOString()
+        });
+        
+        // Search state
+        this.searchMode = false;
+        this.faqMode = false;
+        this.currentContext = null;
+        this.searchTimeout = null;
+        this.suggestionsDropdown = null;
+
+        // Initialize UI
+        this.createSuggestionsDropdown();
+        this.initializeEventListeners();
+        this.startBot();
+    };
+
+    // Track GA4 events
+    trackEvent(eventName, params = {}) {
+        if (typeof gtag === 'function') {
+            gtag('event', eventName, {
+                ...params,
+                source: 'universal_soldier_bot',
+                timestamp: new Date().toISOString()
+            });
+        }
+    };
+
+    // Setup search tracking with debounce
+    setupSearchTracking() {
+        if (!this.userInput) return;
+        
+        let searchTimeout = null;
+        
+        this.userInput.addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            
+            // Clear existing timeout
+            clearTimeout(searchTimeout);
+            
+            // Hide suggestions if query is too short
+            if (query.length < 2) {
+                this.hideSuggestions();
+                return;
+            }
+            
+            // Set new timeout
+            searchTimeout = setTimeout(() => {
+                this.performSearch(query).then(data => {
+                    if (data?.suggestions?.length === 0) {
+                        this.trackEvent('search_no_results', {
+                            search_term: query,
+                            search_type: this.faqMode ? 'faq' : 'products'
+                        });
+                        console.log(`[GA4] Tracked no results for search term: "${query}"`);
+                    }
+                }).catch(error => {
+                    console.error('[ERROR] Search tracking failed:', error);
+                });
+            }, 800);
+        });
+    };
+    
+    createSuggestionsDropdown() {
+        // Create suggestions dropdown container
+        this.suggestionsDropdown = document.createElement('div');
+        this.suggestionsDropdown.className = 'suggestions-dropdown';
+        
+        // Add search event listeners with tracking
+        this.setupSearchTracking();
+            
+            this.userInput.addEventListener('input', (e) => {
+                const query = e.target.value.trim();
+                
+                // Clear previous timeout
+                clearTimeout(searchTimeout);
+                
+                if (query.length < 2) {
+                    this.hideSuggestions();
+                    return;
+                }
+                
+                // Set new timeout for search with tracking
+                searchTimeout = setTimeout(() => {
+                    this.performSearch(query).then(data => {
+                        if (data?.suggestions?.length === 0) {
+                            // Track search with no results in GA4
+                            if (typeof gtag === 'function') {
+                                gtag('event', 'search_no_results', {
+                                    search_term: query,
+                                    search_type: this.faqMode ? 'faq' : 'products',
+                                    timestamp: new Date().toISOString()
+                                });
+                                console.log(`[GA4] Tracked no results for search term: "${query}"`);
+                            }
+                        }
+                    }).catch(error => {
+                        console.error('[ERROR] Search tracking failed:', error);
+                    });
+                }, 800);
+            });
+        
+        // Initialize search handling with debounce
+        if (this.userInput) {
+            let searchTimeout = null;
+            
+            this.userInput.addEventListener('input', (e) => {
+                const query = e.target.value.trim();
+                
+                if (query.length < 2) {
+                    this.hideSuggestions();
+                    return;
+                }
+                
+                // Clear previous timeout
+                clearTimeout(searchTimeout);
+                
+                // Set new timeout for search
+                searchTimeout = setTimeout(() => {
+                    this.performSearch(query).then(data => {
+                        if (data && data.suggestions && data.suggestions.length === 0) {
+                            // Track when no results are found
+                            gtag('event', 'search_no_results', {
+                                search_term: query,
+                                search_type: this.faqMode ? 'faq' : 'products',
+                                timestamp: new Date().toISOString()
+                            });
+                            console.log(`[GA4] Tracked no results for search term: "${query}"`);
+                        }
+                    });
+                }, 800);
+            });
+        }
+    }
+    
+    initializeEventListeners() {
+        // Reset button
+        const resetBtn = document.getElementById('reset-btn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                if (confirm('Czy na pewno chcesz rozpocząć nową sesję? Koszyk zostanie wyczyszczony.')) {
+                    this.resetSession();
+                }
+            });
+        }
+        
+        // Form submit prevention and send button
+        const messageForm = document.getElementById('message-form');
+        if (messageForm) {
+            messageForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.sendTextMessage();
+            });
+        }
+        
+        // Set up search with tracking
+        if (this.userInput) {
+            let searchTimeout = null;
+            
+            this.userInput.addEventListener('input', (e) => {
+                const query = e.target.value.trim();
+                
+                // Clear previous timeout
+                clearTimeout(searchTimeout);
+                
+                // Hide suggestions if query is too short
+                if (query.length < 2) {
+                    this.hideSuggestions();
+                    return;
+                }
+                
+                // Set new timeout for search with tracking
+                searchTimeout = setTimeout(() => {
+                    this.performSearch(query).then(data => {
+                        if (data && data.suggestions && data.suggestions.length === 0) {
+                            // Track search with no results in GA4
+                            if (typeof gtag === 'function') {
+                                gtag('event', 'search_no_results', {
+                                    search_term: query,
+                                    search_type: this.faqMode ? 'faq' : 'products',
+                                    timestamp: new Date().toISOString()
+                                });
+                                console.log(`[GA4] Tracked no results for search term: "${query}"`);
+                            }
+                        }
+                    }).catch(error => {
+                        console.error('[ERROR] Search failed:', error);
+                    });
+                }, 800);
+            });
+                }
+                
+                // Hide suggestions if query too short
+                if (query.length < 2) {
+                    this.hideSuggestions();
+                    return;
+                }
+                
+                // Only search if in search or FAQ mode
+                if (!this.searchMode && !this.faqMode) {
+                    return;
+                }
+                
+                // Debounce for 200ms to avoid too many requests
+                this.searchTimeout = setTimeout(() => {
+                    this.performSearch(query);
+                }, 200);
+            });
+            
+            // Also search on keyup for immediate feedback
+            this.userInput.addEventListener('keyup', (e) => {
+                // Skip special keys
+                if (e.key === 'Enter' || e.key === 'Escape' || e.key === 'Tab') {
+                    return;
+                }
+                
+                const query = e.target.value.trim();
+                
+                if (query.length >= 2 && (this.searchMode || this.faqMode)) {
+                    // Clear existing timeout
+                    if (this.searchTimeout) {
+                        clearTimeout(this.searchTimeout);
+                    }
+                    
+                    // Immediate search on keyup
+                    this.performSearch(query);
+                }
+            });
+            
+            // Hide suggestions on blur
+            this.userInput.addEventListener('blur', () => {
+                setTimeout(() => this.hideSuggestions(), 200);
+            });
+        }
+        
+        // Modal close
+        document.querySelectorAll('.modal-close').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.target.closest('.modal').style.display = 'none';
+            });
+        });
+        
+        // Close modal on outside click
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.style.display = 'none';
+            }
+        });
+    }
+    
+    async startBot() {
+        console.log('[DEBUG] Starting Universal Soldier bot session');
+        this.showLoading(true);
+        
+        // Clear containers
+        this.messagesContainer.innerHTML = '';
+        this.buttonContainer.innerHTML = '';
+        this.textInputContainer.style.display = 'none';
+        
+        try {
+            const response = await fetch('/bot/start', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({})
+            });
+            
+            console.log('[DEBUG] Response status:', response.status);
+            
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('[DEBUG] Received data:', data);
+            
+            if (data.reply) {
+                this.displayBotMessage(data.reply);
+            }
+            
+        } catch (error) {
+            console.error('[ERROR] Failed to start bot:', error);
+            this.showError('Nie udało się uruchomić asystenta. Odśwież stronę i spróbuj ponownie.');
+        } finally {
+            this.showLoading(false);
+        }
+    }
+    
+    displayBotMessage(reply) {
+        if (!reply) return;
+        
+        this.removeTypingIndicator();
+        
+        const messageElement = document.createElement('div');
+        messageElement.className = 'message bot-message';
+        messageElement.style.opacity = '0';
+        
+        let messageContent = `
+            <div class="message-avatar">🤖</div>
+            <div class="message-content">
+        `;
+        
+        // Format message with bold support and line breaks
+        if (reply.text_message) {
+            let formattedMessage = reply.text_message
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n/g, '<br>');
+            messageContent += `<div class="message-text">${formattedMessage}</div>`;
+        }
+        
+        // Add product image if present
+        if (reply.product_image) {
+            messageContent += `
+                <div class="product-card">
+                    <div class="product-image">${reply.product_image}</div>
+                </div>
+            `;
+        }
+        
+        // Check if order was confirmed
+        if (reply.order_confirmed) {
+            this.cartCount = 0;
+            this.updateCartCounter();
+            this.showNotification('✅ Zamówienie zostało potwierdzone!');
+        }
+        
+        // Check if item was added to cart
+        if (reply.cart_updated || (reply.text_message && reply.text_message.includes('dodany do koszyka'))) {
+            this.cartCount++;
+            this.updateCartCounter();
+            
+            // Extract cart info from message if present
+            const cartMatch = reply.text_message.match(/Koszyk \((\d+) produkt/);
+            if (cartMatch) {
+                this.cartCount = parseInt(cartMatch[1]);
+                this.updateCartCounter();
+            }
+        }
+        
+        messageContent += '</div>';
+        messageElement.innerHTML = messageContent;
+        this.messagesContainer.appendChild(messageElement);
+        
+        // Fade in animation
+        setTimeout(() => {
+            messageElement.style.opacity = '1';
+        }, 50);
+        
+        // Handle button display
+        if (reply.buttons && reply.buttons.length > 0) {
+            this.displayButtons(reply.buttons);
+            this.textInputContainer.style.display = 'none';
+        }
+        
+        // Handle input expectation
+        if (reply.enable_input || reply.input_expected) {
+            this.textInputContainer.style.display = 'block';
+            this.buttonContainer.innerHTML = '';
+            this.searchMode = reply.search_mode || false;
+            this.faqMode = reply.faq_mode || false;  // Add FAQ mode
+            if (this.userInput) {
+                this.userInput.placeholder = reply.input_placeholder || 'Wpisz swoją wiadomość...';
+                this.userInput.focus();
+            }
+        } else if (!reply.buttons || reply.buttons.length === 0) {
+            // If no buttons and no input expected, show input
+            this.textInputContainer.style.display = 'block';
+        }
+        
+        this.scrollToBottom();
+    }
+    
+    displayButtons(buttons) {
+        this.buttonContainer.innerHTML = '';
+        this.textInputContainer.style.display = 'none'; // Hide input when showing buttons
+        
+        buttons.forEach((button, index) => {
+            const buttonElement = document.createElement('button');
+            buttonElement.className = 'action-btn';
+            buttonElement.innerHTML = button.text;
+            buttonElement.style.animationDelay = `${index * 0.1}s`;
+            buttonElement.addEventListener('click', () => this.handleButtonClick(button.action));
+            this.buttonContainer.appendChild(buttonElement);
+        });
+    }
+    
+    async handleButtonClick(action) {
+        console.log('[DEBUG] Button clicked:', action);
+        
+        // Display user's choice as a message
+        const clickedButton = event.target;
+        this.displayUserMessage(clickedButton.textContent);
+        
+        // Clear buttons immediately after click
+        this.buttonContainer.innerHTML = '';
+        
+        this.showLoading(true);
+        this.showTypingIndicator();
+        
+        try {
+            const response = await fetch('/bot/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({ button_action: action })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            // Update context if needed
+            if (action.startsWith('machine_')) {
+                this.currentContext = 'product_search';
+                this.searchMode = true;
+                this.faqMode = false;
+            } else if (action === 'faq_search') {
+                this.currentContext = 'faq_search';
+                this.searchMode = false;
+                this.faqMode = true;
+            }
+            
+            if (data.reply) {
+                // Simulate typing delay
+                setTimeout(() => {
+                    this.displayBotMessage(data.reply);
+                }, 500);
+            }
+        } catch (error) {
+            console.error('[ERROR] Button action failed:', error);
+            this.showError('Wystąpił błąd podczas przetwarzania akcji. Spróbuj ponownie.');
+        } finally {
+            this.showLoading(false);
+        }
+    }
+    
+    async sendTextMessage() {
+        const message = this.userInput.value.trim();
+        if (!message) return;
+        
+        // Display user message
+        this.displayUserMessage(message);
+        
+        // Clear input
+        this.userInput.value = '';
+        
+        // Show typing indicator
+        this.showTypingIndicator();
+        this.showLoading(true);
+        
+        try {
+            const response = await fetch('/bot/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({ message })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            if (data.reply) {
+                // Simulate typing delay
+                setTimeout(() => {
+                    this.displayBotMessage(data.reply);
+                }, 300 + Math.random() * 700); // Random delay between 300-1000ms
+            }
+        } catch (error) {
+            console.error('[ERROR] Message send failed:', error);
+            this.showError('Nie udało się wysłać wiadomości. Sprawdź połączenie internetowe.');
+        } finally {
+            this.showLoading(false);
+        }
+    }
+    
+    displayUserMessage(text) {
+        const messageElement = document.createElement('div');
+        messageElement.className = 'message user-message';
+        messageElement.style.opacity = '0';
+        messageElement.innerHTML = `
+            <div class="message-content">
+                <div class="message-text">${this.escapeHtml(text)}</div>
+            </div>
+            <div class="message-avatar">👤</div>
+        `;
+        this.messagesContainer.appendChild(messageElement);
+        
+        // Fade in animation
+        setTimeout(() => {
+            messageElement.style.opacity = '1';
+        }, 50);
+        
+        this.scrollToBottom();
+    }
+    
+    async performSearch(query) {
+        if (!query) return;
+        
+        const searchType = this.faqMode ? 'faq' : 'products';
+        
+        try {
+            const response = await fetch('/search-suggestions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({ 
+                    query: query,
+                    type: searchType 
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Search failed with status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('[DEBUG] Suggestions received:', data);
+            
+            // Track search
+            this.trackEvent('search_performed', {
+                search_term: query,
+                search_type: searchType,
+                results_count: data.suggestions ? data.suggestions.length : 0
+            });
+            
+            if (data.suggestions && data.suggestions.length > 0) {
+                this.displaySearchSuggestions(data.suggestions);
+            } else {
+                this.displayNoSuggestions(query, searchType);
+            }
+        } catch (error) {
+            console.error('[ERROR] Search failed:', error);
+            this.hideSuggestions();
+            this.trackEvent('search_error', {
+                search_term: query,
+                error: error.message
+            });
+        }
+    }
+    
+    displaySearchSuggestions(suggestions) {
+        // Clear and prepare dropdown
+        this.suggestionsDropdown.innerHTML = '';
+        this.suggestionsDropdown.className = 'suggestions-dropdown';
+        
+        suggestions.forEach(item => {
+            const suggestionElement = document.createElement('div');
+            suggestionElement.className = 'suggestion-item';
+            
+            if (item.type === 'faq') {
+                // FAQ suggestion
+                suggestionElement.classList.add('faq-suggestion');
+                suggestionElement.innerHTML = `
+                    <div class="suggestion-item-header">
+                        <div class="suggestion-product-info">
+                            <div class="suggestion-product-name">
+                                ❓ ${item.text}
+                            </div>
+                            <div class="suggestion-product-details">
+                                <span class="suggestion-match-score">Dopasowanie: ${item.score}%</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Product suggestion
+                let stockBadge = '';
+                if (item.stock_status === 'available') {
+                    stockBadge = `<span class="suggestion-stock-indicator stock-available">✅ ${item.stock} szt.</span>`;
+                } else if (item.stock_status === 'limited') {
+                    stockBadge = `<span class="suggestion-stock-indicator stock-limited">⚠️ Ostatnie ${item.stock} szt.</span>`;
+                } else {
+                    stockBadge = `<span class="suggestion-stock-indicator stock-out">❌ Brak</span>`;
+                }
+                
+                suggestionElement.innerHTML = `
+                    <div class="suggestion-item-header">
+                        <div class="suggestion-product-info">
+                            <div class="suggestion-product-name">${item.text}</div>
+                            <div class="suggestion-product-details">
+                                <span class="suggestion-product-code">${item.id}</span>
+                                <span style="color: #d1d5db;">|</span>
+                                <span class="suggestion-product-brand">${item.brand}</span>
+                                <span style="color: #d1d5db;">|</span>
+                                ${stockBadge}
+                            </div>
+                        </div>
+                        <div class="suggestion-price-info">
+                            <div class="suggestion-price">${item.price}</div>
+                            <div class="suggestion-price-label">netto</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Click handler
+            suggestionElement.addEventListener('click', () => {
+                this.userInput.value = item.text;
+                this.hideSuggestions();
+                // Optionally send the message immediately
+                setTimeout(() => this.sendTextMessage(), 100);
+            });
+            
+            this.suggestionsDropdown.appendChild(suggestionElement);
+        });
+        
+        this.positionDropdown();
+    }
+    
+    displayNoSuggestions(query, searchType) {
+        this.suggestionsDropdown.innerHTML = '';
+        this.suggestionsDropdown.className = 'suggestions-dropdown';
+        
+        const message = document.createElement('div');
+        message.className = 'no-results-message';
+        
+        const icon = searchType === 'faq' ? '❓' : '🔍';
+        const text = searchType === 'faq' ? 
+            'Nie znaleziono pytań' : 
+            'Nie znaleziono produktów';
+        
+        message.innerHTML = `
+            <div class="no-results-icon">${icon}</div>
+            <div class="no-results-text">
+                ${text} dla "<strong>${this.escapeHtml(query)}</strong>"
+            </div>
+            <div class="no-results-tips">
+                <div class="no-results-tips-title">
+                    🤖 System automatycznie poprawia błędy!
+                </div>
+                <p style="font-size: 0.8rem; color: #6b7280; margin-top: 8px;">
+                    Kontynuuj pisanie - znajdziemy to czego szukasz
+                </p>
+            </div>
+        `;
+        
+        this.suggestionsDropdown.appendChild(message);
+        this.positionDropdown();
+    }
+    
+    displaySuggestions(suggestions) {
+        // This method is now replaced by displaySearchSuggestions
+        this.displaySearchSuggestions(suggestions);
+    }
+    
+    displayNoResults(query, searchType = 'products') {
+        this.suggestionsDropdown.innerHTML = '';
+        this.suggestionsDropdown.className = 'suggestions-dropdown';
+        
+        const message = document.createElement('div');
+        message.className = 'no-results-message';
+        
+        if (searchType === 'faq') {
+            message.innerHTML = `
+                <div class="no-results-icon">❓</div>
+                <div class="no-results-text">
+                    Nie znaleziono odpowiedzi dla "<strong>${this.escapeHtml(query)}</strong>"
+                </div>
+                <div class="no-results-tips">
+                    <div class="no-results-tips-title">
+                        💡 Spróbuj
+                    </div>
+                    <ul>
+                        <li>Użyć innych słów kluczowych</li>
+                        <li>Zadać pytanie inaczej</li>
+                        <li>Skontaktować się z nami</li>
+                    </ul>
+                </div>
+            `;
+        } else {
+            message.innerHTML = `
+                <div class="no-results-icon">🔍</div>
+                <div class="no-results-text">
+                    Brak wyników dla "<strong>${this.escapeHtml(query)}</strong>"
+                </div>
+                <div class="no-results-tips">
+                    <div class="no-results-tips-title">
+                        System automatycznie poprawia literówki!
+                    </div>
+                    <ul>
+                        <li>Spróbuj innych słów</li>
+                        <li>Użyj numeru katalogowego</li>
+                        <li>Wpisz markę lub model</li>
+                    </ul>
+                </div>
+            `;
+        }
+        
+        this.suggestionsDropdown.appendChild(message);
+        this.positionDropdown();
+    }
+    
+    positionDropdown() {
+        // Position dropdown ABOVE the input
+        const inputGroup = document.getElementById('message-form');
+        
+        // Ensure input group is relatively positioned
+        inputGroup.style.position = 'relative';
+        
+        // Append dropdown to the form
+        if (this.suggestionsDropdown.parentElement !== inputGroup) {
+            inputGroup.appendChild(this.suggestionsDropdown);
+        }
+        
+        // Set dropdown styles to appear above input
+        this.suggestionsDropdown.style.position = 'absolute';
+        this.suggestionsDropdown.style.left = '0';
+        this.suggestionsDropdown.style.right = '0';
+        this.suggestionsDropdown.style.bottom = '100%'; 
+        this.suggestionsDropdown.style.marginBottom = '4px';
+        this.suggestionsDropdown.style.display = 'block';
+    }
+    
+    hideSuggestions() {
+        if (this.suggestionsDropdown) {
+            this.suggestionsDropdown.style.display = 'none';
+        }
+    }
+    
+    async resetSession() {
+        this.showLoading(true);
+        try {
+            this.cartCount = 0;
+            this.updateCartCounter();
+            this.searchMode = false;
+            this.currentContext = null;
+            await this.startBot();
+        } catch (error) {
+            console.error('[ERROR] Reset failed:', error);
+            this.showError('Nie udało się zresetować sesji. Odśwież stronę.');
+        } finally {
+            this.showLoading(false);
+        }
+    }
+    
+    showError(message) {
+        const errorElement = document.createElement('div');
+        errorElement.className = 'message bot-message error';
+        errorElement.innerHTML = `
+            <div class="message-avatar">⚠️</div>
+            <div class="message-content">
+                <div class="message-text">${message}</div>
+            </div>
+        `;
+        this.messagesContainer.appendChild(errorElement);
+        this.scrollToBottom();
+    }
+    
+    showTypingIndicator() {
+        this.removeTypingIndicator();
+        const typingElement = document.createElement('div');
+        typingElement.className = 'message bot-message typing-indicator';
+        typingElement.innerHTML = `
+            <div class="message-avatar">🤖</div>
+            <div class="message-content">
+                <div class="typing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        `;
+        this.messagesContainer.appendChild(typingElement);
+        this.scrollToBottom();
+    }
+    
+    removeTypingIndicator() {
+        const typingIndicator = this.messagesContainer.querySelector('.typing-indicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+    }
+    
+    showLoading(show) {
+        if (this.loadingOverlay) {
+            this.loadingOverlay.style.display = show ? 'flex' : 'none';
+        }
+    }
+    
+    scrollToBottom() {
+        if (this.messagesContainer) {
+            setTimeout(() => {
+                this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+            }, 100);
+        }
+    }
+    
+    updateCartCounter() {
+        if (this.cartCounter) {
+            this.cartCounter.textContent = `🛒 Koszyk: ${this.cartCount}`;
+            
+            // Animate cart update
+            this.cartCounter.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                this.cartCounter.style.transform = 'scale(1)';
+            }, 200);
+        }
+    }
+    
+    showNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-color);
+            color: var(--primary-color);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1001;
+            animation: slideIn 0.3s ease;
+            font-weight: 600;
+        `;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.animation = 'fadeOut 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+    
+    escapeHtml(text) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, m => map[m]);
+    }
+}
+
+// Add necessary CSS for animations
+const style = document.createElement('style');
+style.textContent = `
+    .typing-dots {
+        display: inline-flex;
+        gap: 4px;
+    }
+    
+    .typing-dots span {
+        width: 8px;
+        height: 8px;
+        background: var(--gray-500);
+        border-radius: 50%;
+        animation: typing 1.4s infinite;
+    }
+    
+    .typing-dots span:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+    
+    .typing-dots span:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+    
+    @keyframes typing {
+        0%, 60%, 100% {
+            transform: translateY(0);
+            opacity: 0.5;
+        }
+        30% {
+            transform: translateY(-10px);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes fadeOut {
+        from { opacity: 1; transform: translateX(0); }
+        to { opacity: 0; transform: translateX(20px); }
+    }
+    
+    .action-btn {
+        animation: slideUp 0.3s ease backwards;
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+`;
+document.head.appendChild(style);
+
+// Helper function for debouncing
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Helper function for search tracking
+function setupSearchTracking(bot) {
+    if (!bot.userInput) return;
+    
+    let searchTimeout = null;
+    
+    bot.userInput.addEventListener('input', (e) => {
+        const query = e.target.value.trim();
+        
+        // Clear previous timeout
+        clearTimeout(searchTimeout);
+        
+        // Set new timeout
+        searchTimeout = setTimeout(() => {
+            if (query.length >= 2) {
+                fetch('/search-suggestions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        query: query,
+                        type: bot.faqMode ? 'faq' : 'products'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.suggestions && data.suggestions.length === 0) {
+                        // Track search with no results in GA4
+                        gtag('event', 'search_no_results', {
+                            search_term: query,
+                            search_type: bot.faqMode ? 'faq' : 'products',
+                            timestamp: new Date().toISOString()
+                        });
+                        console.log(`[GA4] Tracked no results for search term: "${query}"`);
+                    }
+                })
+                .catch(error => console.error('Search tracking error:', error));
+            }
+        }, 800);
+    });
+}
+
+// Initialize the bot UI when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 Universal Soldier Bot - Initializing...');
+    const bot = new EcommerceBotUI();
+    const searchTracker = new SearchTracker();
+    
+    // Add debounced search tracking
+    if (bot.userInput) {
+        const debouncedSearch = searchTracker.debounce((query) => {
+            if (query.length >= 2) {
+                fetch('/search-suggestions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        query: query,
+                        type: bot.faqMode ? 'faq' : 'products'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.suggestions && data.suggestions.length === 0) {
+                        searchTracker.trackNoResults(query, bot.faqMode ? 'faq' : 'products');
+                    }
+                })
+                .catch(error => console.error('Search tracking error:', error));
+            }
+        }, 800);
+
+        bot.userInput.addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            debouncedSearch(query);
+        });
+    }
+    
+    console.log('✅ Universal Soldier Bot - Ready for action!');
+});

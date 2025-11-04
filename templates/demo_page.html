@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoParts Pro - Demo + Analytics Dashboard</title>
+    <meta name="description" content="Universal Soldier - Bot e-commerce z dashboardem analitycznym">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚗</text></svg>">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ECOMMERCE123"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-ECOMMERCE123', {
+        debug_mode: true,
+        page_title: 'Universal Soldier Bot + Dashboard',
+        app_name: 'AutoParts Pro Demo',
+        app_version: '3.0'
+      });
+    </script>
+    
+    <!-- Dodaj nowy -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='unified_style.css') }}">
+</head>
+<body>
+    <!-- Connection Status - PRZENIESIONY DO BODY -->
+    <div class="connection-status" id="connectionStatus">
+        <i class="fas fa-wifi"></i>
+        <span>Łączenie...</span>
+    </div>
+    
+    <!-- GŁÓWNY KONTENER - NOWA STRUKTURA -->
+    <div class="demo-container">
+        <!-- Bot Column - Lewa strona -->
+        <div class="bot-column" id="botColumn">
+            <div class="bot-header">
+                🤖 Pierwszy w Polsce System Analizy Utraconego Popytu. Budujemy Dedykowane AI, Które Rozwiązują Twoje Najtrudniejsze Problemy Biznesowe
+            </div>
+            <!-- DODAJ TE 4 LINIJKI: -->
+<button class="mobile-dashboard-toggle" id="mobileDashboardToggle">
+    📊 Pokaż Centrum Analityczne
+</button>
+            <div class="bot-content">
+                <div class="app-container">
+                    <!-- Header -->
+                    <header class="app-header">
+                        <div class="header-content">
+                            <div class="header-left">
+                                <div class="logo-section">
+                                    <div class="logo-icon">🔧</div>
+                                    <div class="logo-text">
+                                        <h1>AutoParts Assistant</h1>
+                                        <span class="logo-subtitle">Powered by Adept Engine</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="header-right">
+                                <div class="header-badges">
+                                    <span class="badge-ecommerce">🛒 E-commerce Solution</span>
+                                    <div class="security-badge">
+                                        <span class="lock-icon">🔒</span>
+                                        <span>Secure</span>
+                                    </div>
+                                    <div class="iso-badge">
+                                        <span class="check-circle">✓</span>
+                                        <span>ISO 27001</span>
+                                    </div>
+                                    <!-- CTA LINK -->
+                                    <a href="/login" class="header-cta-link">
+    <span class="cta-icon">🎯</span>
+    <span>
+        To DEMO<br>
+        Zobacz swoje przyszłe<br>
+        <strong>Centrum Dowodzenia →</strong>
+    </span>
+</a>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+                    
+                    <!-- Main Content -->
+                    <main class="main-content">
+                        <!-- Chat Interface -->
+                        <div id="chat-interface" class="chat-interface">
+                            <div class="chat-header">
+                                <div class="chat-status">
+                                    <div class="status-indicator"></div>
+                                    <span>Asystent AutoParts - <strong>Online</strong></span>
+                                </div>
+                                <div class="header-controls">
+                                    <div class="cart-counter" id="cart-counter">
+                                        🛒 Koszyk: 0
+                                    </div>
+                                    <button id="reset-btn" class="reset-btn" type="button">
+                                        <span>🔄</span>
+                                        Nowa sesja
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div id="messages-container" class="messages-container">
+                                <!-- Messages will be added dynamically -->
+                            </div>
+                            
+                            <div class="input-section">
+                                <div id="button-container" class="button-container">
+                                    <!-- Buttons will be added dynamically -->
+                                </div>
+                                
+                                <div id="text-input-container" class="text-input-container">
+                                    <form class="input-group" id="message-form">
+                                        <input
+                                            type="text"
+                                            id="user-input"
+                                            placeholder="Wpisz pytanie o części samochodowe..."
+                                            autocomplete="off"
+                                            maxlength="500"
+                                        >
+                                        <button id="send-btn" class="send-btn" type="submit">
+                                            <span>Wyślij</span>
+                                            <span class="btn-icon">📤</span>
+                                        </button>
+                                    </form>
+                                    <div class="input-hint">
+                                        <small>💡 Możesz zapytać o części, dostawę, montaż lub sprawdzić kompatybilność</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                    
+                    <!-- Footer -->
+                    <footer class="app-footer">
+                        <div class="footer-content">
+                            <div class="footer-left">
+                                <div class="company">AutoParts Demo</div>
+                                <div class="version">Universal Soldier v3.0</div>
+                                <div class="copyright">© 2025 Adept AI</div>
+                            </div>
+                            <div class="footer-center">
+                                <div class="compliance-badges">
+                                    <div class="badge">
+                                        <span>🚚</span>
+                                        Dostawa 24h
+                                    </div>
+                                    <div class="badge">
+                                        <span>💳</span>
+                                        Bezpieczne płatności
+                                    </div>
+                                    <div class="badge">
+                                        <span>✅</span>
+                                        Gwarancja 24m
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="footer-right">
+                                <div class="tech-stack">AI-Powered Commerce</div>
+                                <div class="support-info">
+                                    <a href="mailto:support@autoparts.pl" class="support-link">
+                                        📧 support@autoparts.pl
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            </div>
+        </div>
+
+                <!-- Resizer Handle -->
+        <div class="resize-handle" id="resizeHandle">
+            <div class="resize-grip"></div>
+        </div>
+
+        <!-- Dashboard Column - Prawa strona -->
+        <div class="dashboard-column" id="dashboardColumn">
+            <div class="dashboard-header">
+                <div class="dashboard-title">
+                    📊 Centrum Analityczne TCD
+                </div>
+                <div class="dashboard-controls">
+                    <button id="collapseDashboard" class="collapse-btn">←</button>
+                </div>
+            </div>
+            
+            <div class="dashboard-content">
+                <!-- TOP METRYKI - WIĘKSZE I CZYTELNIEJSZE -->
+                <section class="dashboard-metrics">
+                    <div class="metric-card found-products">
+    <div class="metric-icon">✅</div>
+    <div class="metric-data">
+        <div class="metric-label">ZNALEZIONE PRODUKTY</div>
+        <div class="metric-number">
+            <span class="count" id="foundProductsCount">0</span>
+            <span class="unit">trafień</span>
+        </div>
+    </div>
+</div>
+
+<div class="metric-card lost-opportunities">
+    <div class="metric-icon">💰</div>
+    <div class="metric-data">
+        <div class="metric-label">UTRACONE OKAZJE</div>
+        <div class="metric-number">
+            <span class="count" id="lostOpportunitiesCount">0</span>
+            <span class="unit">zapytań</span>
+        </div>
+        <div class="metric-value">
+            <span class="amount" id="lostOpportunitiesAmount">0</span> zł
+        </div>
+    </div>
+</div>
+
+<div class="metric-card filtered-out">
+    <div class="metric-icon">🛡️</div>
+    <div class="metric-data">
+        <div class="metric-label">ODFILTROWANE</div>
+        <div class="metric-number">
+            <span class="count" id="filteredOutCount">0</span>
+            <span class="unit">błędów</span>
+        </div>
+    </div>
+</div>
+                </section>
+
+                <!-- LIVE FEED - MAKSYMALNIE 4 ELEMENTY -->
+                <section class="dashboard-feed">
+                    <div class="feed-header">
+                        <h3><i class="fas fa-satellite-dish"></i> Live Feed</h3>
+                        <div class="feed-controls">
+                            <button class="feed-control-btn" id="pauseFeed" title="Wstrzymaj">
+                                <i class="fas fa-pause"></i>
+                            </button>
+                            <button class="feed-control-btn" id="clearFeed" title="Wyczyść">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="feed-content" id="liveFeed">
+                        <div class="feed-placeholder">
+                            <i class="fas fa-satellite-dish"></i>
+                            <span>Oczekiwanie na dane...</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- WYKRES I STATYSTYKI -->
+                <section class="dashboard-analytics">
+                    <div class="analytics-grid">
+                        <div class="chart-panel">
+                            <div class="panel-title">
+                                <i class="fas fa-chart-pie"></i> Rozkład Zapytań
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="performanceChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-panel">
+                            <div class="panel-title">
+                                <i class="fas fa-chart-line"></i> Statystyki
+                            </div>
+                            <div class="stats-list">
+                                <div class="stat-row">
+    <span class="stat-label">Potencjał utracony</span>
+    <span class="stat-value" id="successRate">0%</span>
+</div>
+                               
+                                <div class="stat-row">
+                                    <span class="stat-label">Utracona wartość</span>
+                                    <span class="stat-value success" id="savedRevenue">0 zł</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div> <!-- To jest zamknięcie demo-container -->
+    
+    <!-- Notification Banner zamiast floating button -->
+<div class="offer-notification" id="offerNotification">
+    <div class="notification-content">
+        <span class="notification-icon">💰</span>
+        <div class="notification-text">
+            <strong>Sprawdź naszą ofertę poniżej!</strong>
+            <span>Dowiedz się dlaczego jesteśmy lepsi od konkurencji</span>
+        </div>
+        <button class="notification-close" onclick="document.getElementById('offerNotification').style.display='none'">×</button>
+    </div>
+</div>
+    
+    
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>Inicjalizacja dashboardu...</p>
+        </div>
+    </div>
+    
+    <!-- Product Preview Modal -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Podgląd produktu</h3>
+                <button class="modal-close">×</button>
+            </div>
+            <div class="modal-body" id="product-preview">
+                <!-- Product details will be shown here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ARGUMENTY SPRZEDAŻOWE - POD GŁÓWNYM KONTENEREM -->
+    <section class="sales-arguments">
+    <div class="arguments-container">
+        <div class="arguments-header">
+            <h2>To Więcej Niż Bot. To Partnerstwo Strategiczne.</h2>
+        </div>
+        
+        <div class="advantage-grid">
+    <div class="advantage-item">
+        <div class="advantage-icon">🧠</div>
+        <div class="advantage-content">
+            <h4>System Analityczny, a nie Bot-Zabawka</h4>
+            <p>Każde "brak wyników" to klient, który właśnie wychodzi z Twojego sklepu z pieniędzmi w ręku. Nasz <span style="color: #FFD700;">silnik analityczny</span> w czasie rzeczywistym odróżnia przypadkową <strong>literówkę</strong> od zapytania o produkt <strong>warty tysiące złotych</strong>. Zmieniamy porażkę w twarde dane wywiadowcze.</p>
+        </div>
+    </div>
+
+    <div class="advantage-item">
+    <div class="advantage-icon">💰</div>
+    <div class="advantage-content">
+        <h4>Inteligencja, nie Surowe Dane</h4>
+        <p>Standardowe narzędzia zasypują Cię surowymi logami i mówią "analizuj sam". My działamy inaczej. Otrzymujesz <strong>zweryfikowany przez eksperta, cotygodniowy raport PDF</strong> z gotowymi wnioskami i rekomendacjami. Twoja rola to podejmować decyzje, a nie grzebać w danych.</p>
+    </div>
+</div>
+
+    <div class="advantage-item">
+        <div class="advantage-icon">🛠️</div>
+        <div class="advantage-content">
+            <h4>Nieskończone Możliwości, a nie Zamknięte Pudełko</h4>
+            <p>Standardowe Rozwiązania Chatbotowe = zamknięte pudełko. My = Twój zewnętrzny dział R&D. Potrzebujesz bota który sprawdzi stan magazynu i zaproponuje zamiennik? Chcesz żeby bot nauczył się specyficznego żargonu twojej branży? Zrobimy to, ogranicza Cię tylko wyobraźnia.</p>
+        </div>
+    </div>
+
+    <div class="advantage-item">
+        <div class="advantage-icon">👨‍💻</div>
+        <div class="advantage-content">
+            <h4>Bezpośredni Kontakt z Architektem</h4>
+            <p>Nie rozmawiasz z działem wsparcia. Masz bezpośredni dostęp do mnie – architekta, który zna każdą linijkę kodu. Modyfikacje i nowe pomysły wdrażamy w godzinach, a nie tygodniach.</p>
+        </div>
+    </div>
+
+    <div class="advantage-item">
+        <div class="advantage-icon">💸</div>
+        <div class="advantage-content">
+            <h4>Miażdżąca Przewaga Kosztowa</h4>
+            <p>Pracownik: 50-72k zł/rok. Nasz system: 15k zł/rok. Pracuje 24/7, nigdy nie bierze L4, dodatkowo dostarcza dane o wartości dziesiątek tysięcy.</p>
+        </div>
+    </div>
+
+    <div class="advantage-item">
+        <div class="advantage-icon">🔮</div>
+        <div class="advantage-content">
+            <h4>Przyszłość: Machine Learning + Predykcja</h4>
+            <p>To dopiero początek technologiczny. Następny cel: ML do predykcji przyszłego popytu. Będziemy przewidywać trendy zanim zobaczy je rynek. Nasz produkt rozwija się każdego dnia.</p>
+        </div>
+    </div>
+</div>
+
+
+        <div class="security-section">
+    <h3>🛡️ PANCERNA INFRASTRUKTURA I BEZPIECZEŃSTWO</h3>
+    <div class="security-content">
+        <p><strong>Gwarancja bezpieczeństwa danych:</strong> System operuje na infrastrukturze <strong>Render</strong> z certyfikatem ISO 27001, spełniającym międzynarodowe standardy bezpieczeństwa danych. Globalny shield <strong>Cloudflare</strong> chroni przed atakami DDoS, botami i zagrożeniami cyberbezpieczeństwa. To gwarantuje nie tylko inteligencję, ale i bezwzględną ochronę.</p>
+    </div>
+</div>
+<!-- Zamień całą sekcję pricing-section na tę wersję: -->
+<div class="pricing-section">
+    <h3>💎 OFERTA SPECJALNA DLA PIERWSZEGO PARTNERA STRATEGICZNEGO</h3>
+
+    <div class="pricing-content">
+        <div class="pricing-main">
+            <div class="pricing-card special-offer">
+                <div class="pricing-header">
+                    <h4>Inwestycja Inauguracyjna</h4>
+                    <span class="badge-special">Tylko 1 miejsce!</span>
+                </div>
+
+                <div class="pricing-details">
+                    <div class="price-item main">
+                        <span class="price-label">Wdrożenie Jednorazowe:</span>
+                        <span class="price-value">10 000 zł netto</span>
+                    </div>
+                    <div class="price-item main">
+                        <span class="price-label">Abonament Partnerski:</span>
+                        <span class="price-value">2 000 zł netto/mc</span>
+                    </div>
+                    <p style="font-size: 0.8em; text-align: center; margin-top: 10px; color: #757575; padding: 0 15px;">
+                        *(Standardowa wartość Pakietu Business: 15 000 zł wdrożenie + 3 500 zł/mc. Oferta w zamian za bycie pionierem i cenne case study.)*
+                    </p>
+                </div>
+
+                <div class="pricing-includes">
+                    <h5>W pakiecie partnerskim otrzymujesz:</h5>
+                    <ul class="includes-list">
+                        <li>✓ Pełne wdrożenie systemu analitycznego</li>
+                        <li>✓ Hosting na infrastrukturze enterprise</li>
+                        <li>✓ Cotygodniowe, zweryfikowane raporty PDF o utraconym popycie</li>
+                        <li>✓ Bezpośredni kontakt z architektem systemu</li>
+                        <li>✓ Nieograniczone modyfikacje w ramach abonamentu</li>
+                        <li>✓ Wsparcie 24/7</li>
+                        <li style="font-weight: bold;">✓ Priorytetowe wdrażanie nowych funkcji</li>
+                        <li style="font-weight: bold;">✓ Gwarancja niezmienności ceny przez 24 miesiące</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="pricing-footer">
+            <p class="pricing-note">
+                 <strong>Całkowity koszt pierwszego roku dla Partnera: 34 000 zł netto</strong><br>
+                <small>To ułamek rocznego kosztu analityka, a system pracuje dla Ciebie 24/7, odzyskując utracone przychody.</small>
+            </p>
+            <p class="pricing-urgency">
+                ⚡ Oferta ekskluzywna - Zostań naszym pierwszym partnerem strategicznym!
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="battle-comparison">
+    <h3>Porównanie Technologii: Adept Engine vs. Gotowe rozwiązania Chatbotowe</h3>
+    
+    <div class="comparison-table">
+        <div class="table-header">
+            <div class="feature-col">Cecha</div>
+            <div class="us-col">System Odzyskiwania Utraconego Popytu Adept</div>
+            <div class="nocode-col">Standardowe Rozwiązania Chatbotowe</div>
+        </div>
+        
+        <div class="table-row">
+            <div class="feature-col">
+                <strong>Analiza Intencji</strong>
+            </div>
+            <div class="us-col winner">
+                🧠 <strong>Głęboka</strong><br>
+                <small>W Czasie Rzeczywistym, bez 'Enter'</small>
+            </div>
+            <div class="nocode-col loser">
+                ❌ <strong>Płytka</strong><br>
+                <small>Tylko po wysłaniu zapytania</small>
+            </div>
+        </div>
+        
+        <div class="table-row">
+            <div class="feature-col">
+                <strong>Dane Wywiadowcze</strong>
+            </div>
+            <div class="us-col winner">
+                📡 <strong>Pełny Radar</strong><br>
+                <small>"Echo" Rynku</small>
+            </div>
+            <div class="nocode-col loser">
+                📉 <strong>Prosta Lista</strong><br>
+                <small>Błędów i Porażek</small>
+            </div>
+        </div>
+        
+        <div class="table-row">
+            <div class="feature-col">
+                <strong>Możliwości Rozwoju</strong>
+            </div>
+            <div class="us-col winner">
+                🛠️ <strong>Nieskończone</strong><br>
+                <small>Twój Osobisty Dział R&D</small>
+            </div>
+            <div class="nocode-col loser">
+                📦 <strong>Zamknięte</strong><br>
+                <small>Sztywne Pudełko</small>
+            </div>
+        </div>
+        
+        <div class="table-row">
+            <div class="feature-col">
+                <strong>Koszty</strong>
+            </div>
+            <div class="us-col winner">
+                💰 <strong>Przewidywalne</strong><br>
+                <small>Stały, płaski abonament</small>
+            </div>
+            <div class="nocode-col loser">
+                📈 <strong>Nieprzewidywalne</strong><br>
+                <small>Płacisz za sukces i liczbę rozmów</small>
+            </div>
+        </div>
+        
+        <div class="table-row">
+            <div class="feature-col">
+                <strong>Wsparcie</strong>
+            </div>
+            <div class="us-col winner">
+                👨‍💻 <strong>Bezpośrednie</strong><br>
+                <small>Dostęp do Architekta Systemu</small>
+            </div>
+            <div class="nocode-col loser">
+                🎫 <strong>System Ticketowy</strong><br>
+                <small>Konsultanci 1. Linii</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="battle-conclusion">
+        <p><strong>Wynik: Przewaga Technologiczna Adept AI</strong></p>
+        <p>Standardowe chatboty to narzędzia. Adept Engine to strategiczna broń analityczna.</p>
+    </div>
+</div>
+
+        <div class="proof-section">
+            <h3>Nasze Wdrożenia i Studium Przypadków</h3>
+            <div class="proof-grid">
+                <div class="proof-item">
+                    <span class="proof-check">✅</span>
+                    <strong>Integracja z Prawdziwym AI:</strong> Nasz system do analizy jakości wody (skankran.pl) jest w pełni zintegrowany z API Google Gemini, prowadząc zaawansowane, kontekstowe rozmowy z użytkownikami.
+                </div>
+                <div class="proof-item">
+                    <span class="proof-check">✅</span>
+                    <strong>Sprawdzona Wszechstronność:</strong> Przetestowaliśmy nasz system analityczny w skrajnie odmiennym środowisku – sektorze publicznym (gmina-ai.pl).
+                </div>
+            </div>
+        </div>
+
+        <div class="arguments-cta">
+            <div class="cta-content">
+                <h3>Gotowy Przejąć Kontrolę nad Swoim Rynkiem?</h3>
+                <p>Zobacz jak Universal Soldier AI może zmiażdżyć konkurencję</p>
+                <div class="cta-buttons">
+                    <button class="cta-primary">
+                        <i class="fas fa-rocket"></i>
+                        Rozpocznij Współpracę
+                    </button>
+                    <button class="cta-secondary">
+                        <i class="fas fa-phone"></i>
+                        Bezpośredni Kontakt
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <!-- Scripts -->
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script src="{{ url_for('static', filename='script.js') }}" defer></script>
+<script src="{{ url_for('static', filename='dashboard.js') }}" defer></script>
+
+<script>
+    // Floating CTA funkcjonalność
+    function scrollToArguments() {
+    alert('Funkcja wywołana!');
+    
+    const salesSection = document.querySelector('.sales-arguments');
+    alert(salesSection ? 'Sekcja znaleziona' : 'Sekcja nie znaleziona');
+    
+    if (salesSection) {
+        salesSection.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+        });
+    } else {
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
+}
+
+    // Show/hide based on scroll position
+    window.addEventListener('scroll', () => {
+        const floatingCTA = document.getElementById('floatingCTA');
+        const salesSection = document.querySelector('.sales-arguments');
+        
+        if (floatingCTA && salesSection) {
+            const rect = salesSection.getBoundingClientRect();
+            // Hide when sales section is visible
+            if (rect.top <= window.innerHeight) {
+                floatingCTA.style.opacity = '0';
+                floatingCTA.style.pointerEvents = 'none';
+            } else {
+                floatingCTA.style.opacity = '1';
+                floatingCTA.style.pointerEvents = 'auto';
+            }
+        }
+    });
+
+    // Dashboard Connection Handler
+    window.addEventListener('load', function() {
+        const status = document.getElementById('connectionStatus');
+        if (!status) return;
+        
+        // Wait for dashboard to initialize
+        setTimeout(() => {
+            if (window.tacticalDashboard && window.tacticalDashboard.socket) {
+                status.innerHTML = '<i class="fas fa-wifi"></i><span>Połączony</span>';
+                status.classList.add('connected');
+            } else {
+                status.innerHTML = '<i class="fas fa-wifi-slash"></i><span>Rozłączony</span>';
+                status.classList.add('disconnected');
+            }
+        }, 2000);
+
+        // CTA Button Handlers
+        const ctaPrimary = document.querySelector('.cta-primary');
+        const ctaSecondary = document.querySelector('.cta-secondary');
+        
+        if (ctaPrimary) {
+            ctaPrimary.addEventListener('click', () => {
+                // Scroll to bot
+                document.querySelector('.bot-column').scrollIntoView({ 
+                    behavior: 'smooth' 
+                });
+                
+                // Focus on input if visible
+                setTimeout(() => {
+                    const input = document.getElementById('user-input');
+                    if (input && input.offsetParent !== null) {
+                        input.focus();
+                    }
+                }, 1000);
+            });
+        }
+        
+        if (ctaSecondary) {
+            ctaSecondary.addEventListener('click', () => {
+                window.location.href = 'mailto:support@autoparts.pl?subject=Zapytanie o Universal Soldier AI';
+            });
+        }
+    });
+</script>
+<!-- DODAJ PRZED ZAMKNIĘCIEM 
+<style>
+/* ========================================
+   VERTICAL CTA BAR - Pasek pionowy między botem a TCD
+   ======================================== */
+
+
+.vertical-cta-bar:hover {
+    width: 75px;
+    box-shadow: 
+        0 12px 32px rgba(220, 38, 38, 0.6),
+        inset 0 1px 0 rgba(255,255,255,0.2);
+    border-left-width: 4px;
+    border-right-width: 4px;
+}
+
+/* Ikony */
+.cta-icons {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.cta-lightning {
+    animation: pulse-glow 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+}
+
+.cta-eye {
+    animation: blink 4s ease-in-out infinite;
+}
+
+/* Tekst pionowy */
+.cta-text-vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.3;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.cta-text-vertical span {
+    white-space: nowrap;
+}
+
+.cta-divider {
+    font-size: 10px;
+    opacity: 0.5;
+    margin: 4px 0;
+}
+
+.cta-arrow {
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffd700;
+    animation: bounce-arrow 2s ease-in-out infinite;
+}
+
+/* Animacje */
+@keyframes blink {
+    0%, 90%, 100% { opacity: 1; }
+    93%, 97% { opacity: 0.3; }
+}
+
+@keyframes pulse-glow {
+    0%, 100% { 
+        transform: scale(1);
+        filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+    }
+    50% { 
+        transform: scale(1.15);
+        filter: drop-shadow(0 0 16px rgba(255, 215, 0, 0.9));
+    }
+}
+
+@keyframes bounce-arrow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+/* ========================================
+   BOT RESPONSIVE - Mniejsze przyciski
+   ======================================== */
+
+/* Główne przyciski (Znajdź część, Status, etc) */
+.action-button,
+.bot-column .action-button,
+.bot-content .action-button {
+    padding: 10px 16px !important;
+    font-size: 14px !important;
+    min-height: 44px !important;
+    margin: 6px 0 !important;
+}
+
+/* Grid przycisków */
+.button-grid,
+.actions-grid {
+    gap: 8px !important;
+}
+
+/* Przyciski w footerze */
+footer button,
+.footer-actions button {
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+}
+
+/* Input pole */
+#user-input {
+    font-size: 14px !important;
+    padding: 12px 16px !important;
+}
+
+/* Przyciski kategorii (Samochód, Dostawczy, etc) */
+.category-button,
+.vehicle-button {
+    padding: 12px 20px !important;
+    font-size: 14px !important;
+}
+
+/* Responsive dla małych ekranów */
+@media (max-width: 1400px) {
+    
+    
+    .cta-icons {
+        font-size: 20px;
+    }
+    
+    .cta-text-vertical {
+        font-size: 10px;
+    }
+    
+    .action-button,
+    .bot-column .action-button {
+        padding: 8px 14px !important;
+        font-size: 13px !important;
+        min-height: 40px !important;
+    }
+}
+
+@media (max-width: 1200px) {
+    
+}
+
+@media (max-width: 768px) {
+    .action-button,
+    .bot-column .action-button {
+        padding: 10px 12px !important;
+        font-size: 13px !important;
+    }
+}
+
+
+/* Bot column musi być relative dla CTA bar */
+.bot-column {
+    position: relative !important;
+}
+
+/* Fix dla overlappingu z TCD */
+.demo-container {
+    position: relative;
+}
+
+.bot-column {
+    position: relative;
+    z-index: 10;
+}
+
+.dashboard-column {
+    position: relative;
+    z-index: 5;
+}
+</style>
+
+</body>: -->
+<div class="mobile-dashboard-overlay" id="mobileDashboardOverlay">
+    <div class="mobile-dashboard-close" id="mobileDashboardClose">✖️</div>
+    <div class="mobile-dashboard-content" id="mobileDashboardContent">
+        <!-- Dashboard content będzie tutaj kopiowany przez JS -->
+    </div>
+</div>
+<script src="{{ url_for('static', filename='visitor_tracking.js') }}" defer></script>
+<style>
+/* CTA Button w headerze */
+.header-cta-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    margin-left: 12px;
+}
+
+.header-cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.header-cta-button .cta-icon {
+    font-size: 18px;
+}
+
+.header-cta-button .cta-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.2;
+}
+
+.header-cta-button .cta-small {
+    font-size: 10px;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.header-cta-button .cta-main {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .header-cta-button .cta-small {
+        display: none;
+    }
+    .header-cta-button .cta-main {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-cta-button {
+        padding: 6px 12px;
+        gap: 6px;
+    }
+    .header-cta-button .cta-icon {
+        font-size: 16px;
+    }
+    .header-cta-button .cta-main {
+        font-size: 11px;
+    }
+}
+</style>
+
+<style>
+/* ========================================
+   VERTICAL CTA BAR - Pasek pionowy między botem a TCD
+   ======================================== */
+
+
+.vertical-cta-bar:hover {
+    width: 75px;
+    box-shadow: 
+        0 12px 32px rgba(220, 38, 38, 0.6),
+        inset 0 1px 0 rgba(255,255,255,0.2);
+    border-left-width: 4px;
+    border-right-width: 4px;
+}
+
+/* Ikony */
+.cta-icons {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.cta-lightning {
+    animation: pulse-glow 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+}
+
+.cta-eye {
+    animation: blink 4s ease-in-out infinite;
+}
+
+/* Tekst pionowy */
+.cta-text-vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.3;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.cta-text-vertical span {
+    white-space: nowrap;
+}
+
+.cta-divider {
+    font-size: 10px;
+    opacity: 0.5;
+    margin: 4px 0;
+}
+
+.cta-arrow {
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffd700;
+    animation: bounce-arrow 2s ease-in-out infinite;
+}
+
+/* Animacje */
+@keyframes blink {
+    0%, 90%, 100% { opacity: 1; }
+    93%, 97% { opacity: 0.3; }
+}
+
+@keyframes pulse-glow {
+    0%, 100% { 
+        transform: scale(1);
+        filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+    }
+    50% { 
+        transform: scale(1.15);
+        filter: drop-shadow(0 0 16px rgba(255, 215, 0, 0.9));
+    }
+}
+
+@keyframes bounce-arrow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+/* ========================================
+   BOT RESPONSIVE - Mniejsze przyciski
+   ======================================== */
+
+/* Główne przyciski (Znajdź część, Status, etc) */
+.action-button,
+.bot-column .action-button,
+.bot-content .action-button {
+    padding: 10px 16px !important;
+    font-size: 14px !important;
+    min-height: 44px !important;
+    margin: 6px 0 !important;
+}
+
+/* Grid przycisków */
+.button-grid,
+.actions-grid {
+    gap: 8px !important;
+}
+
+/* Przyciski w footerze */
+footer button,
+.footer-actions button {
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+}
+
+/* Input pole */
+#user-input {
+    font-size: 14px !important;
+    padding: 12px 16px !important;
+}
+
+/* Przyciski kategorii (Samochód, Dostawczy, etc) */
+.category-button,
+.vehicle-button {
+    padding: 12px 20px !important;
+    font-size: 14px !important;
+}
+
+/* Responsive dla małych ekranów */
+@media (max-width: 1400px) {
+    
+    
+    .cta-icons {
+        font-size: 20px;
+    }
+    
+    .cta-text-vertical {
+        font-size: 10px;
+    }
+    
+    .action-button,
+    .bot-column .action-button {
+        padding: 8px 14px !important;
+        font-size: 13px !important;
+        min-height: 40px !important;
+    }
+}
+
+@media (max-width: 1200px) {
+    
+}
+
+@media (max-width: 768px) {
+    .action-button,
+    .bot-column .action-button {
+        padding: 10px 12px !important;
+        font-size: 13px !important;
+    }
+}
+
+
+/* Bot column musi być relative dla CTA bar */
+.bot-column {
+    position: relative !important;
+}
+
+/* Fix dla overlappingu z TCD */
+.demo-container {
+    position: relative;
+}
+
+.bot-column {
+    position: relative;
+    z-index: 10;
+}
+
+.dashboard-column {
+    position: relative;
+    z-index: 5;
+}
+</style>
+
+</body>
+</html>

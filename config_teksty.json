@@ -1,0 +1,17 @@
+{
+  "welcome_message_lines": [
+    "🚗 <strong>Witaj w Auto Parts Pro | Adept AI (Moto) Demo</strong> ⚡",
+    "Testujesz silnik AI. Zobacz, jak wykrywamy utracony popyt.",
+    "Przetestuj:",
+    "1. <strong>kloki bosh e90</strong> (Literówki)",
+    "2. <strong>GDB1748</strong> (Kody)",
+    "3. <strong>części beemka</strong> (Slang)",
+    "",
+    "🔥 <strong>Test Utraconego Popytu:</strong>",
+    "<ul>",
+    "<li><strong>klocki ferrari</strong> (Premium spoza oferty)</li>",
+    "<li><strong>klocki bmw x3</strong> (Model spoza oferty)</li>",
+    "<li><strong>filtr oleju XYZCorp</strong> (Nieznana marka)</li>",
+    "</ul>"
+  ]
+}

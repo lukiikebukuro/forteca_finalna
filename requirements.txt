@@ -1,0 +1,17 @@
+Flask
+flask-socketio
+requests
+fuzzywuzzy
+python-Levenshtein
+gunicorn
+eventlet
+flask-login==0.6.3
+Werkzeug>=2.0.0
+maxminddb
+geoip2
+python-dotenv
+user-agents
+Flask-Limiter
+Flask-WTF
+Flask-Talisman
+python-dateutil

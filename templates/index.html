@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADEPT AI - Budujemy Dedykowane Systemy AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #1E88E5;
+            --dark-blue: #1565C0;
+            --dark-gray: #2C3E50;
+            --light-gray: #F8F9FA;
+            --white: #FFFFFF;
+            --text-dark: #2C3E50;
+            --text-light: #6C757D;
+            --accent-green: #10B981;
+            --accent-purple: #8B5CF6;
+            --accent-orange: #F59E0B;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--white);
+        }
+
+        /* Header */
+        header {
+            background: var(--white);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+        }
+
+        .company-name {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--dark-gray);
+            letter-spacing: -0.5px;
+        }
+
+        .company-name .ai {
+            color: var(--primary-blue);
+            background: linear-gradient(135deg, var(--primary-blue), #42A5F5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-menu a:hover {
+            color: var(--primary-blue);
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--primary-blue);
+            transition: width 0.3s ease;
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--light-gray) 0%, var(--white) 100%);
+            padding: 4rem 2rem 6rem;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding-top: 4rem;
+        }
+
+        .hero-logo {
+            max-width: 280px;
+            display: block;
+            margin: 0 auto 1.5rem auto;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--dark-gray);
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            letter-spacing: -1px;
+        }
+
+        .hero .highlight {
+            color: var(--primary-blue);
+            background: linear-gradient(135deg, var(--primary-blue), #42A5F5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .subtitle {
+            font-size: 1.3rem;
+            color: var(--text-light);
+            margin-bottom: 3rem;
+            font-weight: 400;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary-blue), #42A5F5);
+            color: var(--white);
+            padding: 1rem 2.5rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(30, 136, 229, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(30, 136, 229, 0.4);
+        }
+
+        /* Sections */
+        .section {
+            padding: 6rem 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--dark-gray);
+        }
+
+        /* About Section */
+        .about {
+            background: var(--light-gray);
+        }
+
+        .about-content {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .about-content p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Projects Section */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 3rem;
+            margin-top: 4rem;
+        }
+
+        .project-card {
+            background: var(--white);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.08);
+            transition: all 0.4s ease;
+            border: 1px solid rgba(30, 136, 229, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary-blue), #42A5F5);
+        }
+
+        .project-card.featured::before {
+            background: linear-gradient(135deg, var(--accent-green), #34D399);
+        }
+
+        .project-card.innovation::before {
+            background: linear-gradient(135deg, var(--accent-purple), #A78BFA);
+        }
+
+        .project-card.public::before {
+            background: linear-gradient(135deg, var(--accent-orange), #FBBF24);
+        }
+
+        .project-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 25px 70px rgba(0,0,0,0.15);
+            border-color: var(--primary-blue);
+        }
+
+        .project-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .project-icon {
+            font-size: 2.5rem;
+            margin-right: 1rem;
+        }
+
+        .project-card h3 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--dark-gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .project-card .url {
+            color: var(--primary-blue);
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            display: block;
+            opacity: 0.8;
+        }
+
+        .project-tagline {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .project-card p {
+            color: var(--text-light);
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+        .project-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--white);
+            background: linear-gradient(135deg, var(--primary-blue), #42A5F5);
+            text-decoration: none;
+            font-weight: 700;
+            padding: 0.8rem 2rem;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .project-link:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 25px rgba(30, 136, 229, 0.3);
+        }
+
+        /* Badge System */
+        .project-badges {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge.flagship {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-green);
+        }
+
+        .badge.innovation {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--accent-purple);
+        }
+
+        .badge.pioneer {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent-orange);
+        }
+
+        /* Contact Section */
+        .contact {
+            background: var(--dark-gray);
+            color: var(--white);
+        }
+
+        .contact .section-title {
+            color: var(--white);
+        }
+
+        .contact-content {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .contact-form {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #E9ECEF;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 1rem;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.05);
+            color: var(--white);
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--primary-blue), #42A5F5);
+            color: var(--white);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(30, 136, 229, 0.3);
+        }
+
+        .contact-email {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .contact-email a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-gray);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .project-card {
+                padding: 2rem;
+            }
+
+            nav {
+                padding: 1rem;
+            }
+
+            .section {
+                padding: 4rem 1rem;
+            }
+
+            .hero {
+                padding: 6rem 1rem 4rem;
+            }
+
+            .hero-content {
+                padding-top: 2rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease-out;
+        }
+
+        .scroll-animate.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo-container">
+                <svg class="logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Brain hemisphere (left side) -->
+                    <path d="M60 60 C40 60, 25 75, 25 95 C25 115, 40 130, 60 130 C70 130, 80 125, 85 115 L85 75 C80 65, 70 60, 60 60 Z" fill="none" stroke="#2C3E50" stroke-width="4"/>
+                    
+                    <!-- Neural connections in brain -->
+                    <circle cx="45" cy="80" r="3" fill="#2C3E50"/>
+                    <circle cx="50" cy="100" r="3" fill="#2C3E50"/>
+                    <circle cx="65" cy="90" r="3" fill="#2C3E50"/>
+                    <circle cx="70" cy="110" r="3" fill="#2C3E50"/>
+                    
+                    <!-- Connections between neurons -->
+                    <line x1="45" y1="80" x2="50" y2="100" stroke="#2C3E50" stroke-width="2"/>
+                    <line x1="50" y1="100" x2="65" y2="90" stroke="#2C3E50" stroke-width="2"/>
+                    <line x1="65" y1="90" x2="70" y2="110" stroke="#2C3E50" stroke-width="2"/>
+                    <line x1="45" y1="80" x2="65" y2="90" stroke="#2C3E50" stroke-width="2"/>
+                    
+                    <!-- Geometric AI structure (letter A shape) -->
+                    <path d="M100 140 L130 60 L160 140 M110 115 L150 115" fill="none" stroke="#1E88E5" stroke-width="5" stroke-linejoin="round"/>
+                    
+                    <!-- Network nodes in the A -->
+                    <polygon points="130,70 135,75 130,80 125,75" fill="#1E88E5"/>
+                    <polygon points="115,105 120,110 115,115 110,110" fill="#1E88E5"/>
+                    <polygon points="145,105 150,110 145,115 140,110" fill="#1E88E5"/>
+                    <polygon points="105,130 110,135 105,140 100,135" fill="#1E88E5"/>
+                    <polygon points="155,130 160,135 155,140 150,135" fill="#1E88E5"/>
+                    
+                    <!-- Connecting lines between geometric nodes -->
+                    <line x1="130" y1="75" x2="115" y2="110" stroke="#1E88E5" stroke-width="2"/>
+                    <line x1="130" y1="75" x2="145" y2="110" stroke="#1E88E5" stroke-width="2"/>
+                    <line x1="115" y1="110" x2="105" y2="135" stroke="#1E88E5" stroke-width="2"/>
+                    <line x1="145" y1="110" x2="155" y2="135" stroke="#1E88E5" stroke-width="2"/>
+                    
+                    <!-- Bridge connection between brain and AI -->
+                    <line x1="85" y1="95" x2="100" y2="100" stroke="#1E88E5" stroke-width="3" stroke-dasharray="5,5"/>
+                    <circle cx="92" cy="97" r="2" fill="#1E88E5"/>
+                </svg>
+                <span class="company-name">ADEPT <span class="ai">AI</span></span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#about">O nas</a></li>
+                <li><a href="#projects">Projekty</a></li>
+                <li><a href="#contact">Kontakt</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content animate-fade-in">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Adept AI Logo" class="hero-logo">
+            <h1>Budujemy <span class="highlight">Dedykowane</span> Systemy AI</h1>
+            <p class="subtitle">Które Rozwiązują Twoje Najtrudniejsze Problemy Biznesowe</p>
+            <a href="#projects" class="cta-button">Zobacz Nasze Systemy</a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section about">
+        <div class="container">
+            <h2 class="section-title scroll-animate">Haker Rzeczywistości</h2>
+            <div class="about-content">
+                <p class="scroll-animate">Specjalizujemy się w tworzeniu systemów AI, które przekształcają chaotyczne procesy biznesowe w precyzyjnie działające mechanizmy. Każdy projekt to indywidualnie zaprojektowana broń przeciwko nieefektywności.</p>
+                <p class="scroll-animate">Nie oferujemy gotowych rozwiązań. Budujemy dedykowane systemy, które rozwiązują konkretne problemy konkretnych firm.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="section">
+        <div class="container">
+            <h2 class="section-title scroll-animate">Nasze Innowacje</h2>
+            <div class="projects-grid">
+                
+                <!-- Flagship Project - Adept Engine -->
+                <div class="project-card featured scroll-animate">
+    <div class="project-badges">
+        <span class="badge flagship">Flagship</span>
+    </div>
+    <div class="project-header">
+        <img src="{{ url_for('static', filename='adept.png') }}" alt="Adept AI Logo" style="width: 90px; height: 90px; object-fit: contain;">
+        <div>
+            <h3>System Wykrywania Utraconego Popytu</h3>
+            <span class="url">Zobacz Ile Pieniędzy Tracisz</span>
+        </div>
+    </div>
+    <p><strong>Pierwszy w Polsce</strong> system analityczny, który wykrywa utracony popyt <strong>w czasie rzeczywistym, <em>zanim</em> klient wciśnie Enter.</strong></p>
+
+<p>To więcej niż chatbot. Każde "brak produktu" = stracony klient i konkretna kwota w złotówkach. Nasz <strong>uniwersalny silnik analityczny Adept Engine</strong> analizuje KAŻDE zapytanie – rozumie <strong>specjalistyczny żargon branżowy</strong>, koryguje <strong>literówki</strong> i precyzyjnie odróżnia przypadkowy bełkot od sygnału, że w Twojej ofercie brakuje produktu wartego tysiące złotych.</p>
+
+<p><strong>Większość generycznych systemów tego nie potrafi. Nasz tak.</strong></p>
+<a href="/motobot-prototype" class="project-link">Zobacz Demo w Akcji →</a>
+</div>
+
+
+                <!-- Innovation Medal - Skankran -->
+                <!-- Innovation Medal - Skankran -->
+<div class="project-card innovation scroll-animate">
+    <div class="project-badges">
+        <span class="badge innovation">Medal Honoru</span>
+    </div>
+    <div class="project-header">
+        <img src="{{ url_for('static', filename='skankran.svg') }}" alt="Skankran Logo" style="width: 120px; height: 120px; object-fit: contain;">
+        <div>
+            <h3>Skankran.pl</h3>
+            <span class="url">skankran.pl</span>
+        </div>
+    </div>
+    <p class="project-tagline">Pierwszy w Polsce System Analizy Jakości Wody Kranowej</p>
+    <p><strong>Skankran to kompleksowa platforma</strong>, która przełamała monopol na niezrozumiałe, rządowe dane o wodzie. Jako pierwsi w kraju (a możliwe że na świecie w tej skali): zdigitalizowaliśmy ręcznie dane z wielu miast oraz setek stacji uzdatniania wody, i <strong>dodaliśmy AquaBota</strong> - inteligentnego asystenta zdolnego do prowadzenia kontekstowych rozmów. Trenowany na wiedzy medycznej WHO/EPA. <strong>Rządowe raporty to chaos</strong> - różne formaty PDF, niekompletne dane, brak standaryzacji.   Nasz silnik nauczył się rozróżniać parametry niebezpieczne od irytujących i wiele więcej. Dodatkowo jest podłączony do API Gemini <strong>Wniosek: skoro poradziliśmy sobie z tym, Twoja baza produktowa to dla nas formalność.</strong></p>
+    <a href="https://skankran.pl" class="project-link" target="_blank">Zobacz Innowację</a>
+</div>
+
+                <!-- Public Sector - Gmina AI -->
+                <div class="project-card public scroll-animate">
+                    <div class="project-badges">
+                        <span class="badge pioneer">Pionier Sektora</span>
+                    </div>
+                    <div class="project-header">
+                        <span class="project-icon">🏛️</span>
+                        <div>
+                            <h3>Gmina-AI</h3>
+                            <span class="url">gmina-ai.pl</span>
+                        </div>
+                    </div>
+                    <p class="project-tagline">Inteligentny Asystent dla Administracji Publicznej</p>
+                    <p>Upraszczamy komunikację między urzędem a obywatelem. AI asystent, który rozumie biurokratyczny język i tłumaczy go na ludzki. 24/7 dostępność, zero kolejek, maksymalna efektywność.</p>
+                    <a href="https://gmina-ai.pl" class="project-link" target="_blank">Eksploruj Rozwiązanie</a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section contact">
+        <div class="container">
+            <h2 class="section-title scroll-animate">Gotowy na Transformację?</h2>
+            <div class="contact-content">
+                <form class="contact-form scroll-animate">
+                    <div class="form-group">
+                        <label for="name">Imię i Nazwisko</label>
+                        <input type="text" id="name" name="name" placeholder="Jan Kowalski" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Adres Email</label>
+                        <input type="email" id="email" name="email" placeholder="jan@firma.pl" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="company">Firma</label>
+                        <input type="text" id="company" name="company" placeholder="Nazwa firmy">
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Opisz Swój Problem Biznesowy</label>
+                        <textarea id="message" name="message" rows="5" placeholder="Jakie procesy chcesz zautomatyzować? Jakiego rodzaju system potrzebujesz?" required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Rozpocznij Współpracę</button>
+                </form>
+                <div class="contact-email scroll-animate">
+                    <p>Lub napisz bezpośrednio: <a href="mailto:kontakt@adept-ai.pl">kontakt@adept-ai.pl</a></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 ADEPT AI. Przekuwamy Chaos w Klarowność.</p>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.scroll-animate').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Header background on scroll
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(255, 255, 255, 0.98)';
+                header.style.backdropFilter = 'blur(20px)';
+            } else {
+                header.style.background = 'var(--white)';
+                header.style.backdropFilter = 'none';
+            }
+        });
+
+        // Form submission
+        document.querySelector('.contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            // Show success message (in real implementation, send to server)
+            alert('Dziękujemy za wiadomość! Skontaktujemy się z Państwem wkrótce.');
+            this.reset();
+        });
+
+        // Add stagger animation to project cards
+        setTimeout(() => {
+            document.querySelectorAll('.project-card').forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.3}s`;
+            });
+        }, 100);
+    </script>
+</body>
+</html>

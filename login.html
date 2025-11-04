@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Centrum Analityczne Utraconych Okazji</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #fafbfc97;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+        
+        .login-container {
+            width: 100%;
+            max-width: 480px;
+            background: #ffffff94;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+        
+        .login-header {
+            padding: 48px 40px 32px;
+            text-align: center;
+            background: #ffffff;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .company-logo {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 24px;
+    display: block;
+}
+        
+        .system-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+            letter-spacing: -0.025em;
+        }
+        
+        .system-subtitle {
+            font-size: 20px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 16px;
+            letter-spacing: -0.025em;
+        }
+        
+        .system-description {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        .login-form {
+            padding: 40px;
+            background: #ffffff;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #ffffff;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            color: #111827;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+        
+        .form-input::placeholder {
+            color: #9ca3af;
+            font-weight: 400;
+        }
+        
+        .form-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .login-button {
+            width: 100%;
+            padding: 14px 24px;
+            background: #1e40af;
+            border: none;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 8px;
+        }
+        
+        .login-button:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.4);
+        }
+        
+        .login-button:active {
+            transform: translateY(0);
+        }
+        
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .alert-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+        }
+        
+        .alert-success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #16a34a;
+        }
+        
+        .alert-info {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #2563eb;
+        }
+        
+        .login-footer {
+            padding: 24px 40px 32px;
+            background: #f8fafc;
+            border-top: 1px solid #f1f5f9;
+            text-align: center;
+        }
+        
+        .footer-text {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+        
+        .credentials-info {
+            background: #f1f5f9;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+        
+        .credentials-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .credential-item {
+            font-size: 11px;
+            color: #64748b;
+            margin-bottom: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .credential-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* Loading state */
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #ffffff;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 640px) {
+            .login-container {
+                margin: 16px;
+                max-width: none;
+            }
+            
+            .login-header {
+                padding: 32px 24px 24px;
+            }
+            
+            .login-form {
+                padding: 24px;
+            }
+            
+            .login-footer {
+                padding: 16px 24px 24px;
+            }
+            
+            .system-title {
+                font-size: 20px;
+            }
+            
+            .system-subtitle {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Studio Adept AI" class="company-logo">
+            <h1 class="system-title">CENTRUM ANALITYCZNE</h1>
+            <h2 class="system-subtitle">UTRACONYCH OKAZJI</h2>
+            <p class="system-description">System analityczny by Studio Adept AI</p>
+        </div>
+        
+        <form class="login-form" id="loginForm">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="form-group">
+                <label for="username" class="form-label">Nazwa użytkownika</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    class="form-input" 
+                    placeholder="Wprowadź nazwę użytkownika"
+                    required
+                    autocomplete="username"
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="password" class="form-label">Hasło</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    class="form-input" 
+                    placeholder="Wprowadź hasło"
+                    required
+                    autocomplete="current-password"
+                >
+            </div>
+            
+            <button type="submit" class="login-button" id="loginButton">
+                <span id="buttonText">Zaloguj się</span>
+            </button>
+            
+            <div class="credentials-info">
+                <div class="credentials-title">Konta testowe</div>
+                <div class="credential-item">Admin: admin / admin123</div>
+                <div class="credential-item">Klient: demo_client / demo123</div>
+                <div class="credential-item">Debug: debug / debug123</div>
+            </div>
+        </form>
+        
+        <div class="login-footer">
+            <p class="footer-text">© 2025 Studio Adept AI. Wszystkie prawa zastrzeżone.</p>
+            <p class="footer-text">Centrum Analityczne Utraconych Okazji v1.0</p>
+        </div>
+    </div>
+
+    <script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // Zatrzymaj normalny submit
+        
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const button = document.getElementById('loginButton');
+        const buttonText = document.getElementById('buttonText');
+        
+        // Show loading state
+        button.disabled = true;
+        buttonText.innerHTML = '<span class="loading"></span>Logowanie...';
+        
+        // Sprawdź dane logowania
+        setTimeout(() => {
+            if (username === 'demo_client' && password === 'demo123') {
+                // Przekieruj do dashboard
+                window.location.href = 'client-dashboard.html';
+            } else {
+                // Błędne dane - reset button
+                button.disabled = false;
+                buttonText.innerHTML = 'Zaloguj się';
+                
+                // Pokaż błąd
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-error';
+                alertDiv.textContent = 'Nieprawidłowa nazwa użytkownika lub hasło';
+                
+                const form = document.querySelector('.login-form');
+                form.insertBefore(alertDiv, form.firstChild);
+                
+                // Usuń alert po 3 sekundach
+                setTimeout(() => alertDiv.remove(), 3000);
+            }
+        }, 1000); // 1 sekunda delay dla efektu loading
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('username').focus();
+    });
+</script>
+</body>
+</html>
