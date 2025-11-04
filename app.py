@@ -50,8 +50,6 @@ def init_database():
     else:
         conn.close()
 
-# Uruchom inicjalizację
-init_database()
 
 # ========== KONIEC INICJALIZACJI ==========
 
@@ -2068,5 +2066,7 @@ if __name__ == '__main__':
         
         print("🔐 Sistema Autoryzacji aktywny")
         print("👤 Default admin: admin / admin123")
+        
+        init_database()
         
         socketio.run(app, debug=True, host='0.0.0.0', port=5000)
