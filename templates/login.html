@@ -256,7 +256,7 @@
             <p class="system-description">System analityczny by Studio Adept AI</p>
         </div>
         
-        <form class="login-form" id="loginForm">
+        <form class="login-form" method="POST" action="/login">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
@@ -298,9 +298,9 @@
             </button>
             
            <div class="credentials-info">
-    <div class="credentials-title" style="font-size: 1.1em;">Konto testowe</div>
+    <div class="credentials-title" style="font-size: 1.1em;">Konta testowe</div>
     
-    <div class="credential-item" style="font-size: 1.2em; font-weight: bold;">Klient: demo_client / demo123</div>
+    <div class="credential-item" style="font-size: 1.2em; font-weight: bold;">Klient: demo / demo123</div>
     
     </div>
 </form>
@@ -312,53 +312,6 @@
     </div>
 
     <script>
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-        e.preventDefault(); // Zatrzymaj normalny submit
-        
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        const button = document.getElementById('loginButton');
-        const buttonText = document.getElementById('buttonText');
-        
-        // Show loading state
-        button.disabled = true;
-        buttonText.innerHTML = '<span class="loading"></span>Logowanie...';
-        
-        // Sprawdź dane logowania
-        // Sprawdź dane logowania
-setTimeout(() => {
-    if ((username === 'demo_client' && password === 'demo123') || 
-        (username === 'admin' && password === 'admin123') ||
-        (username === 'debug' && password === 'debug123')) {
-        
-        // Ustaw formularz na POST do Flask
-        const form = document.getElementById('loginForm');
-        form.method = 'POST';
-        form.action = '/login';
-        
-        // Usuń preventDefault i wyślij formularz
-        form.removeEventListener('submit', arguments.callee);
-        form.submit();
-        
-    } else {
-        // Błędne dane - reset button
-        button.disabled = false;
-        buttonText.innerHTML = 'Zaloguj się';
-        
-        // Pokaż błąd
-        const alertDiv = document.createElement('div');
-        alertDiv.className = 'alert alert-error';
-        alertDiv.textContent = 'Nieprawidłowa nazwa użytkownika lub hasło';
-        
-        const form = document.querySelector('.login-form');
-        form.insertBefore(alertDiv, form.firstChild);
-        
-        // Usuń alert po 3 sekundach
-        setTimeout(() => alertDiv.remove(), 3000);
-    }
-}, 1000); // 1 sekunda delay dla efektu loading
-    });
-
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('username').focus();
     });

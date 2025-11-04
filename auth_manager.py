@@ -161,10 +161,17 @@ class User(UserMixin):
             row = cursor.fetchone()
             conn.close()
             
+            if not row:
+                print(f"[DEBUG] User '{username}' NOT FOUND in database")
+                return None
+            
             print(f"[DEBUG] Password check: '{password}' vs stored hash")
             print(f"[DEBUG] Hash result: {check_password_hash(row[3], password)}")
-            print(f"[DEBUG] Full debug - password: '{password}', hash: {row[3] if row else 'NO_USER'}")
-            if row and check_password_hash(row[3], password):
+            print(f"[DEBUG] ✅ Found user: {row[1]} (role: {row[4]})")
+            print(f"[DEBUG] Testing password '{password}'...")
+            print(f"[DEBUG] Hash check result: {check_password_hash(row[3], password)}")
+            
+            if check_password_hash(row[3], password):
                 # Aktualizuj last_login
                 User._update_last_login(row[0])
                 
@@ -666,4 +673,4 @@ def ensure_tables_exist():
         print("[DATABASE] Tables verified/created")
         
     except Exception as e:
-        print(f"[DATABASE] ERROR: {e}")    
+        print(f"[DATABASE] ERROR: {e}")

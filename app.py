@@ -1968,43 +1968,7 @@ def get_visitor_context(session_id):
 
 # app.py (Wklej to np. po linii 1598)
 
-# ================================================================
-# TYMCZASOWA NAPRAWA DO RESETU HASEŁ NA PRODUKCJI
-# ================================================================
-@app.route('/admin-reset-users-123xyz') # Użyj tajnego URL, którego nikt nie zna
-def temp_reset_users():
-    """
-    Tymczasowy endpoint do wymuszenia aktualizacji bazy użytkowników na Render.
-    """
-    try:
-        print("="*30)
-        print("[MANUAL RESET] WYMUSZONY START...")
-        print("[MANUAL RESET] Krok 1: Weryfikacja tabel...")
-        ensure_tables_exist()
-        print("[MANUAL RESET] Krok 2: Uruchamianie setup_default_users()...")
-        setup_default_users() # To jest funkcja z auth_manager.py
-        print("[MANUAL RESET] Krok 3: Ukończono.")
-        print("="*30)
-        
-        return """
-        <h1>SUKCES: BAZA DANYCH ZRESETOWANA</h1>
-        <p>Hasła zostały zaktualizowane zgodnie z kodem w auth_manager.py.</p>
-        <p>Powinieneś teraz móc się zalogować jako:</p>
-        <ul>
-            <li>Użytkownik: <strong>admin</strong> / Hasło: <strong>Nokia5310!</strong></li>
-            <li>Użytkownik: <strong>demo</strong> / Hasło: <strong>demo123</strong></li>
-        </ul>
-        <p style="color:red; font-weight:bold;">
-            WAŻNE: Usuń teraz ten kod (endpoint /admin-reset-users-123xyz) z app.py i wdróż ponownie!
-        </p>
-        """
-    except Exception as e:
-        print(f"[MANUAL RESET] KRYTYCZNY BŁĄD: {str(e)}")
-        return f"<h1>BŁĄD PODCZAS RESETU</h1><p>{str(e)}</p>", 500
 
-# ================================================================
-# KONIEC SEKCJI NAPRAWY
-# ================================================================
 
 
 
@@ -2051,7 +2015,7 @@ if __name__ == '__main__':
         print("   📊 Metrics: Only final queries counted")
         print("=" * 70)
         ensure_tables_exist()
-        setup_default_users()
+    # setup_default_users()
         
         print("🔐 Sistema Autoryzacji aktywny")
         print("👤 Default admin: admin / admin123")
