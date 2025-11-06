@@ -291,17 +291,36 @@ class AdminDashboard {
             10000 // 10 sekund
         );
         
-        // Dodaj do listy hot leads
-        this.hotLeads.unshift({
-            company: companyName,
-            city: data.city,
-            query: query,
-            timestamp: new Date(),
-            estimatedValue: data.estimatedValue || 0
-        });
-        
-        // Odśwież listę hot leads
-        this.updateHotLeadsList();
+        // GRUPUJ HOT LEADS po firmie (zamiast duplikatów)
+const existingLead = this.hotLeads.find(lead => lead.company === companyName);
+
+if (existingLead) {
+    // Firma już była - update danych
+    existingLead.queries = existingLead.queries || [];
+    existingLead.queries.push(query);
+    existingLead.lastQuery = query;
+    existingLead.timestamp = new Date(); // Update czasu
+    existingLead.totalQueries = (existingLead.totalQueries || 0) + 1;
+    existingLead.estimatedValue = (existingLead.estimatedValue || 0) + (data.estimatedValue || 0);
+} else {
+    // Nowa firma - dodaj
+    this.hotLeads.unshift({
+        company: companyName,
+        city: data.city,
+        query: query,
+        lastQuery: query,
+        queries: [query],
+        totalQueries: 1,
+        timestamp: new Date(),
+        estimatedValue: data.estimatedValue || 0
+    });
+}
+
+// Ogranicz do top 10 hot leads
+this.hotLeads = this.hotLeads.slice(0, 10);
+
+// Odśwież listę hot leads
+this.updateHotLeadsList();
         
         // Zapisz do localStorage
         this.saveHotLeadsToStorage();
@@ -548,22 +567,25 @@ class AdminDashboard {
         container.innerHTML = '';
         
         this.hotLeads.slice(0, 5).forEach(lead => {
-            const item = document.createElement('div');
-            item.className = 'hot-lead-item';
-            
-            const timeAgo = this.timeAgo(lead.timestamp);
-            
-            item.innerHTML = `
-                <div class="hot-lead-header">
-                    <strong>🔥 ${lead.company}</strong>
-                    <span class="hot-lead-time">${timeAgo}</span>
-                </div>
-                <div class="hot-lead-query">"${lead.query}"</div>
-                ${lead.estimatedValue > 0 ? `<div class="hot-lead-value">Potencjalna wartość: ${lead.estimatedValue} zł</div>` : ''}
-            `;
-            
-            container.appendChild(item);
-        });
+    const item = document.createElement('div');
+    item.className = 'hot-lead-item';
+    
+    const timeAgo = this.timeAgo(lead.timestamp);
+    
+    item.innerHTML = `
+        <div class="hot-lead-header">
+            <strong>🔥 ${lead.company}</strong>
+            <span class="hot-lead-time">${timeAgo}</span>
+        </div>
+        <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">
+            📊 ${lead.totalQueries || 1} zapytań
+        </div>
+        <div class="hot-lead-query">Ostatnie: "${lead.lastQuery || lead.query}"</div>
+        ${lead.estimatedValue > 0 ? `<div class="hot-lead-value">Łączna wartość: ${lead.estimatedValue} zł</div>` : ''}
+    `;
+    
+    container.appendChild(item);
+});
     }
     
     /**

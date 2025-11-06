@@ -306,7 +306,7 @@ class VisitorTracker {
                 if (this.socket && this.socket.connected) {
                     const eventData = {
                         query: query,
-                        classification: 'ANALYZING', // Będzie zaktualizowane przez backend
+                        classification: 'ANALYZING',
                         estimatedValue: 0,
                         timestamp: new Date().toISOString(),
                         city: sessionInfo.city || 'Unknown',
@@ -319,12 +319,15 @@ class VisitorTracker {
                     this.socket.emit('visitor_event', eventData);
                 }
                 
-// WYŁĄCZONE - duplikat:                 // Wyślij także przez REST API dla persystencji
-// WYŁĄCZONE - duplikat:                 await this.sendVisitorEvent('bot_query', {
-// WYŁĄCZONE - duplikat:                     query: query,
-// WYŁĄCZONE - duplikat:                     message_count: this.messageCount,
-// WYŁĄCZONE - duplikat:                     time_since_entry: Date.now() - this.entryTime.getTime()
-// WYŁĄCZONE - duplikat:                 });
+                // WŁĄCZONE PONOWNIE - potrzebne dla HOT LEADS klasyfikacji
+                await this.sendVisitorEvent('bot_query', {
+                    query: query,
+                    message_count: this.messageCount,
+                    time_since_entry: Date.now() - this.entryTime.getTime(),
+                    city: sessionInfo.city || 'Unknown',
+                    country: sessionInfo.country || 'Unknown',
+                    organization: sessionInfo.organization || 'Unknown'
+                });
                 
                 // Call original function
                 return originalSendFinalAnalysis.call(window.botUI, query);

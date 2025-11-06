@@ -6,16 +6,13 @@
     <title>AutoParts Pro - Demo + Analytics Dashboard</title>
     <meta name="description" content="Universal Soldier - Bot e-commerce z dashboardem analitycznym">
     
-    <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚗</text></svg>">
     
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-    <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-ECOMMERCE123"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -29,31 +26,52 @@
       });
     </script>
     
-    <!-- Dodaj nowy -->
-   <link rel="stylesheet" href="{{ url_for('static', filename='unified_style.css') }}">
-</head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='unified_style.css') }}">
+   
+   <style>
+        .clarification-banner {
+            background-color: #fefce8; /* Jasnożółty */
+            border: 1px solid #fde047; /* Żółty border */
+            color: #713f12; /* Ciemny tekst */
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin: 0 0 20px 0; /* Odstęp TYLKO na dole, przed botem */
+            font-size: 15px;
+            font-weight: 500;
+            line-height: 1.6;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .clarification-banner strong {
+            color: #ca8a04; /* Ciemniejszy żółty */
+            display: block; /* "💡 Uwaga:" w osobnej linii */
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+    </style>
+
+    
+    
+    </head>
 <body>
-    <!-- Connection Status - PRZENIESIONY DO BODY -->
     <div class="connection-status" id="connectionStatus">
         <i class="fas fa-wifi"></i>
         <span>Łączenie...</span>
     </div>
     
-    <!-- GŁÓWNY KONTENER - NOWA STRUKTURA -->
     <div class="demo-container">
-        <!-- Bot Column - Lewa strona -->
         <div class="bot-column" id="botColumn">
-            <div class="bot-header">
-                🤖 Pierwszy w Polsce System Analizy Utraconego Popytu. Budujemy Dedykowane AI, Które Rozwiązują Twoje Najtrudniejsze Problemy Biznesowe
-            </div>
-            <!-- DODAJ TE 4 LINIJKI: -->
-<button class="mobile-dashboard-toggle" id="mobileDashboardToggle">
+           
+            <button class="mobile-dashboard-toggle" id="mobileDashboardToggle">
     📊 Pokaż Centrum Analityczne
 </button>
+
+            <div class="clarification-banner">
+                <strong>💡 Uwaga: To tylko prezentacja MOŻLIWOŚCI silnika.</strong>
+                Instalacja chatbota jest opcjonalna, a nie wymagana. Nasz System Analityczny może działać w tle, nasłuchując Państwa obecnej wyszukiwarki. Poniżej w ofercie wyjaśniamy szczegóły.
+            </div>
             <div class="bot-content">
                 <div class="app-container">
-                    <!-- Header -->
-                    <header class="app-header">
+                    <header class="app-header" style="position: static;">
                         <div class="header-content">
                             <div class="header-left">
                                 <div class="logo-section">
@@ -76,7 +94,6 @@
                                         <span class="check-circle">✓</span>
                                         <span>ISO 27001</span>
                                     </div>
-                                    <!-- CTA LINK -->
                                     <a href="/login" class="header-cta-link">
     <span class="cta-icon">🎯</span>
     <span>
@@ -90,9 +107,7 @@
                         </div>
                     </header>
                     
-                    <!-- Main Content -->
                     <main class="main-content">
-                        <!-- Chat Interface -->
                         <div id="chat-interface" class="chat-interface">
                             <div class="chat-header">
                                 <div class="chat-status">
@@ -111,13 +126,11 @@
                             </div>
                             
                             <div id="messages-container" class="messages-container">
-                                <!-- Messages will be added dynamically -->
-                            </div>
+                                </div>
                             
                             <div class="input-section">
                                 <div id="button-container" class="button-container">
-                                    <!-- Buttons will be added dynamically -->
-                                </div>
+                                    </div>
                                 
                                 <div id="text-input-container" class="text-input-container">
                                     <form class="input-group" id="message-form">
@@ -141,7 +154,6 @@
                         </div>
                     </main>
                     
-                    <!-- Footer -->
                     <footer class="app-footer">
                         <div class="footer-content">
                             <div class="footer-left">
@@ -166,25 +178,23 @@
                                 </div>
                             </div>
                             <div class="footer-right">
-                                <div class="tech-stack">AI-Powered Commerce</div>
-                                <div class="support-info">
-                                    <a href="mailto:support@autoparts.pl" class="support-link">
-                                        📧 support@autoparts.pl
-                                    </a>
-                                </div>
-                            </div>
+    <div class="tech-stack">AI-Powered Commerce</div>
+    <div class="support-info">
+        <a href="mailto:kontakt.adept@gmail.com" class="support-link">
+            📧 kontakt.adept@gmail.com
+        </a>
+    </div>
+</div>
                         </div>
                     </footer>
                 </div>
             </div>
         </div>
 
-                <!-- Resizer Handle -->
         <div class="resize-handle" id="resizeHandle">
             <div class="resize-grip"></div>
         </div>
 
-        <!-- Dashboard Column - Prawa strona -->
         <div class="dashboard-column" id="dashboardColumn">
             <div class="dashboard-header">
                 <div class="dashboard-title">
@@ -196,7 +206,6 @@
             </div>
             
             <div class="dashboard-content">
-                <!-- TOP METRYKI - WIĘKSZE I CZYTELNIEJSZE -->
                 <section class="dashboard-metrics">
                     <div class="metric-card found-products">
     <div class="metric-icon">✅</div>
@@ -235,7 +244,6 @@
 </div>
                 </section>
 
-                <!-- LIVE FEED - MAKSYMALNIE 4 ELEMENTY -->
                 <section class="dashboard-feed">
                     <div class="feed-header">
                         <h3><i class="fas fa-satellite-dish"></i> Live Feed</h3>
@@ -257,7 +265,6 @@
                     </div>
                 </section>
 
-                <!-- WYKRES I STATYSTYKI -->
                 <section class="dashboard-analytics">
                     <div class="analytics-grid">
                         <div class="chart-panel">
@@ -278,7 +285,7 @@
     <span class="stat-label">Potencjał utracony</span>
     <span class="stat-value" id="successRate">0%</span>
 </div>
-                               
+                                
                                 <div class="stat-row">
                                     <span class="stat-label">Utracona wartość</span>
                                     <span class="stat-value success" id="savedRevenue">0 zł</span>
@@ -289,10 +296,7 @@
                 </section>
             </div>
         </div>
-    </div> <!-- To jest zamknięcie demo-container -->
-    
-    <!-- Notification Banner zamiast floating button -->
-<div class="offer-notification" id="offerNotification">
+    </div> <div class="offer-notification" id="offerNotification">
     <div class="notification-content">
         <span class="notification-icon">💰</span>
         <div class="notification-text">
@@ -304,7 +308,6 @@
 </div>
     
     
-    <!-- Loading Overlay -->
     <div id="loading-overlay" class="loading-overlay">
         <div class="loading-content">
             <div class="loading-spinner"></div>
@@ -312,7 +315,6 @@
         </div>
     </div>
     
-    <!-- Product Preview Modal -->
     <div id="product-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -320,15 +322,12 @@
                 <button class="modal-close">×</button>
             </div>
             <div class="modal-body" id="product-preview">
-                <!-- Product details will be shown here -->
-            </div>
+                </div>
         </div>
     </div>
 
-    <!-- Toast Notifications -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- ARGUMENTY SPRZEDAŻOWE - POD GŁÓWNYM KONTENEREM -->
     <section class="sales-arguments">
     <div class="arguments-container">
         <div class="arguments-header">
@@ -356,10 +355,9 @@
         <div class="advantage-icon">🛠️</div>
         <div class="advantage-content">
             <h4>Nieskończone Możliwości, a nie Zamknięte Pudełko</h4>
-            <p>Standardowe Rozwiązania Chatbotowe = zamknięte pudełko. My = Twój zewnętrzny dział R&D. Potrzebujesz bota który sprawdzi stan magazynu i zaproponuje zamiennik? Chcesz żeby bot nauczył się specyficznego żargonu twojej branży? Zrobimy to, ogranicza Cię tylko wyobraźnia.</p>
+            <p><strong>Jeżeli zdecydujesz się również na chatbota,</strong> jesteśmy twoim prywatnym działem R&D. Potrzebujesz bota który sprawdzi stan magazynu i zaproponuje zamiennik? Chcesz żeby bot nauczył się specyficznego żargonu twojej branży? Zrobimy to, ogranicza Cię tylko wyobraźnia.</p>
         </div>
     </div>
-
     <div class="advantage-item">
         <div class="advantage-icon">👨‍💻</div>
         <div class="advantage-content">
@@ -392,9 +390,42 @@
         <p><strong>Gwarancja bezpieczeństwa danych:</strong> System operuje na infrastrukturze <strong>Render</strong> z certyfikatem ISO 27001, spełniającym międzynarodowe standardy bezpieczeństwa danych. Globalny shield <strong>Cloudflare</strong> chroni przed atakami DDoS, botami i zagrożeniami cyberbezpieczeństwa. To gwarantuje nie tylko inteligencję, ale i bezwzględną ochronę.</p>
     </div>
 </div>
-<!-- Zamień całą sekcję pricing-section na tę wersję: -->
 <div class="pricing-section">
+   
+
+    <div class="comparison-intro-box" 
+     style="margin-bottom: 24px; 
+            padding: 24px; 
+            background: rgba(255, 255, 255, 0.05); /* Lekko przezroczyste tło, nie białe */
+            border-radius: 12px; 
+            border: 1px solid rgba(255, 255, 255, 0.1);">
+    
+    <div style="display: flex; gap: 16px; align-items: flex-start;">
+        <div style="font-size: 24px; margin-top: 5px;">🤔</div>
+        <div>
+            <h4 style="margin-bottom: 12px; color: #FFFFFF; font-size: 16px; font-weight: 700;">Chatbot vs. System Analityczny - jaka jest różnica?</h4>
+            <p style="font-size: 14px; line-height: 1.6; color: #e5e7eb;">
+                Wielu klientów pyta: 'Czym to się różni od chatbota?'<br>
+                Oto kluczowa różnica:
+            </p>
+            <ul style="list-style-position: inside; margin-top: 10px; font-size: 0.9em; color: #e5e7eb; padding-left: 5px;">
+                <li><strong>Chatbot (Tidio, Tawk.to) = INTERFEJS</strong> (rozmawia z klientem)</li>
+                <li><strong>Nasz System = ANALITYKA</strong> (nasłuchuje w tle, wykrywa utracony popyt)</li>
+            </ul>
+            <p style="margin-top: 10px; font-size: 14px; color: #e5e7eb;">
+                Możesz mieć:
+                <strong style="color: #FFFFFF;">✓ Tylko nasz system analityczny</strong> (z Twoją wyszukiwarką)<br>
+                <strong style="color: #FFFFFF;">✓ Nasz system + Twój istniejący bot</strong> (dajemy mu "mózg")<br>
+                <strong style="color: #FFFFFF;">✓ Nasz system + nasz bot</strong> (pełna integracja)
+            </p>
+        </div>
+    </div>
+</div>
+   
+   
     <h3>💎 OFERTA SPECJALNA DLA PIERWSZEGO PARTNERA STRATEGICZNEGO</h3>
+
+    
 
     <div class="pricing-content">
         <div class="pricing-main">
@@ -436,7 +467,7 @@
 
         <div class="pricing-footer">
             <p class="pricing-note">
-                 <strong>Całkowity koszt pierwszego roku dla Partnera: 34 000 zł netto</strong><br>
+                <strong>Całkowity koszt pierwszego roku dla Partnera: 34 000 zł netto</strong><br>
                 <small>To ułamek rocznego kosztu analityka, a system pracuje dla Ciebie 24/7, odzyskując utracone przychody.</small>
             </p>
             <p class="pricing-urgency">
@@ -446,14 +477,19 @@
     </div>
 </div>
 
-<div class="battle-comparison">
+
+
+
     <h3>Porównanie Technologii: Adept Engine vs. Gotowe rozwiązania Chatbotowe</h3>
+    <p style="text-align: center; font-size: 14px; color: #6b7280; margin-top: 8px; margin-bottom: 24px;">
+        Poniższa tabela pokazuje przewagę naszego <strong>SILNIKA ANALITYCZNEGO</strong> (niezależnie od tego, czy masz interfejs chatbota, czy nie):
+    </p>
     
     <div class="comparison-table">
         <div class="table-header">
             <div class="feature-col">Cecha</div>
             <div class="us-col">System Odzyskiwania Utraconego Popytu Adept</div>
-            <div class="nocode-col">Standardowe Rozwiązania Chatbotowe</div>
+            <div class="nocode-col">Standardowe Chatboty (Tidio, Tawk.to, N8N) - Tylko interfejs, bez analityki</div>
         </div>
         
         <div class="table-row">
@@ -533,41 +569,54 @@
     </div>
 </div>
 
-        <div class="proof-section">
+
+
+<div class="proof-section">
             <h3>Nasze Wdrożenia i Studium Przypadków</h3>
             <div class="proof-grid">
                 <div class="proof-item">
                     <span class="proof-check">✅</span>
-                    <strong>Integracja z Prawdziwym AI:</strong> Nasz system do analizy jakości wody (skankran.pl) jest w pełni zintegrowany z API Google Gemini, prowadząc zaawansowane, kontekstowe rozmowy z użytkownikami.
+                    <strong>Nasz system do analizy jakości wody (skankran.pl) jest w pełni zintegrowany z API Google Gemini,<strong>Był trenowany na dokumentach medycznych WHO/EPA</strong> prowadzi zaawansowane, kontekstowe rozmowy z użytkownikami. Analizuje stacje uzdatniania użytkownika a następnie odpowiada jak wartości ze stacji wpływają na zdrowie użytkownika. To pokazuje naszą zdolność do tworzenia specjalistycznych, zaawansowanych botów dostosowanych do unikalnych potrzeb biznesowych.</div>
                 </div>
-                <div class="proof-item">
-                    <span class="proof-check">✅</span>
-                    <strong>Sprawdzona Wszechstronność:</strong> Przetestowaliśmy nasz system analityczny w skrajnie odmiennym środowisku – sektorze publicznym (gmina-ai.pl).
-                </div>
+               
             </div>
         </div>
 
-        <div class="arguments-cta">
-            <div class="cta-content">
-                <h3>Gotowy Przejąć Kontrolę nad Swoim Rynkiem?</h3>
-                <p>Zobacz jak Universal Soldier AI może zmiażdżyć konkurencję</p>
-                <div class="cta-buttons">
-                    <button class="cta-primary">
-                        <i class="fas fa-rocket"></i>
-                        Rozpocznij Współpracę
-                    </button>
-                    <button class="cta-secondary">
-                        <i class="fas fa-phone"></i>
-                        Bezpośredni Kontakt
-                    </button>
-                </div>
+        <div class="cta-email-replacement" 
+     style="margin-top: 24px; 
+            padding: 24px; 
+            background: rgba(255, 255, 255, 0.05); /* Lekko przezroczyste tło */
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 12px; 
+            text-align: center;">
+
+    <h4 style="color: #FFFFFF; font-weight: 700; font-size: 16px; margin-bottom: 8px;">Gotowy rozpocząć audyt?</h4>
+    
+    <p style="color: #e5e7eb; font-size: 15px; margin-bottom: 16px;">Skontaktuj się z nami bezpośrednio, aby omówić "Płatny Pilot":</p>
+    
+    <a href="mailto:kontakt.adept@gmail.com?subject=Zapytanie%20o%20System%20Analityczny%20Adept%20AI" 
+       style="display: inline-block; 
+              padding: 12px 24px; 
+              background: #3b82f6; /* Używamy niebieskiego z P1 */
+              color: white; 
+              font-weight: 600; 
+              text-decoration: none; 
+              border-radius: 8px;
+              font-size: 15px;
+              transition: all 0.2s ease;"
+       onmouseover="this.style.background='#2563eb'"
+       onmouseout="this.style.background='#3b82f6'">
+       
+        <i class="fas fa-envelope" style="margin-right: 8px;"></i>
+        kontakt.adept@gmail.com
+    </a>
+</div>
             </div>
         </div>
     </div>
 </section>
 
-    <!-- Scripts -->
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 <script src="{{ url_for('static', filename='dashboard.js') }}" defer></script>
@@ -626,224 +675,24 @@
                 status.classList.add('disconnected');
             }
         }, 2000);
-
-        // CTA Button Handlers
-        const ctaPrimary = document.querySelector('.cta-primary');
-        const ctaSecondary = document.querySelector('.cta-secondary');
-        
-        if (ctaPrimary) {
-            ctaPrimary.addEventListener('click', () => {
-                // Scroll to bot
-                document.querySelector('.bot-column').scrollIntoView({ 
-                    behavior: 'smooth' 
-                });
-                
-                // Focus on input if visible
-                setTimeout(() => {
-                    const input = document.getElementById('user-input');
-                    if (input && input.offsetParent !== null) {
-                        input.focus();
-                    }
-                }, 1000);
-            });
+// START: PANCERNY FIX "SCROLL NA GÓRĘ" (Wersja 2.0)
+    // To jest "hakerska" łatka, która wymusza scroll na górę po załadowaniu
+    // wiadomości powitalnej (która jest ładowana asynchronicznie).
+    setTimeout(() => {
+        const messagesContainer = document.getElementById('messages-container');
+        if (messagesContainer) {
+            messagesContainer.scrollTop = 0; // Wymuś scroll na samą górę
+            console.log('Adept Engine: Scroll-to-top override executed.');
         }
+    }, 300); // Dajemy 300ms na załadowanie wiadomości powitalnej
+    // KONIEC: PANCERNY FIX
         
-        if (ctaSecondary) {
-            ctaSecondary.addEventListener('click', () => {
-                window.location.href = 'mailto:support@autoparts.pl?subject=Zapytanie o Universal Soldier AI';
-            });
-        }
     });
 </script>
-<!-- DODAJ PRZED ZAMKNIĘCIEM 
-<style>
-/* ========================================
-   VERTICAL CTA BAR - Pasek pionowy między botem a TCD
-   ======================================== */
-
-
-.vertical-cta-bar:hover {
-    width: 75px;
-    box-shadow: 
-        0 12px 32px rgba(220, 38, 38, 0.6),
-        inset 0 1px 0 rgba(255,255,255,0.2);
-    border-left-width: 4px;
-    border-right-width: 4px;
-}
-
-/* Ikony */
-.cta-icons {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    font-size: 24px;
-    margin-bottom: 8px;
-}
-
-.cta-lightning {
-    animation: pulse-glow 2s ease-in-out infinite;
-    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
-}
-
-.cta-eye {
-    animation: blink 4s ease-in-out infinite;
-}
-
-/* Tekst pionowy */
-.cta-text-vertical {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    color: white;
-    font-size: 11px;
-    font-weight: 600;
-    text-align: center;
-    line-height: 1.3;
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
-}
-
-.cta-text-vertical span {
-    white-space: nowrap;
-}
-
-.cta-divider {
-    font-size: 10px;
-    opacity: 0.5;
-    margin: 4px 0;
-}
-
-.cta-arrow {
-    margin-top: 8px;
-    font-size: 13px;
-    font-weight: 700;
-    color: #ffd700;
-    animation: bounce-arrow 2s ease-in-out infinite;
-}
-
-/* Animacje */
-@keyframes blink {
-    0%, 90%, 100% { opacity: 1; }
-    93%, 97% { opacity: 0.3; }
-}
-
-@keyframes pulse-glow {
-    0%, 100% { 
-        transform: scale(1);
-        filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
-    }
-    50% { 
-        transform: scale(1.15);
-        filter: drop-shadow(0 0 16px rgba(255, 215, 0, 0.9));
-    }
-}
-
-@keyframes bounce-arrow {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
-}
-
-/* ========================================
-   BOT RESPONSIVE - Mniejsze przyciski
-   ======================================== */
-
-/* Główne przyciski (Znajdź część, Status, etc) */
-.action-button,
-.bot-column .action-button,
-.bot-content .action-button {
-    padding: 10px 16px !important;
-    font-size: 14px !important;
-    min-height: 44px !important;
-    margin: 6px 0 !important;
-}
-
-/* Grid przycisków */
-.button-grid,
-.actions-grid {
-    gap: 8px !important;
-}
-
-/* Przyciski w footerze */
-footer button,
-.footer-actions button {
-    padding: 8px 12px !important;
-    font-size: 13px !important;
-}
-
-/* Input pole */
-#user-input {
-    font-size: 14px !important;
-    padding: 12px 16px !important;
-}
-
-/* Przyciski kategorii (Samochód, Dostawczy, etc) */
-.category-button,
-.vehicle-button {
-    padding: 12px 20px !important;
-    font-size: 14px !important;
-}
-
-/* Responsive dla małych ekranów */
-@media (max-width: 1400px) {
-    
-    
-    .cta-icons {
-        font-size: 20px;
-    }
-    
-    .cta-text-vertical {
-        font-size: 10px;
-    }
-    
-    .action-button,
-    .bot-column .action-button {
-        padding: 8px 14px !important;
-        font-size: 13px !important;
-        min-height: 40px !important;
-    }
-}
-
-@media (max-width: 1200px) {
-    
-}
-
-@media (max-width: 768px) {
-    .action-button,
-    .bot-column .action-button {
-        padding: 10px 12px !important;
-        font-size: 13px !important;
-    }
-}
-
-
-/* Bot column musi być relative dla CTA bar */
-.bot-column {
-    position: relative !important;
-}
-
-/* Fix dla overlappingu z TCD */
-.demo-container {
-    position: relative;
-}
-
-.bot-column {
-    position: relative;
-    z-index: 10;
-}
-
-.dashboard-column {
-    position: relative;
-    z-index: 5;
-}
-</style>
-
-</body>: -->
 <div class="mobile-dashboard-overlay" id="mobileDashboardOverlay">
     <div class="mobile-dashboard-close" id="mobileDashboardClose">✖️</div>
     <div class="mobile-dashboard-content" id="mobileDashboardContent">
-        <!-- Dashboard content będzie tutaj kopiowany przez JS -->
-    </div>
+        </div>
 </div>
 <script src="{{ url_for('static', filename='visitor_tracking.js') }}" defer></script>
 <style>
@@ -914,10 +763,11 @@ footer button,
 }
 </style>
 
+
 <style>
 /* ========================================
-   VERTICAL CTA BAR - Pasek pionowy między botem a TCD
-   ======================================== */
+    VERTICAL CTA BAR - Pasek pionowy między botem a TCD
+    ======================================== */
 
 
 .vertical-cta-bar:hover {
@@ -1003,8 +853,8 @@ footer button,
 }
 
 /* ========================================
-   BOT RESPONSIVE - Mniejsze przyciski
-   ======================================== */
+    BOT RESPONSIVE - Mniejsze przyciski
+    ======================================== */
 
 /* Główne przyciski (Znajdź część, Status, etc) */
 .action-button,

@@ -659,6 +659,19 @@
     </div>
     
     <script>
+        // Clear service workers
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+            registration.unregister();
+        }
+    });
+}
+
+// Force reload without cache
+if (!performance.navigation.type || performance.navigation.type !== 1) {
+    location.reload(true);
+}
         // Live Feed Simulation
         function addFeedItem(query, classification, timestamp) {
             const feed = document.getElementById('liveFeed');

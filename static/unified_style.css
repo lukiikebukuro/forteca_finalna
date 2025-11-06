@@ -3998,6 +3998,46 @@ pricing-main {
     gap: 8px !important;
 }
 
+/* ===== PROOF SECTION: Centering and constrained width ===== */
+/* Keeps proof examples centered on the page and avoids hugging the left edge. Scoped to .proof-section. */
+.proof-section {
+    padding: 2.5rem 0;
+}
+
+.proof-section .proof-grid {
+    display: grid !important;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    max-width: 920px; /* constrain width so content isn't flush to the page */
+    margin: 0 auto;   /* center the grid */
+    padding: 0 1rem;  /* small horizontal padding on very narrow screens */
+}
+
+.proof-section .proof-item {
+    display: flex !important;
+    gap: 12px !important;
+    align-items: flex-start !important;
+    padding: 1rem !important;
+    border-radius: 10px !important;
+    background: rgba(34, 197, 94, 0.08) !important;
+}
+
+.proof-section .proof-item .proof-content {
+    display: block;
+}
+
+.proof-section .proof-item .proof-content p {
+    margin: 0;
+    color: #102026; /* dark text for readability */
+}
+
+/* Center the proof-section title only */
+.proof-section > h3 {
+    text-align: center !important;
+    margin-bottom: 1rem !important;
+}
+
+
 /* 5. PRZYCISKI MNIEJSZE */
 .bot-column button,
 .bot-content button {
