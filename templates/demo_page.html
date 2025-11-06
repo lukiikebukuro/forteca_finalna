@@ -675,17 +675,7 @@
                 status.classList.add('disconnected');
             }
         }, 2000);
-// START: PANCERNY FIX "SCROLL NA GÓRĘ" (Wersja 2.0)
-    // To jest "hakerska" łatka, która wymusza scroll na górę po załadowaniu
-    // wiadomości powitalnej (która jest ładowana asynchronicznie).
-    setTimeout(() => {
-        const messagesContainer = document.getElementById('messages-container');
-        if (messagesContainer) {
-            messagesContainer.scrollTop = 0; // Wymuś scroll na samą górę
-            console.log('Adept Engine: Scroll-to-top override executed.');
-        }
-    }, 300); // Dajemy 300ms na załadowanie wiadomości powitalnej
-    // KONIEC: PANCERNY FIX
+
         
     });
 </script>

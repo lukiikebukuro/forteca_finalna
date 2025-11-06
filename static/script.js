@@ -841,13 +841,35 @@ this.dashboardOverlay = null;
         }
     }
     
+    //
+// START: PANCERNY SCROLL (v3.0)
+//
     scrollToBottom() {
         if (this.messagesContainer) {
             setTimeout(() => {
-                this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+                
+                // === POCZĄTEK "HAKERSKIEJ" ŁATKI ===
+                // Sprawdź, ile jest wiadomości w oknie
+                const messageCount = this.messagesContainer.querySelectorAll('.message').length;
+                
+                // Jeśli to jest TYLKO wiadomość powitalna (1 wiadomość) LUB
+                // jeśli ładuje się wskaźnik pisania (2 wiadomości),
+                // ZMUSZAMY scroll na GÓRĘ.
+                if (messageCount <= 2 && this.messagesContainer.querySelector('.bot-message')) {
+                    this.messagesContainer.scrollTop = 0; // Wymuś GÓRĘ
+                    console.log('Adept Engine: Scroll-to-top override executed.');
+                } else {
+                    // W każdym innym przypadku (normalna rozmowa), scrolluj na DÓŁ.
+                    this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+                }
+                // === KONIEC "HAKERSKIEJ" ŁATKI ===
+                
             }, 100);
         }
     }
+//
+// KONIEC: PANCERNY SCROLL (v3.0)
+//
     
     updateCartCounter() {
         if (this.cartCounter) {
