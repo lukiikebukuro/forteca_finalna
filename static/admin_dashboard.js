@@ -1,34 +1,34 @@
 /**
- * 🎯 ADMIN DASHBOARD - Twoje Centrum Dowodzenia
+ * 🎯 ADMIN DASHBOARD v2.1 - FIXED
  * 
- * CO TO ROBI (po ludzku):
- * 1. Pokazuje kto był na Twojej stronie (firmy, miasta)
- * 2. Mówi co robili (jakie pytania, czy kupili)
- * 3. Wyłapuje HOT LEADS (kto jest mega zainteresowany)
- * 4. Wszystko na żywo - jak ktoś wchodzi, widzisz od razu
- * 
- * Żadnych technikaliów - tylko jasne info dla Ciebie!
+ * POPRAWKI:
+ * - Modal działa (event listener fix)
+ * - Log History persistence (localStorage)
+ * - Pomarańczowa ramka Hot Leads
  */
 
 class AdminDashboard {
     constructor() {
-        console.log('🎯 ADMIN DASHBOARD: Uruchamiam Twoje centrum dowodzenia...');
+        console.log('🎯 ADMIN DASHBOARD v2.1: Uruchamiam zmodernizowane centrum dowodzenia...');
         
-        // Tutaj trzymamy dane
-        this.companies = new Map();        // Firmy które nas odwiedziły
-        this.activeSessions = [];          // Kto jest TERAZ na stronie
-        this.todayStats = {                // Statystyki z dziś
+        // Dane
+        this.companies = new Map();        
+        this.activeSessions = [];          
+        this.todayStats = {                
             totalVisitors: 0,
             totalSessions: 0,
             avgDuration: 0,
             conversionRate: 0
         };
         
-        this.hotLeads = [];                // HOT LEADS lista (WAŻNE!)
+        this.hotLeads = [];                
+        this.logHistory = [];              
         this.socket = null;
         
-        // DODAJ: Załaduj HOT LEADS z localStorage (persistence!)
+        // Załaduj zapisane dane
         this.loadHotLeadsFromStorage();
+        this.loadCompaniesFromStorage();
+        this.loadLogHistoryFromStorage();  // NOWE: Persistence logów
         
         // Start!
         this.initialize();
@@ -46,13 +46,71 @@ class AdminDashboard {
                     lead.timestamp = new Date(lead.timestamp);
                 });
                 console.log(`✅ Załadowano ${this.hotLeads.length} HOT LEADS z localStorage`);
-                
-                // CRITICAL FIX: Renderuj HOT LEADS po załadowaniu!
-                this.updateHotLeadsList();
             }
         } catch (e) {
             console.error('❌ Błąd ładowania HOT LEADS:', e);
             this.hotLeads = [];
+        }
+    }
+    
+    /**
+ * Załaduj firmy z localStorage - FIXED
+ */
+loadCompaniesFromStorage() {
+    try {
+        const stored = localStorage.getItem('companies');
+        if (stored) {
+            const companiesArray = JSON.parse(stored);
+            
+            companiesArray.forEach(company => {
+                // KONWERTUJ stringi z powrotem na Date (dla wyświetlania)
+                company.firstVisit = new Date(company.firstVisit);
+                company.lastVisit = new Date(company.lastVisit);
+                
+                // CRITICAL: Konwertuj timestamps w queries
+                if (company.queries && Array.isArray(company.queries)) {
+                    company.queries = company.queries.map(q => ({
+                        ...q,
+                        timestamp: new Date(q.timestamp)
+                    }));
+                } else {
+                    company.queries = []; // Fallback jeśli brak queries
+                }
+                
+                this.companies.set(company.name, company);
+            });
+            
+            console.log(`✅ Załadowano ${this.companies.size} firm z localStorage`);
+            console.log(`📊 Przykładowa firma:`, Array.from(this.companies.values())[0]);
+            
+            // Renderuj firmy po załadowaniu
+            this.updateCompanyList(Array.from(this.companies.values()));
+        }
+    } catch (e) {
+        console.error('❌ Błąd ładowania firm:', e);
+        this.companies = new Map();
+    }
+}
+    
+    /**
+     * NOWE: Załaduj Log History z localStorage
+     */
+    loadLogHistoryFromStorage() {
+        try {
+            const stored = localStorage.getItem('logHistory');
+            if (stored) {
+                this.logHistory = JSON.parse(stored);
+                this.logHistory.forEach(log => {
+                    log.timestamp = new Date(log.timestamp);
+                });
+                console.log(`✅ Załadowano ${this.logHistory.length} logów z localStorage`);
+                
+                // Renderuj logi po załadowaniu
+                this.renderLogHistory();
+            }
+        } catch (e) {
+            console.error('❌ Błąd ładowania logów:', e);
+            this.logHistory = [];
         }
     }
     
@@ -65,22 +123,42 @@ class AdminDashboard {
     }
     
     /**
+     * Zapisz firmy do localStorage
+     */
+    saveCompaniesToStorage() {
+        try {
+            const companiesArray = Array.from(this.companies.values());
+            localStorage.setItem('companies', JSON.stringify(companiesArray));
+        } catch (e) {
+            console.error('❌ Błąd zapisywania firm:', e);
+        }
+    }
+    
+    /**
+     * NOWE: Zapisz Log History do localStorage
+     */
+    saveLogHistoryToStorage() {
+        try {
+            localStorage.setItem('logHistory', JSON.stringify(this.logHistory));
+        } catch (e) {
+            console.error('❌ Błąd zapisywania logów:', e);
+        }
+    }
+    
+    /**
      * KROK 1: Uruchom wszystko
      */
     async initialize() {
         console.log('📡 Łączę się z serwerem...');
         
         try {
-            // Połącz WebSocket (dane na żywo)
             await this.connectWebSocket();
-            
-            // Załaduj dane z ostatnich 24h
             await this.loadTodayData();
             
             // Odświeżaj co 30 sekund
             setInterval(() => this.refreshStats(), 30000);
             
-            console.log('✅ ADMIN DASHBOARD działa! Możesz śledzić swoich klientów.');
+            console.log('✅ ADMIN DASHBOARD v2.1 działa!');
             this.showNotification('Dashboard gotowy!', 'success');
             
         } catch (error) {
@@ -90,7 +168,7 @@ class AdminDashboard {
     }
     
     /**
-     * KROK 2: Połącz WebSocket (dane na żywo)
+     * KROK 2: Połącz WebSocket
      */
     async connectWebSocket() {
         return new Promise((resolve, reject) => {
@@ -105,31 +183,25 @@ class AdminDashboard {
                 reconnectionAttempts: 5
             });
             
-            // Połączono!
             this.socket.on('connect', () => {
-                console.log('✅ WebSocket połączony - dane będą płynąć na żywo!');
+                console.log('✅ WebSocket połączony!');
                 resolve();
             });
             
-            // 🔔 NOWY VISITOR! (to jest najważniejsze)
             this.socket.on('live_feed_update', (data) => {
                 console.log('🔔 Nowy visitor!', data);
                 this.handleNewVisitor(data);
             });
             
-            // Rozłączono
             this.socket.on('disconnect', () => {
                 console.warn('⚠️ WebSocket rozłączony');
-                this.updateConnectionStatus('disconnected');
             });
             
-            // Błąd
             this.socket.on('connect_error', (error) => {
                 console.error('❌ Błąd WebSocket:', error);
                 reject(error);
             });
             
-            // Timeout 10s
             setTimeout(() => {
                 if (!this.socket.connected) {
                     reject(new Error('Timeout połączenia WebSocket'));
@@ -139,42 +211,78 @@ class AdminDashboard {
     }
     
     /**
-     * KROK 3: Załaduj dane z dziś (ostatnie 24h)
-     */
-    async loadTodayData() {
-        try {
-            console.log('📊 Pobieram dane z ostatnich 24h...');
+    /**
+ * KROK 3: Załaduj dane z dziś - FIXED (merge zamiast overwrite)
+ */
+async loadTodayData() {
+    try {
+        console.log('📊 Pobieram dane z ostatnich 24h...');
+        
+        const response = await fetch('/api/admin/visitor-stats');
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            console.log('✅ Dane pobrane z backendu:', data);
             
-            const response = await fetch('/api/admin/visitor-stats');
-            const data = await response.json();
+            // Aktualizuj statystyki (to OK)
+            this.updateVisitorStats(data.stats);
             
-            if (data.status === 'success') {
-                console.log('✅ Dane pobrane:', data);
+            // CRITICAL: NIE nadpisuj firm! Merge z localStorage
+            if (data.companies && data.companies.length > 0) {
+                console.log('🔄 Merguję dane z backendu z localStorage...');
                 
-                // Aktualizuj liczby
-                this.updateVisitorStats(data.stats);
-                
-                // Aktualizuj listę firm
-                this.updateCompanyList(data.companies);
-                
-                // Aktualizuj aktywne sesje
-                this.updateActiveSessions(data.active_sessions);
-                
-                // Aktualizuj wykres
-                this.updateClassificationChart(data.classification);
-                
-            } else {
-                throw new Error(data.message || 'Błąd pobierania danych');
+                data.companies.forEach(backendCompany => {
+                    if (this.companies.has(backendCompany.name)) {
+                        // Firma już jest w localStorage - zostaw localStorage!
+                        console.log(`  ↪ ${backendCompany.name} - używam danych z localStorage`);
+                    } else {
+                        // Nowa firma z backendu - dodaj
+                        console.log(`  ➕ ${backendCompany.name} - dodaję z backendu`);
+                        
+                        // Konwertuj daty
+                        backendCompany.firstVisit = new Date(backendCompany.firstVisit || Date.now());
+                        backendCompany.lastVisit = new Date(backendCompany.lastVisit || Date.now());
+                        
+                        // Konwertuj queries
+                        if (backendCompany.queries && Array.isArray(backendCompany.queries)) {
+                            backendCompany.queries = backendCompany.queries.map(q => ({
+                                ...q,
+                                timestamp: new Date(q.timestamp || Date.now())
+                            }));
+                        } else {
+                            backendCompany.queries = [];
+                        }
+                        
+                        this.companies.set(backendCompany.name, backendCompany);
+                    }
+                });
             }
             
-        } catch (error) {
-            console.error('❌ Błąd ładowania danych:', error);
-            this.showNotification('Nie udało się pobrać danych', 'error');
+            // TERAZ renderuj (localStorage ma priorytet!)
+            this.updateCompanyList(Array.from(this.companies.values()));
+            
+            // Aktualizuj sesje
+            this.updateActiveSessions(data.active_sessions);
+            
+            // Odśwież Stats Widget po merge
+            this.updateStatsWidget();
+            
+        } else {
+            throw new Error(data.message || 'Błąd pobierania danych');
         }
+        
+    } catch (error) {
+        console.error('❌ Błąd ładowania danych:', error);
+        
+        // Jeśli backend nie działa - używaj TYLKO localStorage
+        console.log('⚠️ Backend niedostępny - używam tylko localStorage');
+        this.updateCompanyList(Array.from(this.companies.values()));
+        this.updateStatsWidget();
     }
+}
     
     /**
-     * 🔔 NOWY VISITOR! (ktoś właśnie wszedł na stronę)
+     * 🔔 NOWY VISITOR!
      */
     handleNewVisitor(data) {
         console.log('👤 Nowy visitor:', {
@@ -184,90 +292,180 @@ class AdminDashboard {
             klasyfikacja: data.classification
         });
         
-        // DODANE: Renderuj w Live Feed
-        this.addLiveFeedEvent(data);
+        // 1. Dodaj do Log History + ZAPISZ
+        this.addToLogHistory(data);
         
-        // 1. Dodaj firmę do listy (jeśli nie ma)
+        // 2. Pokaż w Live Feed Bar
+        this.showLiveFeedNotification(data);
+        
+        // 3. Dodaj firmę do listy
         this.trackCompany(data);
         
-        // 2. Sprawdź czy to HOT LEAD
+        // 4. Sprawdź czy to HOT LEAD
         if (this.isHotLead(data)) {
             this.showHotLeadAlert(data);
         }
         
-        // 3. Zaktualizuj liczby
-        this.incrementVisitorCount();
+        // 5. Zaktualizuj Stats Widget
+        this.updateStatsWidget();
         
-        // 4. Odśwież statystyki
-        this.refreshStats();
+        // 6. Odśwież liczby
+        this.incrementVisitorCount();
     }
     
     /**
-     * Śledź firmę (dodaj do listy firm)
+     * Dodaj do Log History + SAVE
      */
-    trackCompany(data) {
-        const companyName = data.organization || 'Unknown';
+    addToLogHistory(data) {
+        const logEntry = {
+            timestamp: new Date(),
+            query: data.query,
+            company: data.organization || data.city || 'Unknown',
+            classification: data.classification
+        };
         
-        if (companyName === 'Unknown') return; // Pomijamy unknown
+        this.logHistory.unshift(logEntry);
+        this.logHistory = this.logHistory.slice(0, 100); // Ostatnie 100
         
-        // Sprawdź czy firma już była
-        if (!this.companies.has(companyName)) {
-            this.companies.set(companyName, {
-                name: companyName,
-                city: data.city,
-                country: data.country,
-                firstVisit: new Date(),
-                lastVisit: new Date(),
-                totalQueries: 1,
-                queries: [data.query],
-                highIntentQueries: data.classification === 'ZNALEZIONE PRODUKTY' ? 1 : 0,
-                lostOpportunities: data.classification === 'UTRACONE OKAZJE' ? 1 : 0,
-                engagementScore: this.calculateEngagementScore(data)
-            });
-            
-            console.log(`🆕 Nowa firma: ${companyName} (${data.city})`);
-        } else {
-            // Firma już była - zaktualizuj dane
-            const company = this.companies.get(companyName);
-            company.lastVisit = new Date();
-            company.totalQueries++;
-            company.queries.push(data.query);
-            
-            if (data.classification === 'ZNALEZIONE PRODUKTY') {
-                company.highIntentQueries++;
-            }
-            if (data.classification === 'UTRACONE OKAZJE') {
-                company.lostOpportunities++;
-            }
-            
-            company.engagementScore = this.calculateEngagementScore(data, company);
-            
-            console.log(`🔄 Firma wraca: ${companyName} (zapytań: ${company.totalQueries})`);
+        // ZAPISZ DO localStorage
+        this.saveLogHistoryToStorage();
+        
+        // Renderuj
+        this.renderLogHistory();
+    }
+    
+    /**
+     * Renderuj Log History
+     */
+    renderLogHistory() {
+        const container = document.getElementById('logHistoryList');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        if (this.logHistory.length === 0) {
+            container.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px; font-size: 12px;">Czekam na pierwsze zdarzenia...</div>';
+            return;
         }
         
-        // Odśwież listę firm na dashboardzie
-        this.updateCompanyList(Array.from(this.companies.values()));
+        this.logHistory.slice(0, 20).forEach(log => {
+            const item = document.createElement('div');
+            item.className = 'log-item';
+            
+            const time = log.timestamp.toLocaleTimeString('pl-PL');
+            
+            item.innerHTML = `
+                <div class="log-timestamp">${time}</div>
+                <div class="log-query">"${this.escapeHtml(log.query)}"</div>
+                <div class="log-company">📍 ${this.escapeHtml(log.company)}</div>
+            `;
+            
+            container.appendChild(item);
+        });
     }
     
     /**
-     * Czy to HOT LEAD? (bardzo zainteresowany klient)
+     * Pokaż Live Feed Notification Bar
+     */
+    showLiveFeedNotification(data) {
+        const bar = document.getElementById('liveFeedBar');
+        const text = document.getElementById('liveFeedText');
+        
+        if (!bar || !text) return;
+        
+        const company = data.organization || data.city || 'Unknown';
+        text.textContent = `${company} - "${data.query}"`;
+        
+        bar.classList.add('active');
+        
+        setTimeout(() => {
+            bar.classList.remove('active');
+        }, 5000);
+    }
+    
+    /**
+ * Śledź firmę - FIXED VERSION
+ */
+trackCompany(data) {
+    const companyName = data.organization || 'Unknown';
+    
+    if (companyName === 'Unknown') return;
+    
+    if (!this.companies.has(companyName)) {
+        // NOWA FIRMA
+        const newCompany = {
+            name: companyName,
+            city: data.city || 'Unknown',
+            country: data.country || 'Unknown',
+            firstVisit: new Date().toISOString(), // ZMIANA: String zamiast Date
+            lastVisit: new Date().toISOString(),  // ZMIANA: String zamiast Date
+            totalQueries: 1,
+            queries: [{
+                query: data.query,
+                timestamp: new Date().toISOString(), // ZMIANA: String zamiast Date
+                classification: data.classification || 'UNKNOWN',
+                estimatedValue: data.estimatedValue || 0
+            }],
+            highIntentQueries: data.classification === 'ZNALEZIONE PRODUKTY' ? 1 : 0,
+            lostOpportunities: data.classification === 'UTRACONE OKAZJE' ? 1 : 0,
+            engagementScore: this.calculateEngagementScore(data)
+        };
+        
+        this.companies.set(companyName, newCompany);
+        console.log(`🆕 Nowa firma: ${companyName} (${data.city})`);
+        
+    } else {
+        // FIRMA JUŻ ISTNIEJE - UPDATE
+        const company = this.companies.get(companyName);
+        
+        // Update podstawowych danych
+        company.lastVisit = new Date().toISOString(); // ZMIANA: String
+        company.totalQueries++;
+        
+        // CRITICAL: Dodaj nowe query
+        const newQuery = {
+            query: data.query,
+            timestamp: new Date().toISOString(), // ZMIANA: String
+            classification: data.classification || 'UNKNOWN',
+            estimatedValue: data.estimatedValue || 0
+        };
+        
+        company.queries.push(newQuery);
+        
+        // Update counters
+        if (data.classification === 'ZNALEZIONE PRODUKTY') {
+            company.highIntentQueries++;
+        }
+        if (data.classification === 'UTRACONE OKAZJE') {
+            company.lostOpportunities++;
+        }
+        
+        // Recalculate engagement
+        company.engagementScore = this.calculateEngagementScore(data, company);
+        
+        console.log(`🔄 Firma wraca: ${companyName} (${company.totalQueries} zapytań, ${company.queries.length} w tablicy)`);
+    }
+    
+    // CRITICAL: Zapisz natychmiast!
+    this.saveCompaniesToStorage();
+    
+    // Odśwież UI
+    this.updateCompanyList(Array.from(this.companies.values()));
+}
+    /**
+     * Czy to HOT LEAD?
      */
     isHotLead(data) {
-        // HOT LEAD = spełnia jeden z warunków:
-        
-        // 1. Duża znana firma
-        const bigCompanies = ['Google', 'Microsoft', 'Amazon', 'Facebook', 'Apple', 'Orange'];
+        const bigCompanies = ['Google', 'Microsoft', 'Amazon', 'Facebook', 'Apple', 'Orange', 'PKN', 'PZU'];
         if (bigCompanies.some(big => data.organization?.includes(big))) {
             return true;
         }
         
-        // 2. Firma która wróciła (3+ zapytania)
         const company = this.companies.get(data.organization);
         if (company && company.totalQueries >= 3) {
             return true;
         }
         
-        // 3. High-intent query (znalazł produkty)
         if (data.classification === 'ZNALEZIONE PRODUKTY') {
             return true;
         }
@@ -284,137 +482,120 @@ class AdminDashboard {
         
         console.log(`🔥🔥🔥 HOT LEAD: ${companyName} - "${query}"`);
         
-        // Pokaż wielki alert na górze dashboardu
         this.showNotification(
             `🔥 HOT LEAD: ${companyName} właśnie szukał: "${query}"`,
             'hot-lead',
-            10000 // 10 sekund
+            10000
         );
         
-        // GRUPUJ HOT LEADS po firmie (zamiast duplikatów)
-const existingLead = this.hotLeads.find(lead => lead.company === companyName);
-
-if (existingLead) {
-    // Firma już była - update danych
-    existingLead.queries = existingLead.queries || [];
-    existingLead.queries.push(query);
-    existingLead.lastQuery = query;
-    existingLead.timestamp = new Date(); // Update czasu
-    existingLead.totalQueries = (existingLead.totalQueries || 0) + 1;
-    existingLead.estimatedValue = (existingLead.estimatedValue || 0) + (data.estimatedValue || 0);
-} else {
-    // Nowa firma - dodaj
-    this.hotLeads.unshift({
-        company: companyName,
-        city: data.city,
-        query: query,
-        lastQuery: query,
-        queries: [query],
-        totalQueries: 1,
-        timestamp: new Date(),
-        estimatedValue: data.estimatedValue || 0
-    });
-}
-
-// Ogranicz do top 10 hot leads
-this.hotLeads = this.hotLeads.slice(0, 10);
-
-// Odśwież listę hot leads
-this.updateHotLeadsList();
+        const existingLead = this.hotLeads.find(lead => lead.company === companyName);
         
-        // Zapisz do localStorage
+        if (existingLead) {
+            existingLead.queries = existingLead.queries || [];
+            existingLead.queries.push(query);
+            existingLead.lastQuery = query;
+            existingLead.timestamp = new Date();
+            existingLead.totalQueries = (existingLead.totalQueries || 0) + 1;
+            existingLead.estimatedValue = (existingLead.estimatedValue || 0) + (data.estimatedValue || 0);
+        } else {
+            this.hotLeads.unshift({
+                company: companyName,
+                city: data.city,
+                query: query,
+                lastQuery: query,
+                queries: [query],
+                totalQueries: 1,
+                timestamp: new Date(),
+                estimatedValue: data.estimatedValue || 0
+            });
+        }
+        
+        this.hotLeads = this.hotLeads.slice(0, 10);
         this.saveHotLeadsToStorage();
     }
     
     /**
-     * Oblicz engagement score (0-100)
-     * Im wyższy = bardziej zainteresowany
+     * Oblicz engagement score
      */
     calculateEngagementScore(data, existingCompany = null) {
         let score = 0;
         
-        // Punkty za zapytania
         if (existingCompany) {
-            score += Math.min(existingCompany.totalQueries * 10, 40); // max 40 pkt
+            score += Math.min(existingCompany.totalQueries * 10, 40);
         } else {
-            score += 10; // pierwsze zapytanie
+            score += 10;
         }
         
-        // Punkty za high-intent
         if (data.classification === 'ZNALEZIONE PRODUKTY') {
             score += 30;
         }
         
-        // Punkty za utracone okazje (chciał czegoś czego nie ma = zainteresowany)
         if (data.classification === 'UTRACONE OKAZJE') {
             score += 20;
         }
         
-        // Punkty za wartość
         if (data.estimatedValue > 500) {
             score += 10;
         }
         
-        return Math.min(score, 100); // max 100
+        return Math.min(score, 100);
     }
     
     /**
-     * Zaktualizuj liczby na górze (Visitor Analytics)
-     */
-    updateVisitorStats(stats) {
-        // Aktywni użytkownicy (ostatnie 15 min)
-        document.getElementById('activeVisitors').textContent = stats.active_now || 0;
-        
-        // Sesje dziś
-        document.getElementById('totalSessions').textContent = stats.sessions_today || 0;
-        
-        // Średni czas sesji (w minutach)
-        const avgMinutes = Math.floor((stats.avg_duration || 0) / 60);
-        const avgSeconds = (stats.avg_duration || 0) % 60;
-        document.getElementById('avgDuration').textContent = `${avgMinutes}:${avgSeconds.toString().padStart(2, '0')}`;
-        
-        // Conversion rate (% sesji z high-intent)
-        const convRate = stats.conversion_rate || 0;
-        document.getElementById('conversionRate').textContent = `${convRate}%`;
-        
-        console.log('📊 Statystyki zaktualizowane:', stats);
-    }
-    
-    /**
-     * Zaktualizuj listę firm (Companies Tracking)
+     * FIXED: Zaktualizuj listę firm Z DZIAŁAJĄCYM MODALEM
      */
     updateCompanyList(companies) {
-        const container = document.getElementById('companyList');
-        if (!container) return;
+        const container = document.getElementById('hotLeadsCompanies');
+        if (!container) {
+            console.warn('⚠️ Container hotLeadsCompanies nie znaleziony!');
+            return;
+        }
         
-        // Sortuj po engagement score (najgorętsze na górze)
+        // Sortuj po engagement score
         companies.sort((a, b) => b.engagementScore - a.engagementScore);
         
-        // Wyczyść listę
         container.innerHTML = '';
         
-        // Dodaj firmy (top 10)
-        companies.slice(0, 10).forEach(company => {
-            const item = document.createElement('div');
-            item.className = 'company-item';
+        if (companies.length === 0) {
+            container.innerHTML = `
+                <div class="no-companies">
+                    📡 Brak firm do wyświetlenia<br>
+                    <small style="color: #9ca3af; margin-top: 8px; display: block;">Czekam na pierwsze odwiedziny</small>
+                </div>
+            `;
+            return;
+        }
+        
+        // Top 20 firm
+        companies.slice(0, 20).forEach((company, index) => {
+            const card = document.createElement('div');
+            card.className = 'company-card';
+            
+            // CRITICAL: Dodaj data-company-index dla modalа
+            card.setAttribute('data-company-index', index);
             
             // Kolor engagement score
-            let scoreColor = '#6b7280'; // gray
-            if (company.engagementScore >= 70) scoreColor = '#ef4444'; // red (HOT!)
-            else if (company.engagementScore >= 50) scoreColor = '#f59e0b'; // orange (warm)
-            else if (company.engagementScore >= 30) scoreColor = '#3b82f6'; // blue (interested)
+            let scoreColor = '#6b7280';
+            if (company.engagementScore >= 70) scoreColor = '#ef4444';
+            else if (company.engagementScore >= 50) scoreColor = '#f59e0b';
+            else if (company.engagementScore >= 30) scoreColor = '#3b82f6';
             
             // Emoji zainteresowania
-            let heatEmoji = '🔥🔥🔥'; // bardzo gorący
+            let heatEmoji = '🔥🔥🔥';
             if (company.engagementScore < 70) heatEmoji = '🔥🔥';
             if (company.engagementScore < 50) heatEmoji = '🔥';
             if (company.engagementScore < 30) heatEmoji = '👀';
             
-            item.innerHTML = `
+            // Ostatnie zapytanie (bezpiecznie)
+            const lastQuery = company.queries && company.queries.length > 0 
+                ? company.queries[company.queries.length - 1].query 
+                : 'Brak zapytań';
+            
+            card.innerHTML = `
                 <div class="company-header">
                     <div class="company-name">
-                        <strong>${company.name}</strong>
-                        <span class="company-location">${company.city}, ${company.country}</span>
+                        <strong>${this.escapeHtml(company.name)}</strong>
+                        <span class="company-location">${this.escapeHtml(company.city)}, ${this.escapeHtml(company.country)}</span>
                     </div>
                     <div class="engagement-badge" style="background: ${scoreColor}20; color: ${scoreColor};">
                         ${heatEmoji} ${company.engagementScore}/100
@@ -426,178 +607,222 @@ this.updateHotLeadsList();
                     <span>❌ ${company.lostOpportunities} utraconych okazji</span>
                 </div>
                 <div class="company-latest">
-                    Ostatnie: "${company.queries[company.queries.length - 1]}"
+                    Ostatnie: "${this.escapeHtml(lastQuery)}"
                 </div>
             `;
             
-            container.appendChild(item);
+            // FIXED: Użyj onclick z globalną funkcją
+            card.onclick = () => {
+                console.log('🖱️ Kliknięto kartę firmy:', company.name);
+                window.adminDashboard.openCompanyModal(company);
+            };
+            
+            container.appendChild(card);
         });
         
         console.log(`🏢 Zaktualizowano listę firm: ${companies.length} firm`);
     }
     
     /**
-     * Zaktualizuj aktywne sesje (kto jest TERAZ na stronie)
-     */
-    updateActiveSessions(sessions) {
-        const container = document.getElementById('sessionList');
-        if (!container) return;
+ * Otwórz modal - Z DEBUGOWANIEM
+ */
+openCompanyModal(company) {
+    console.log('📂 Otwieranie modala dla:', company.name);
+    console.log('📋 Queries w firmie:', company.queries);
+    console.log('📊 Liczba queries:', company.queries?.length);
+    
+    // Sprawdź czy modal istnieje
+    const modal = document.getElementById('companyModal');
+    if (!modal) {
+        console.error('❌ Modal nie znaleziony w DOM!');
+        return;
+    }
+    
+    // Ustaw tytuł
+    const modalTitle = document.getElementById('modalCompanyName');
+    const modalLocation = document.getElementById('modalCompanyLocation');
+    
+    if (modalTitle) modalTitle.textContent = company.name;
+    if (modalLocation) modalLocation.textContent = `${company.city}, ${company.country}`;
+    
+    // Ustaw statystyki
+    const modalTotal = document.getElementById('modalTotalQueries');
+    const modalIntent = document.getElementById('modalHighIntent');
+    const modalLost = document.getElementById('modalLostOpp');
+    
+    if (modalTotal) modalTotal.textContent = company.totalQueries;
+    if (modalIntent) modalIntent.textContent = company.highIntentQueries;
+    if (modalLost) modalLost.textContent = company.lostOpportunities;
+    
+    // Renderuj listę zapytań
+    const queriesList = document.getElementById('modalQueriesList');
+    if (!queriesList) {
+        console.error('❌ modalQueriesList nie znaleziony!');
+        return;
+    }
+    
+    queriesList.innerHTML = '';
+    
+    if (!company.queries || company.queries.length === 0) {
+        console.warn('⚠️ Firma nie ma queries!');
+        queriesList.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px;">Brak zapytań w historii</div>';
+    } else {
+        console.log(`✅ Renderuję ${company.queries.length} zapytań`);
         
-        container.innerHTML = '';
+        // Od najnowszych
+        const sortedQueries = [...company.queries].reverse();
         
-        if (!sessions || sessions.length === 0) {
-            container.innerHTML = '<div class="no-sessions">Brak aktywnych sesji</div>';
-            return;
-        }
-        
-        sessions.forEach(session => {
+        sortedQueries.forEach((q, index) => {
+            console.log(`  Query ${index + 1}:`, q);
+            
             const item = document.createElement('div');
-            item.className = 'session-item';
+            item.className = 'query-item';
             
-            // Czas trwania sesji
-            const duration = this.formatDuration(session.duration || 0);
+            const timestamp = new Date(q.timestamp).toLocaleString('pl-PL');
             
-            // Status
-            let statusEmoji = '👀'; // ogląda
-            if (session.queries > 3) statusEmoji = '🔥'; // bardzo aktywny
-            if (session.has_high_intent) statusEmoji = '✅'; // znalazł co chciał
-            if (session.has_lost_opportunity) statusEmoji = '❌'; // nie znalazł
+            // Klasyfikacja CSS
+            const classMap = {
+                'ZNALEZIONE PRODUKTY': 'classification-found',
+                'UTRACONE OKAZJE': 'classification-lost',
+                'ODFILTROWANE': 'classification-filtered'
+            };
+            const cssClass = classMap[q.classification] || 'classification-filtered';
             
             item.innerHTML = `
-                <div class="session-header">
-                    <span class="session-id">${statusEmoji} ${session.company || session.city || 'Unknown'}</span>
-                    <span class="session-duration">${duration}</span>
-                </div>
-                <div class="session-summary">${this.generateSessionSummary(session)}</div>
+                <div class="query-timestamp">⏱️ ${timestamp}</div>
+                <div class="query-text">"${this.escapeHtml(q.query)}"</div>
+                <span class="query-classification ${cssClass}">${q.classification}</span>
+                ${q.estimatedValue > 0 ? `<span style="margin-left: 8px; font-size: 11px; color: #10b981; font-weight: 600;">💰 ${q.estimatedValue} zł</span>` : ''}
             `;
             
-            container.appendChild(item);
+            queriesList.appendChild(item);
         });
-        
-        console.log(`⏱️ Aktywne sesje: ${sessions.length}`);
     }
     
-    /**
-     * Wygeneruj podsumowanie sesji (co user robił)
-     */
-    generateSessionSummary(session) {
-        const parts = [];
-        
-        if (session.queries > 0) {
-            parts.push(`Zadał ${session.queries} pytań`);
-        }
-        
-        if (session.has_high_intent) {
-            parts.push('znalazł produkty');
-        }
-        
-        if (session.has_lost_opportunity) {
-            parts.push('nie znalazł tego czego szukał');
-        }
-        
-        if (session.latest_query) {
-            parts.push(`ostatnie: "${session.latest_query}"`);
-        }
-        
-        return parts.join(' → ') || 'Przegląda stronę';
-    }
+    // Pokaż modal
+    modal.classList.add('active');
+    console.log('✅ Modal otwarty!');
+}
     
     /**
-     * Zaktualizuj wykres klasyfikacji zapytań
+     * Zaktualizuj Stats Widget
      */
-    updateClassificationChart(classification) {
-        const ctx = document.getElementById('classificationChart');
-        if (!ctx) return;
+    updateStatsWidget() {
+        const companies = Array.from(this.companies.values());
         
-        // Usuń stary wykres jeśli istnieje (FIX: sprawdź czy to Chart instance)
-        if (window.classificationChart && window.classificationChart instanceof Chart) {
-            window.classificationChart.destroy();
-        }
+        let hotCount = 0;
+        let warmCount = 0;
+        let coldCount = 0;
+        let totalPotential = 0;
         
-        // Dane do wykresu
-        const data = {
-            labels: ['Znalezione Produkty', 'Utracone Okazje', 'Odfiltrowane'],
-            datasets: [{
-                data: [
-                    classification.found || 0,
-                    classification.lost || 0,
-                    classification.filtered || 0
-                ],
-                backgroundColor: [
-                    '#10b981', // zielony
-                    '#ef4444', // czerwony
-                    '#6b7280'  // szary
-                ],
-                borderWidth: 0
-            }]
-        };
-        
-        // Stwórz wykres
-        window.classificationChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: data,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            padding: 15,
-                            font: {
-                                size: 12,
-                                family: 'Inter'
-                            }
-                        }
+        companies.forEach(company => {
+            // Policz potencjał
+            if (company.queries) {
+                company.queries.forEach(q => {
+                    if (q.classification === 'UTRACONE OKAZJE' && q.estimatedValue) {
+                        totalPotential += q.estimatedValue;
                     }
-                }
+                });
+            }
+            
+            // Klasyfikuj
+            if (company.totalQueries >= 5) {
+                hotCount++;
+            } else if (company.totalQueries >= 2) {
+                warmCount++;
+            } else {
+                coldCount++;
             }
         });
         
-        console.log('📊 Wykres zaktualizowany:', classification);
+        const total = hotCount + warmCount + coldCount || 1;
+        
+        // Aktualizuj liczby
+        const hotCountEl = document.getElementById('hotCount');
+        const warmCountEl = document.getElementById('warmCount');
+        const coldCountEl = document.getElementById('coldCount');
+        
+        if (hotCountEl) hotCountEl.textContent = hotCount;
+        if (warmCountEl) warmCountEl.textContent = warmCount;
+        if (coldCountEl) coldCountEl.textContent = coldCount;
+        
+        // Aktualizuj paski
+        const hotBar = document.getElementById('hotBar');
+        const warmBar = document.getElementById('warmBar');
+        const coldBar = document.getElementById('coldBar');
+        
+        if (hotBar) hotBar.style.width = `${(hotCount / total) * 100}%`;
+        if (warmBar) warmBar.style.width = `${(warmCount / total) * 100}%`;
+        if (coldBar) coldBar.style.width = `${(coldCount / total) * 100}%`;
+        
+        // Aktualizuj potencjał
+        const totalPotentialEl = document.getElementById('totalPotential');
+        if (totalPotentialEl) {
+            totalPotentialEl.textContent = `${totalPotential.toLocaleString('pl-PL')} zł`;
+        }
+        
+        console.log('🌡️ Stats Widget:', { hotCount, warmCount, coldCount, totalPotential });
     }
     
     /**
-     * Zaktualizuj listę HOT LEADS
+     * Zaktualizuj Visitor Stats
      */
-    updateHotLeadsList() {
-        const container = document.getElementById('hotLeadsList');
-        if (!container) return;
+    updateVisitorStats(stats) {
+        const activeEl = document.getElementById('activeVisitors');
+        const sessionsEl = document.getElementById('totalSessions');
+        const durationEl = document.getElementById('avgDuration');
+        const convEl = document.getElementById('conversionRate');
         
-        container.innerHTML = '';
+        if (activeEl) activeEl.textContent = stats.active_now || 0;
+        if (sessionsEl) sessionsEl.textContent = stats.sessions_today || 0;
         
-        this.hotLeads.slice(0, 5).forEach(lead => {
-    const item = document.createElement('div');
-    item.className = 'hot-lead-item';
-    
-    const timeAgo = this.timeAgo(lead.timestamp);
-    
-    item.innerHTML = `
-        <div class="hot-lead-header">
-            <strong>🔥 ${lead.company}</strong>
-            <span class="hot-lead-time">${timeAgo}</span>
-        </div>
-        <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">
-            📊 ${lead.totalQueries || 1} zapytań
-        </div>
-        <div class="hot-lead-query">Ostatnie: "${lead.lastQuery || lead.query}"</div>
-        ${lead.estimatedValue > 0 ? `<div class="hot-lead-value">Łączna wartość: ${lead.estimatedValue} zł</div>` : ''}
-    `;
-    
-    container.appendChild(item);
-});
+        if (durationEl) {
+            const avgMinutes = Math.floor((stats.avg_duration || 0) / 60);
+            const avgSeconds = (stats.avg_duration || 0) % 60;
+            durationEl.textContent = `${avgMinutes}:${avgSeconds.toString().padStart(2, '0')}`;
+        }
+        
+        if (convEl) {
+            const convRate = stats.conversion_rate || 0;
+            convEl.textContent = `${convRate}%`;
+        }
+        
+        console.log('📊 Statystyki zaktualizowane');
     }
     
     /**
-     * Odśwież statystyki (co 30s)
+     * Zaktualizuj aktywne sesje
+     */
+    updateActiveSessions(sessions) {
+        console.log(`⏱️ Aktywne sesje: ${sessions?.length || 0}`);
+    }
+    
+    /**
+     * Odśwież statystyki
      */
     async refreshStats() {
-        console.log('🔄 Odświeżam statystyki...');
-        await this.loadTodayData();
+    console.log('🔄 Odświeżam statystyki (bez nadpisywania firm)...');
+    
+    try {
+        const response = await fetch('/api/admin/visitor-stats');
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            // Tylko statystyki - NIE firmy!
+            this.updateVisitorStats(data.stats);
+            
+            console.log('✅ Statystyki odświeżone (firmy nietknięte)');
+        }
+    } catch (error) {
+        console.error('❌ Błąd odświeżania:', error);
     }
     
+    // Zawsze odśwież Stats Widget (z localStorage)
+    this.updateStatsWidget();
+}
+    
     /**
-     * Zwiększ licznik odwiedzających
+     * Zwiększ licznik
      */
     incrementVisitorCount() {
         const el = document.getElementById('totalSessions');
@@ -623,30 +848,13 @@ this.updateHotLeadsList();
         
         container.appendChild(notification);
         
-        // Auto remove
         setTimeout(() => {
             notification.remove();
         }, duration);
     }
     
     /**
-     * Status połączenia
-     */
-    updateConnectionStatus(status) {
-        const indicator = document.getElementById('connectionStatus');
-        if (!indicator) return;
-        
-        if (status === 'connected') {
-            indicator.textContent = '🟢 Tracking Active';
-            indicator.style.color = '#10b981';
-        } else {
-            indicator.textContent = '🔴 Disconnected';
-            indicator.style.color = '#ef4444';
-        }
-    }
-    
-    /**
-     * Formatuj czas trwania (sekundy → MM:SS)
+     * Formatuj czas
      */
     formatDuration(seconds) {
         const mins = Math.floor(seconds / 60);
@@ -655,7 +863,7 @@ this.updateHotLeadsList();
     }
     
     /**
-     * Ile czasu temu (timestamp → "2 min temu")
+     * Ile czasu temu
      */
     timeAgo(timestamp) {
         const seconds = Math.floor((new Date() - timestamp) / 1000);
@@ -665,59 +873,29 @@ this.updateHotLeadsList();
         if (seconds < 86400) return `${Math.floor(seconds / 3600)} h temu`;
         return `${Math.floor(seconds / 86400)} dni temu`;
     }
-
-    /**
-     * DODANE: Renderuj Live Feed event
-     */
-    addLiveFeedEvent(data) {
-        const liveFeed = document.getElementById('liveFeed');
-        if (!liveFeed) return;
-        
-        // Usuń placeholder jeśli istnieje
-        const placeholder = liveFeed.querySelector('[style*="Czekam"]');
-        if (placeholder) {
-            liveFeed.innerHTML = '';
-        }
-        
-        // Klasyfikacja → CSS class
-        const classMap = {
-            'ZNALEZIONE PRODUKTY': 'classification-found',
-            'UTRACONE OKAZJE': 'classification-lost',
-            'ODFILTROWANE': 'classification-filtered'
-        };
-        
-        const cssClass = classMap[data.classification] || 'classification-filtered';
-        
-        // Stwórz element
-        const feedItem = document.createElement('div');
-        feedItem.className = 'feed-item';
-        feedItem.innerHTML = `
-            <div class="feed-timestamp">${data.timestamp || new Date().toLocaleTimeString('pl-PL')}</div>
-            <div class="feed-query">${this.escapeHtml(data.query)}</div>
-            <span class="feed-classification ${cssClass}">${data.classification}</span>
-        `;
-        
-        // Dodaj na górę
-        liveFeed.insertBefore(feedItem, liveFeed.firstChild);
-        
-        // Ogranicz do 20 najnowszych
-        while (liveFeed.children.length > 20) {
-            liveFeed.removeChild(liveFeed.lastChild);
-        }
-    }
     
     /**
-     * Escape HTML (bezpieczeństwo)
+     * Escape HTML
      */
     escapeHtml(text) {
+        if (!text) return '';
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
     }
 }
 
-// 🚀 URUCHOM DASHBOARD automatycznie
+// 🚀 URUCHOM DASHBOARD
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🎯 Inicjalizuję Admin Dashboard...');
+    console.log('🎯 Inicjalizuję Admin Dashboard v2.1...');
     window.adminDashboard = new AdminDashboard();
 });
+
+// GLOBAL FUNCTION: Close Modal
+function closeCompanyModal() {
+    const modal = document.getElementById('companyModal');
+    if (modal) {
+        modal.classList.remove('active');
+        console.log('✅ Modal zamknięty');
+    }
+}

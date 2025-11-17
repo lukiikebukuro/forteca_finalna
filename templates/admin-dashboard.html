@@ -24,6 +24,7 @@
             line-height: 1.6;
         }
         
+        /* ========== HEADER ========== */
         .header {
             background: #374151;
             border-bottom: 1px solid #d1d5db;
@@ -101,21 +102,77 @@
             font-size: 12px;
             font-weight: 600;
             transition: all 0.2s ease;
+            cursor: pointer;
         }
         
         .logout-btn:hover {
             background: #dc2626;
         }
         
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #10b981;
+            font-weight: 600;
+        }
+        
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* ========== LIVE FEED NOTIFICATION BAR ========== */
+        .live-feed-bar {
+            background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 12px 32px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 84px;
+            z-index: 99;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        .live-feed-bar.active {
+            display: block;
+        }
+        
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        /* ========== MAIN CONTENT ========== */
         .main-content {
             padding: 24px;
             max-width: 1600px;
             margin: 0 auto;
         }
         
+        /* ========== NEW GRID LAYOUT (70/30) ========== */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr;
+            grid-template-columns: 70fr 30fr;
             gap: 24px;
             margin-bottom: 24px;
         }
@@ -140,44 +197,513 @@
             padding-bottom: 8px;
         }
         
-        .live-feed {
-            height: 400px;
-            overflow-y: auto;
+        .section-subtitle {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: -8px;
+            margin-bottom: 16px;
+        }
+        
+        /* ========== LEFT COLUMN: HOT LEADS B2B ========== */
+        /* ========== LEFT COLUMN: HOT LEADS B2B (PREMIUM LOOK) ========== */
+.hot-leads-container {
+    min-height: 600px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    padding: 0; /* Reset padding - będzie w środku */
+    overflow: hidden; /* Żeby zaokrąglone rogi działały */
+}
+
+/* NAGŁÓWEK - Ciemne tło jak navbar */
+.hot-leads-header {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    padding: 20px 24px;
+    border-bottom: 3px solid #f59e0b; /* Złoty akcent */
+    margin-bottom: 0;
+}
+
+.hot-leads-header .section-title {
+    color: #ffffff;
+    border: none;
+    margin-bottom: 8px;
+    font-size: 18px;
+}
+
+.hot-leads-header .section-subtitle {
+    color: #cbd5e1;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+/* CONTAINER DLA KART (padding wewnątrz) */
+.hot-leads-cards-container {
+    padding: 20px;
+}
+
+/* KARTY FIRM - Premium look */
+.company-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 14px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Subtelny akcent na lewej krawędzi */
+.company-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: #e5e7eb;
+    transition: all 0.25s ease;
+}
+
+/* HOVER - Efekt premium */
+.company-card:hover {
+    border-color: #f59e0b;
+    box-shadow: 0 8px 24px rgba(245, 158, 11, 0.18);
+    transform: translateY(-3px);
+    background: #fffbeb;
+}
+
+.company-card:hover::before {
+    background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+    width: 5px;
+}
+
+/* ACTIVE STATE (przy kliknięciu) */
+.company-card:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+}
+
+/* Company Header - lepsze odstępy */
+.company-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+    gap: 12px;
+}
+
+.company-name {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+}
+
+.company-name strong {
+    font-size: 16px;
+    color: #111827;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.company-location {
+    font-size: 12px;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.company-location::before {
+    content: '📍';
+    font-size: 11px;
+}
+
+/* Engagement Badge - premium style */
+.engagement-badge {
+    padding: 7px 16px;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.company-card:hover .engagement-badge {
+    transform: scale(1.05);
+}
+
+/* Company Stats - lepsze ikonki */
+.company-stats {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 14px;
+    font-size: 13px;
+    color: #6b7280;
+    flex-wrap: wrap;
+}
+
+.company-stats span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Latest Query - bardziej wyróżniony */
+.company-latest {
+    font-size: 13px;
+    color: #374151;
+    font-style: italic;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    border-radius: 8px;
+    margin-top: 10px;
+    border-left: 3px solid #3b82f6;
+    position: relative;
+    padding-left: 40px;
+}
+
+.company-latest::before {
+    content: '💬';
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+}
+
+/* No Companies State - bardziej przyjaźnie */
+.no-companies {
+    text-align: center;
+    color: #9ca3af;
+    padding: 80px 20px;
+    font-size: 15px;
+}
+
+.no-companies::before {
+    content: '🔍';
+    display: block;
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+        
+        /* ========== RIGHT COLUMN: PULS RYNKU ========== */
+        .puls-rynku-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        /* Stats Widget (Góra) */
+        .stats-widget {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+        }
+        
+        .stats-widget-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .stats-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .stat-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .stat-bar-label {
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stat-bar-progress {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .stat-bar-fill {
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .stats-total {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .stats-total-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fbbf24;
+        }
+        
+        /* Log History (Środek) */
+        .log-history {
             background: #f9fafb;
+            border: 1px solid #e5e7eb;
             border-radius: 8px;
             padding: 16px;
         }
         
-        .feed-item {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 12px;
+        .log-history-title {
+            font-size: 14px;
+            font-weight: 700;
             margin-bottom: 12px;
-            transition: all 0.2s ease;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
         
-        .feed-item:hover {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        .log-history-list {
+            max-height: 300px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
         
-        .feed-timestamp {
-            font-size: 11px;
+        .log-history-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .log-history-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .log-history-list::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        
+        .log-history-list::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        .log-item {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 12px;
+        }
+        
+        .log-timestamp {
+            font-family: monospace;
             color: #6b7280;
             margin-bottom: 4px;
         }
         
-        .feed-query {
-            font-size: 14px;
+        .log-query {
             color: #374151;
             font-weight: 500;
+            margin-bottom: 2px;
+        }
+        
+        .log-company {
+            color: #6b7280;
+            font-size: 11px;
+        }
+        
+        /* Visitor Analytics (Dół) */
+        .visitor-analytics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 14px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        
+        .stat-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #111827;
             margin-bottom: 4px;
         }
         
-        .feed-classification {
-            font-size: 12px;
-            padding: 2px 8px;
+        .stat-label {
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* ========== MODAL ========== */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
             border-radius: 12px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+        
+        .modal-subtitle {
+            font-size: 13px;
+            color: #6b7280;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        
+        .modal-close:hover {
+            background: #f3f4f6;
+            color: #111827;
+        }
+        
+        .modal-body {
+            padding: 24px;
+        }
+        
+        .modal-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .modal-stat-card {
+            text-align: center;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+        
+        .modal-stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+        
+        .modal-stat-label {
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+        }
+        
+        .modal-queries-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .query-item {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 14px;
+        }
+        
+        .query-timestamp {
+            font-size: 11px;
+            color: #6b7280;
+            margin-bottom: 6px;
+        }
+        
+        .query-text {
+            font-size: 14px;
+            color: #374151;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .query-classification {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
             font-weight: 600;
         }
         
@@ -196,323 +722,86 @@
             color: #1e40af;
         }
         
-        .visitor-stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-        }
-        
-        .stat-item {
-            text-align: center;
-            padding: 16px;
-            background: #f9fafb;
-            border-radius: 8px;
-        }
-        
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: #111827;
-            margin-bottom: 4px;
-        }
-        
-        .stat-label {
-            font-size: 12px;
-            color: #6b7280;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        
-        .analytics-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
-            margin-top: 24px;
-        }
-        
-        .chart-container {
-            height: 250px;
-            background: #f9fafb;
-            border-radius: 8px;
-            padding: 16px;
-        }
-        
-        .session-list {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        
-        .session-item {
-            padding: 12px;
-            border-bottom: 1px solid #f3f4f6;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .session-item:hover {
-            background: #f9fafb;
-        }
-        
-        .session-header {
+        /* ========== NOTIFICATIONS ========== */
+        #notificationContainer {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 9999;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 4px;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 400px;
         }
         
-        .session-id {
-            font-size: 12px;
-            color: #6b7280;
-            font-family: monospace;
+        .notification {
+            padding: 16px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-size: 14px;
+            font-weight: 500;
+            animation: slideInToast 0.3s ease-out;
         }
         
-        .session-duration {
-            font-size: 11px;
-            color: #6b7280;
-        }
-        
-        .session-summary {
-            font-size: 13px;
-            color: #374151;
-        }
-        
-        .status-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            color: #059669;
-            font-weight: 600;
-        }
-        
-        .status-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
+        .notification-success {
             background: #10b981;
-            animation: pulse 2s infinite;
+            color: white;
         }
         
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .notification-error {
+            background: #ef4444;
+            color: white;
         }
         
-        .ga4-comparison {
-            background: linear-gradient(135deg, #059669 0%, #047857 100%);
-            color: #ffffff;
-            padding: 20px;
-            border-radius: 12px;
-        }
-        
-        .ga4-title {
-            font-size: 16px;
+        .notification-hot-lead {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #78350f;
+            border: 2px solid #d97706;
+            font-size: 15px;
             font-weight: 700;
-            margin-bottom: 12px;
         }
         
-        .advantage-list {
-            list-style: none;
+        @keyframes slideInToast {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
         
-        .advantage-item {
-            font-size: 13px;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .advantage-item::before {
-            content: "✓";
-            font-weight: 700;
-            color: #a7f3d0;
-        }
-        
-        /* Responsive */
-        @media (max-width: 1024px) {
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 1200px) {
             .dashboard-grid {
                 grid-template-columns: 1fr;
             }
             
-            .analytics-grid {
-                grid-template-columns: 1fr;
+            .puls-rynku-container {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            .stats-widget,
+            .log-history,
+            .visitor-analytics {
+                flex: 1;
+                min-width: 300px;
             }
         }
-/* 🎨 NOWE STYLE DLA ADMIN DASHBOARD */
-
-/* Company List */
-.company-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.company-item {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 12px;
-    transition: all 0.2s ease;
-}
-
-.company-item:hover {
-    border-color: #3b82f6;
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
-}
-
-.company-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 8px;
-}
-
-.company-name {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.company-name strong {
-    font-size: 15px;
-    color: #111827;
-}
-
-.company-location {
-    font-size: 12px;
-    color: #6b7280;
-}
-
-.engagement-badge {
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
-    white-space: nowrap;
-}
-
-.company-stats {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 8px;
-    font-size: 12px;
-    color: #6b7280;
-}
-
-.company-latest {
-    font-size: 13px;
-    color: #374151;
-    font-style: italic;
-    padding: 8px;
-    background: #f9fafb;
-    border-radius: 4px;
-    margin-top: 8px;
-}
-
-/* Hot Leads */
-.hot-lead-item {
-    background: #ffffff;
-    border: 2px solid #f59e0b;
-    border-radius: 8px;
-    padding: 12px;
-    margin-bottom: 12px;
-}
-
-.hot-lead-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-}
-
-.hot-lead-time {
-    font-size: 11px;
-    color: #78350f;
-    font-weight: 500;
-}
-
-.hot-lead-query {
-    font-size: 14px;
-    color: #374151;
-    font-style: italic;
-    margin-bottom: 4px;
-}
-
-.hot-lead-value {
-    font-size: 12px;
-    color: #10b981;
-    font-weight: 600;
-}
-
-/* Notifications */
-#notificationContainer {
-    position: fixed;
-    top: 80px;
-    right: 20px;
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    max-width: 400px;
-}
-
-.notification {
-    padding: 16px 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    font-size: 14px;
-    font-weight: 500;
-    animation: slideInToast 0.3s ease-out;
-}
-
-.notification-success {
-    background: #10b981;
-    color: white;
-}
-
-.notification-error {
-    background: #ef4444;
-    color: white;
-}
-
-.notification-hot-lead {
-    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-    color: #78350f;
-    border: 2px solid #d97706;
-    font-size: 15px;
-    font-weight: 700;
-}
-
-@keyframes slideInToast {
-    from {
-        transform: translateX(400px);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-/* No sessions message */
-.no-sessions {
-    text-align: center;
-    color: #9ca3af;
-    padding: 32px;
-    font-size: 14px;
-}
-
-/* Section subtitle */
-.section-subtitle {
-    font-size: 13px;
-    color: #6b7280;
-    margin-top: -8px;
-    margin-bottom: 16px;
-}
     </style>
 </head>
 <body>
+    <!-- Notifications -->
     <div id="notificationContainer"></div>
+    
+    <!-- Live Feed Notification Bar -->
+    <div class="live-feed-bar" id="liveFeedBar">
+        🔴 Nowe zdarzenie: <span id="liveFeedText"></span>
+    </div>
+    
+    <!-- Header -->
     <div class="header">
         <div class="header-content">
             <div class="header-left">
@@ -535,176 +824,180 @@
         </div>
     </div>
     
+    <!-- Main Content -->
     <div class="main-content">
-        <!-- Main Dashboard Grid -->
+        <!-- Dashboard Grid (70/30) -->
         <div class="dashboard-grid">
-            <!-- Live Feed -->
-            <div class="card">
-                <div class="section-title">
-                    🔴 Live Feed - Zapytania Użytkowników
-                </div>
-                <div class="live-feed" id="liveFeed">
-                    <!-- Live Feed ładowany dynamicznie -->
-                </div>
+            <!-- LEFT COLUMN (70%): HOT LEADS B2B -->
+            <!-- LEFT COLUMN (70%): HOT LEADS B2B -->
+<!-- LEFT COLUMN (70%): HOT LEADS B2B -->
+<div class="card hot-leads-container">
+    <div class="hot-leads-header">
+        <div class="section-title" style="border: none; margin-bottom: 8px;">
+            🔥 HOT LEADS B2B - Firmy Gotowe Do Rozmowy
+        </div>
+        <div class="section-subtitle" style="margin-top: 0;">
+            Firmy które pokazują wysokie zainteresowanie. <strong>Kliknij w firmę</strong> aby zobaczyć pełną historię zapytań.
+        </div>
+    </div>
+    <div class="hot-leads-cards-container">
+        <div id="hotLeadsCompanies">
+            <div class="no-companies">
+                Ładowanie danych firm...<br>
+                <small style="color: #9ca3af; margin-top: 8px; display: block;">Czekam na pierwsze odwiedziny</small>
             </div>
+        </div>
+    </div>
+</div>
             
-            <!-- 🏢 NOWA SEKCJA: Companies Tracking -->
-            <div class="card">
-                <div class="section-title">
-                    🏢 Firmy Które Was Odwiedzają
-                </div>
-                <div style="font-size: 13px; color: #6b7280; margin-bottom: 16px;">
-                    Sortowane po zainteresowaniu (🔥🔥🔥 = gorący lead gotowy kupić)
-                </div>
-                <div id="companyList" class="company-list">
-                    <div style="text-align: center; color: #6b7280; padding: 20px;">
-                        📡 Ładowanie danych firm...
+            <!-- RIGHT COLUMN (30%): PULS RYNKU -->
+            <div class="puls-rynku-container">
+                <!-- 1. GÓRA: Stats Widget -->
+                <div class="stats-widget">
+                    <div class="stats-widget-title">
+                        🌡️ Temperatura Rynku (Live)
                     </div>
-                </div>
-            </div>
-            
-            <!-- 🔥 HOT LEADS Alerts -->
-            <div class="card" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 2px solid #f59e0b;">
-                <div class="section-title" style="color: #92400e;">
-                    🔥 HOT LEADS - Klienci Gotowi Do Rozmowy
-                </div>
-                <div style="font-size: 13px; color: #78350f; margin-bottom: 16px;">
-                    Firmy które pokazują wysok zainteresowanie - dzwoń DO NICH!
-                </div>
-                <div id="hotLeadsList">
-                    <div style="text-align: center; color: #78350f; padding: 20px;">
-                        Czekam na gorące leady...
+                    <div class="stats-bars">
+                        <div class="stat-bar">
+                            <div class="stat-bar-label">
+                                <span>🔴 Gorące (5+ zapytań)</span>
+                                <span id="hotCount">0</span>
+                            </div>
+                            <div class="stat-bar-progress">
+                                <div class="stat-bar-fill" id="hotBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="stat-bar">
+                            <div class="stat-bar-label">
+                                <span>🟡 Badające (2-4 zapytania)</span>
+                                <span id="warmCount">0</span>
+                            </div>
+                            <div class="stat-bar-progress">
+                                <div class="stat-bar-fill" id="warmBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="stat-bar">
+                            <div class="stat-bar-label">
+                                <span>🟢 Pojedyncze wejścia</span>
+                                <span id="coldCount">0</span>
+                            </div>
+                            <div class="stat-bar-progress">
+                                <div class="stat-bar-fill" id="coldBar" style="width: 0%"></div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <!-- Visitor Stats -->
-            <div class="card">
-                <div class="section-title">
-                    👥 Visitor Analytics
-                </div>
-                <div class="visitor-stats">
-                    <div class="stat-item">
-                        <div class="stat-value" id="activeVisitors">7</div>
-                        <div class="stat-label">Aktywni Użytkownicy</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="totalSessions">42</div>
-                        <div class="stat-label">Sesje Dziś</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="avgDuration">3:24</div>
-                        <div class="stat-label">Średni Czas Sesji</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="conversionRate">23%</div>
-                        <div class="stat-label">Conversion Rate</div>
+                    <div class="stats-total">
+                        💰 Potencjał B2B: <span class="stats-total-value" id="totalPotential">0 zł</span>
                     </div>
                 </div>
                 
-                <div class="ga4-comparison" style="margin-top: 20px;">
-                    <div class="ga4-title">🎯 Przewaga nad GA4</div>
-                    <ul class="advantage-list">
-                        <li class="advantage-item">Pełne transkrypcje rozmów</li>
-                        <li class="advantage-item">Intent analysis w czasie rzeczywistym</li>
-                        <li class="advantage-item">Customer journey mapping</li>
-                        <li class="advantage-item">Conversion funnel szczegółowy</li>
-                        <li class="advantage-item">Lost opportunity tracking</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Analytics Grid -->
-        <div class="analytics-grid">
-            <!-- Session Timeline -->
-            <div class="card">
-                <div class="section-title">
-                    📋 Aktywne Sesje
-                </div>
-                <div class="session-list" id="sessionList">
-                    <div class="session-item">
-                        <div class="session-header">
-                            <span class="session-id">sess_8x9k2m</span>
-                            <span class="session-duration">5:32</span>
-                        </div>
-                        <div class="session-summary">Szuka klocków BMW → znalazł produkt → dodał do koszyka</div>
+                <!-- 2. ŚRODEK: Log History (Matrix) -->
+                <div class="log-history">
+                    <div class="log-history-title">
+                        📜 Ostatnie Zdarzenia (Matrix)
                     </div>
-                    <div class="session-item">
-                        <div class="session-header">
-                            <span class="session-id">sess_3n7j5p</span>
-                            <span class="session-duration">2:18</span>
+                    <div class="log-history-list" id="logHistoryList">
+                        <div style="text-align: center; color: #9ca3af; padding: 20px; font-size: 12px;">
+                            Czekam na pierwsze zdarzenia...
                         </div>
-                        <div class="session-summary">Pytał o filtry Porsche → brak w ofercie → opuścił stronę</div>
-                    </div>
-                    <div class="session-item">
-                        <div class="session-header">
-                            <span class="session-id">sess_6q4w8r</span>
-                            <span class="session-duration">1:05</span>
-                        </div>
-                        <div class="session-summary">Wpisywał nonsensowne zapytania → bot odfiltrował</div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Query Classification Chart -->
-            <div class="card">
-                <div class="section-title">
-                    📊 Klasyfikacja Zapytań
-                </div>
-                <div class="chart-container">
-                    <canvas id="classificationChart"></canvas>
+                
+                <!-- 3. DÓŁ: Visitor Analytics -->
+                <div class="visitor-analytics">
+                    <div class="stat-item">
+                        <div class="stat-value" id="activeVisitors">0</div>
+                        <div class="stat-label">Aktywni Użytkownicy</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalSessions">0</div>
+                        <div class="stat-label">Sesje Dziś</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="avgDuration">0:00</div>
+                        <div class="stat-label">Średni Czas Sesji</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="conversionRate">0%</div>
+                        <div class="stat-label">Conversion Rate</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     
+    <!-- Modal: Company Query History -->
+    <div class="modal" id="companyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <div class="modal-title" id="modalCompanyName">Nazwa Firmy</div>
+                    <div class="modal-subtitle" id="modalCompanyLocation">Lokalizacja</div>
+                </div>
+                <button class="modal-close" onclick="closeCompanyModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <!-- Stats Overview -->
+                <div class="modal-stats">
+                    <div class="modal-stat-card">
+                        <div class="modal-stat-value" id="modalTotalQueries">0</div>
+                        <div class="modal-stat-label">Zapytań</div>
+                    </div>
+                    <div class="modal-stat-card">
+                        <div class="modal-stat-value" id="modalHighIntent">0</div>
+                        <div class="modal-stat-label">High-Intent</div>
+                    </div>
+                    <div class="modal-stat-card">
+                        <div class="modal-stat-value" id="modalLostOpp">0</div>
+                        <div class="modal-stat-label">Utracone</div>
+                    </div>
+                </div>
+                
+                <!-- Query History -->
+                <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 12px; color: #111827;">
+                    📋 Historia Zapytań
+                </h3>
+                <div class="modal-queries-list" id="modalQueriesList">
+                    <!-- Queries loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
     <script>
         // Clear service workers
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(function(registrations) {
-        for(let registration of registrations) {
-            registration.unregister();
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister();
+                }
+            });
         }
-    });
-}
-
-// Force reload without cache
-if (!performance.navigation.type || performance.navigation.type !== 1) {
-    location.reload(true);
-}
-        // Live Feed Simulation
-        function addFeedItem(query, classification, timestamp) {
-            const feed = document.getElementById('liveFeed');
-            const item = document.createElement('div');
-            item.className = 'feed-item';
-            
-            const classMap = {
-                'ZNALEZIONE PRODUKTY': 'classification-found',
-                'UTRACONE OKAZJE': 'classification-lost',
-                'ODFILTROWANE': 'classification-filtered'
-            };
-            
-            item.innerHTML = `
-                <div class="feed-timestamp">${timestamp}</div>
-                <div class="feed-query">${query}</div>
-                <span class="feed-classification ${classMap[classification]}">${classification}</span>
-            `;
-            
-            feed.insertBefore(item, feed.firstChild);
-            
-            // Keep only last 10 items
-            while (feed.children.length > 10) {
-                feed.removeChild(feed.lastChild);
-            }
-        }
-        
         
         // Client View Function
         function openClientView() {
-    window.location.href = '/client-dashboard';
-}
+            window.location.href = '/client-dashboard';
+        }
         
+        // Modal Functions (będą używane przez admin_dashboard.js)
+        function closeCompanyModal() {
+            document.getElementById('companyModal').classList.remove('active');
+        }
         
+        // Close modal on backdrop click
+        document.getElementById('companyModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeCompanyModal();
+            }
+        });
+        
+        // Close modal on ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeCompanyModal();
+            }
+        });
     </script>
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script src="{{ url_for('static', filename='admin_dashboard.js') }}" defer></script>
