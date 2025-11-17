@@ -443,7 +443,7 @@ def search_suggestions():
         return jsonify({'suggestions': [], 'error': str(e)}), 200
 
 # === NOWY ENDPOINT - FINALNA ANALIZA DLA TCD ===
-@app.route('/motobot-prototype/api/analyze_query', methods=['POST'])
+#@app.route('/motobot-prototype/api/analyze_query', methods=['POST'])
 @limiter.limit("100/minute")
 def analyze_query():
     """
