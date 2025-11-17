@@ -149,23 +149,26 @@ loadCompaniesFromStorage() {
      * KROK 1: Uruchom wszystko
      */
     async initialize() {
-        console.log('📡 Łączę się z serwerem...');
+    console.log('📡 Łączę się z serwerem...');
+    
+    try {
+        await this.connectWebSocket();
+        await this.loadTodayData();
         
-        try {
-            await this.connectWebSocket();
-            await this.loadTodayData();
-            
-            // Odświeżaj co 30 sekund
-            setInterval(() => this.refreshStats(), 30000);
-            
-            console.log('✅ ADMIN DASHBOARD v2.1 działa!');
-            this.showNotification('Dashboard gotowy!', 'success');
-            
-        } catch (error) {
-            console.error('❌ Błąd uruchamiania:', error);
-            this.showNotification('Błąd połączenia z serwerem', 'error');
-        }
+        // NOWE: Przelicz metryki po załadowaniu
+        this.updateVisitorStats({});
+        
+        // Odświeżaj co 30 sekund
+        setInterval(() => this.refreshStats(), 30000);
+        
+        console.log('✅ ADMIN DASHBOARD v2.1 działa!');
+        this.showNotification('Dashboard gotowy!', 'success');
+        
+    } catch (error) {
+        console.error('❌ Błąd uruchamiania:', error);
+        this.showNotification('Błąd połączenia z serwerem', 'error');
     }
+}
     
     /**
      * KROK 2: Połącz WebSocket
@@ -285,33 +288,36 @@ async loadTodayData() {
      * 🔔 NOWY VISITOR!
      */
     handleNewVisitor(data) {
-        console.log('👤 Nowy visitor:', {
-            firma: data.organization,
-            miasto: data.city,
-            zapytanie: data.query,
-            klasyfikacja: data.classification
-        });
-        
-        // 1. Dodaj do Log History + ZAPISZ
-        this.addToLogHistory(data);
-        
-        // 2. Pokaż w Live Feed Bar
-        this.showLiveFeedNotification(data);
-        
-        // 3. Dodaj firmę do listy
-        this.trackCompany(data);
-        
-        // 4. Sprawdź czy to HOT LEAD
-        if (this.isHotLead(data)) {
-            this.showHotLeadAlert(data);
-        }
-        
-        // 5. Zaktualizuj Stats Widget
-        this.updateStatsWidget();
-        
-        // 6. Odśwież liczby
-        this.incrementVisitorCount();
+    console.log('👤 Nowy visitor:', {
+        firma: data.organization,
+        miasto: data.city,
+        zapytanie: data.query,
+        klasyfikacja: data.classification
+    });
+    
+    // 1. Dodaj do Log History
+    this.addToLogHistory(data);
+    
+    // 2. Pokaż w Live Feed Bar
+    this.showLiveFeedNotification(data);
+    
+    // 3. Dodaj firmę do listy
+    this.trackCompany(data);
+    
+    // 4. Sprawdź czy to HOT LEAD
+    if (this.isHotLead(data)) {
+        this.showHotLeadAlert(data);
     }
+    
+    // 5. Zaktualizuj Stats Widget
+    this.updateStatsWidget();
+    
+    // NOWE: 6. Odśwież Visitor Analytics (live!)
+    this.updateVisitorStats({}); // Pusty obiekt - używamy lokalnych danych
+    
+    // 7. Odśwież liczby
+    this.incrementVisitorCount();
+}
     
     /**
      * Dodaj do Log History + SAVE
@@ -764,31 +770,110 @@ openCompanyModal(company) {
         console.log('🌡️ Stats Widget:', { hotCount, warmCount, coldCount, totalPotential });
     }
     
+
     /**
-     * Zaktualizuj Visitor Stats
-     */
-    updateVisitorStats(stats) {
-        const activeEl = document.getElementById('activeVisitors');
-        const sessionsEl = document.getElementById('totalSessions');
-        const durationEl = document.getElementById('avgDuration');
-        const convEl = document.getElementById('conversionRate');
-        
-        if (activeEl) activeEl.textContent = stats.active_now || 0;
-        if (sessionsEl) sessionsEl.textContent = stats.sessions_today || 0;
-        
-        if (durationEl) {
-            const avgMinutes = Math.floor((stats.avg_duration || 0) / 60);
-            const avgSeconds = (stats.avg_duration || 0) % 60;
-            durationEl.textContent = `${avgMinutes}:${avgSeconds.toString().padStart(2, '0')}`;
+ * NOWE: Policz metryki lokalnie (z localStorage + live data)
+ */
+calculateLocalStats() {
+    const companies = Array.from(this.companies.values());
+    const now = new Date();
+    const fifteenMinutesAgo = new Date(now - 15 * 60 * 1000);
+    
+    // 1. Aktywni użytkownicy (ostatnie 15 min)
+    let activeUsers = 0;
+    companies.forEach(company => {
+        const lastVisit = new Date(company.lastVisit);
+        if (lastVisit > fifteenMinutesAgo) {
+            activeUsers++;
         }
-        
-        if (convEl) {
-            const convRate = stats.conversion_rate || 0;
-            convEl.textContent = `${convRate}%`;
-        }
-        
-        console.log('📊 Statystyki zaktualizowane');
+    });
+    
+    // 2. Sesje dziś (suma wszystkich queries)
+    let totalQueries = 0;
+    companies.forEach(company => {
+        totalQueries += company.totalQueries || 0;
+    });
+    
+    // 3. Średni czas sesji (estimate based on queries)
+    // Założenie: 1 query = ~45 sekund interakcji
+    let avgDuration = 0;
+    if (companies.length > 0) {
+        const totalDuration = companies.reduce((sum, company) => {
+            // Estimate: więcej zapytań = dłuższa sesja
+            const estimatedSeconds = (company.totalQueries || 0) * 45;
+            return sum + estimatedSeconds;
+        }, 0);
+        avgDuration = Math.round(totalDuration / companies.length);
     }
+    
+    // 4. Conversion rate (high-intent / total)
+    let totalHighIntent = 0;
+    companies.forEach(company => {
+        totalHighIntent += company.highIntentQueries || 0;
+    });
+    
+    let conversionRate = 0;
+    if (totalQueries > 0) {
+        conversionRate = Math.round((totalHighIntent / totalQueries) * 100);
+    }
+    
+    console.log('📊 Local stats calculated:', {
+        activeUsers,
+        totalQueries,
+        avgDuration,
+        conversionRate
+    });
+    
+    return {
+        active_now: activeUsers,
+        sessions_today: totalQueries,
+        avg_duration: avgDuration,
+        conversion_rate: conversionRate
+    };
+}
+
+
+    /**
+ * Zaktualizuj Visitor Stats - HYBRID (backend + localStorage)
+ */
+updateVisitorStats(backendStats) {
+    console.log('📊 Backend stats:', backendStats);
+    
+    // CRITICAL: Użyj lokalnych obliczeń zamiast backendu!
+    const localStats = this.calculateLocalStats();
+    
+    console.log('📊 Using local stats:', localStats);
+    
+    // Użyj lokalnych statystyk (bardziej dokładne!)
+    const stats = {
+        active_now: localStats.active_now,
+        sessions_today: localStats.sessions_today,
+        avg_duration: localStats.avg_duration,
+        conversion_rate: localStats.conversion_rate
+    };
+    
+    // Aktualizuj UI
+    const activeEl = document.getElementById('activeVisitors');
+    const sessionsEl = document.getElementById('totalSessions');
+    const durationEl = document.getElementById('avgDuration');
+    const convEl = document.getElementById('conversionRate');
+    
+    if (activeEl) activeEl.textContent = stats.active_now || 0;
+    if (sessionsEl) sessionsEl.textContent = stats.sessions_today || 0;
+    
+    if (durationEl) {
+        const avgMinutes = Math.floor((stats.avg_duration || 0) / 60);
+        const avgSeconds = (stats.avg_duration || 0) % 60;
+        durationEl.textContent = `${avgMinutes}:${avgSeconds.toString().padStart(2, '0')}`;
+    }
+    
+    if (convEl) {
+        const convRate = stats.conversion_rate || 0;
+        convEl.textContent = `${convRate}%`;
+    }
+    
+    console.log('✅ Visitor stats updated (local calculations)');
+}
     
     /**
      * Zaktualizuj aktywne sesje
