@@ -2404,6 +2404,39 @@ def get_client_info(client_id):
         print(f"[ERROR] Failed to get client info: {e}")
         return None
 
+# === EMERGENCY DATABASE FIX ===
+@app.route('/api/admin/fix-database-now')
+@require_admin_access
+def fix_database_now():
+    """Endpoint ratunkowy do stworzenia brakującej tabeli"""
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        cursor = conn.cursor()
+        
+        # 1. Stwórz tabelę admin_dashboard_state
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS admin_dashboard_state (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                state_key TEXT UNIQUE NOT NULL,
+                state_data TEXT NOT NULL,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # 2. Stwórz index
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_state_key ON admin_dashboard_state(state_key)')
+        
+        conn.commit()
+        conn.close()
+        
+        return jsonify({
+            'status': 'success', 
+            'message': '✅ Tabela admin_dashboard_state została stworzona pomyślnie!'
+        })
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+
 # === MAIN APPLICATION STARTUP ===
 if __name__ == '__main__':
     with app.app_context():
