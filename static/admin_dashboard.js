@@ -358,10 +358,7 @@ class AdminDashboard {
         
         const organization = data.organization || 'Unknown';
         
-        if (organization === 'Unknown') {
-            console.log('⚠️ Pomijam visitor bez organizacji');
-            return;
-        }
+       
         
         // Zaktualizuj lub stwórz firmę
         if (this.companies.has(organization)) {
@@ -549,36 +546,59 @@ class AdminDashboard {
     
     /**
      * ============================================
-     * COMPANY LIST
+     * COMPANY LIST (FIXED FOR CARDS LAYOUT)
      * ============================================
      */
     
     updateCompanyList(companies) {
-        const tbody = document.getElementById('companiesTableBody');
-        if (!tbody) return;
+        // ZMIANA: Szukamy kontenera na karty, a nie tabeli
+        const container = document.getElementById('hotLeadsCompanies');
+        if (!container) return;
         
         if (companies.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Brak danych o firmach</td></tr>';
+            container.innerHTML = `
+                <div class="no-companies">
+                    Jeszcze nikt nie odwiedził strony.<br>
+                    <small style="color: #9ca3af; margin-top: 8px; display: block;">Czekam na dane...</small>
+                </div>`;
             return;
         }
         
         // Sortuj po engagement score (malejąco)
         companies.sort((a, b) => (b.engagementScore || 0) - (a.engagementScore || 0));
         
-        tbody.innerHTML = companies.map(company => {
+        container.innerHTML = companies.map(company => {
             const scoreClass = company.engagementScore >= 70 ? 'score-high' : 
                              company.engagementScore >= 40 ? 'score-medium' : 'score-low';
             
+            // Formatowanie daty dla karty
+            const lastVisit = new Date(company.lastVisit).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+            
+            // Pobierz ostatnie zapytanie
+            const lastQuery = company.queries && company.queries.length > 0 
+                ? company.queries[company.queries.length - 1].text 
+                : 'Brak zapytań';
+
             return `
-                <tr onclick="window.adminDashboard.showCompanyDetails('${this.escapeHtml(company.name)}')" 
-                    style="cursor: pointer;">
-                    <td><strong>${this.escapeHtml(company.name)}</strong></td>
-                    <td>${this.escapeHtml(company.city)}</td>
-                    <td>${company.totalQueries || 0}</td>
-                    <td>${company.highIntentQueries || 0}</td>
-                    <td>${company.lostOpportunities || 0}</td>
-                    <td><span class="engagement-badge ${scoreClass}">${company.engagementScore || 0}/100</span></td>
-                </tr>
+                <div class="company-card" onclick="window.adminDashboard.showCompanyDetails('${this.escapeHtml(company.name)}')" >
+                    <div class="company-header">
+                        <div class="company-name">
+                            <strong>${this.escapeHtml(company.name)}</strong>
+                            <div class="company-location">${this.escapeHtml(company.city)}, ${this.escapeHtml(company.country)}</div>
+                        </div>
+                        <span class="engagement-badge ${scoreClass}">${company.engagementScore || 0}/100</span>
+                    </div>
+                    
+                    <div class="company-stats">
+                        <span>⚡ ${company.totalQueries || 0} zapytań</span>
+                        <span style="color: #dc2626">🔥 ${company.highIntentQueries || 0} hot</span>
+                        <span style="color: #6b7280">🕒 ${lastVisit}</span>
+                    </div>
+                    
+                    <div class="company-latest">
+                        ${this.escapeHtml(lastQuery)}
+                    </div>
+                </div>
             `;
         }).join('');
     }
