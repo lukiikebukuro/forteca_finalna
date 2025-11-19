@@ -356,9 +356,10 @@ class AdminDashboard {
     handleNewVisitor(data) {
         console.log('👤 Nowy visitor:', data);
         
-        const organization = data.organization || 'Unknown';
+        const organization = data.organization || 'Unknown Visitor';
         
-       
+        // NIE FILTRUJ - akceptuj wszystko (również Unknown)
+        console.log(`📝 Przetwarzam visitora: ${organization}`);
         
         // Zaktualizuj lub stwórz firmę
         if (this.companies.has(organization)) {
@@ -416,15 +417,16 @@ class AdminDashboard {
         // Zapisz na serwerze
         this.saveCompaniesToServer();
         
-        // Sprawdź czy to HOT LEAD
+        // Sprawdź czy to HOT LEAD (obniżony próg dla testów)
         const company = this.companies.get(organization);
-        if (company.engagementScore >= 50 && data.decision === 'ZNALEZIONE PRODUKTY') {
+        if (company.engagementScore >= 10 && data.decision === 'ZNALEZIONE PRODUKTY') {
             this.addHotLead({
                 company: organization,
                 query: data.query || 'N/A',
                 score: company.engagementScore,
                 timestamp: new Date()
             });
+            console.log(`🔥 HOT LEAD! ${organization} (score: ${company.engagementScore})`);
         }
         
         // Dodaj do Log History
@@ -546,10 +548,15 @@ class AdminDashboard {
     
     /**
      * ============================================
-     * COMPANY LIST (FIXED FOR CARDS LAYOUT)
+     * COMPANY LIST
      * ============================================
      */
     
+    /**
+     * ============================================
+     * COMPANY LIST - WERSJA KARTY (Zamiast tabeli)
+     * ============================================
+     */
     updateCompanyList(companies) {
         // ZMIANA: Szukamy kontenera na karty, a nie tabeli
         const container = document.getElementById('hotLeadsCompanies');
@@ -558,8 +565,8 @@ class AdminDashboard {
         if (companies.length === 0) {
             container.innerHTML = `
                 <div class="no-companies">
-                    Jeszcze nikt nie odwiedził strony.<br>
-                    <small style="color: #9ca3af; margin-top: 8px; display: block;">Czekam na dane...</small>
+                    Ładowanie danych firm...<br>
+                    <small style="color: #9ca3af; margin-top: 8px; display: block;">Czekam na pierwsze odwiedziny</small>
                 </div>`;
             return;
         }
@@ -567,20 +574,23 @@ class AdminDashboard {
         // Sortuj po engagement score (malejąco)
         companies.sort((a, b) => (b.engagementScore || 0) - (a.engagementScore || 0));
         
-        container.innerHTML = companies.map(company => {
+        // Generujemy HTML kart
+        container.innerHTML = companies.map((company, index) => {
             const scoreClass = company.engagementScore >= 70 ? 'score-high' : 
                              company.engagementScore >= 40 ? 'score-medium' : 'score-low';
             
-            // Formatowanie daty dla karty
-            const lastVisit = new Date(company.lastVisit).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+            let lastVisit = 'Teraz';
+            try {
+                lastVisit = new Date(company.lastVisit).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+            } catch(e) {}
             
-            // Pobierz ostatnie zapytanie
             const lastQuery = company.queries && company.queries.length > 0 
                 ? company.queries[company.queries.length - 1].text 
                 : 'Brak zapytań';
 
+            // Dodajemy onclick z bezpiecznym wywołaniem
             return `
-                <div class="company-card" onclick="window.adminDashboard.showCompanyDetails('${this.escapeHtml(company.name)}')" >
+                <div class="company-card js-company-card" onclick="window.adminDashboard.showCompanyDetails('${this.escapeHtml(company.name)}')">
                     <div class="company-header">
                         <div class="company-name">
                             <strong>${this.escapeHtml(company.name)}</strong>
@@ -602,9 +612,11 @@ class AdminDashboard {
             `;
         }).join('');
     }
-    
+
     /**
-     * Pokaż szczegóły firmy (modal)
+     * ============================================
+     * MODAL - WERSJA NAPRAWIONA (Pasuje do nowego HTML)
+     * ============================================
      */
     showCompanyDetails(companyName) {
         const company = this.companies.get(companyName);
@@ -613,40 +625,64 @@ class AdminDashboard {
             return;
         }
         
-        // Wypełnij modal danymi
-        document.getElementById('modalCompanyName').textContent = company.name;
-        document.getElementById('modalCity').textContent = company.city || 'Unknown';
-        document.getElementById('modalCountry').textContent = company.country || 'Unknown';
-        document.getElementById('modalFirstVisit').textContent = this.formatDate(company.firstVisit);
-        document.getElementById('modalLastVisit').textContent = this.formatDate(company.lastVisit);
-        document.getElementById('modalTotalQueries').textContent = company.totalQueries || 0;
-        document.getElementById('modalHighIntent').textContent = company.highIntentQueries || 0;
-        document.getElementById('modalLostOpp').textContent = company.lostOpportunities || 0;
-        document.getElementById('modalEngagement').textContent = company.engagementScore || 0;
-        
-        // Renderuj queries
+        // 1. Nazwa firmy
+        const nameEl = document.getElementById('modalCompanyName');
+        if (nameEl) nameEl.textContent = company.name;
+
+        // 2. Lokalizacja (To powodowało błąd! W HTML jest jeden element, a nie dwa)
+        const locEl = document.getElementById('modalCompanyLocation');
+        if (locEl) {
+            locEl.textContent = `${company.city || 'Nieznane'}, ${company.country || ''}`;
+        }
+
+        // 3. Statystyki
+        const totalEl = document.getElementById('modalTotalQueries');
+        if (totalEl) totalEl.textContent = company.totalQueries || 0;
+
+        const highEl = document.getElementById('modalHighIntent');
+        if (highEl) highEl.textContent = company.highIntentQueries || 0;
+
+        const lostEl = document.getElementById('modalLostOpp');
+        if (lostEl) lostEl.textContent = company.lostOpportunities || 0;
+
+        // 4. Renderuj listę zapytań
         const queriesContainer = document.getElementById('modalQueriesList');
-        if (company.queries && company.queries.length > 0) {
-            queriesContainer.innerHTML = company.queries
-                .slice(0, 10) // Ostatnie 10 queries
-                .map(q => `
-                    <div class="query-item">
-                        <div class="query-text">${this.escapeHtml(q.text || 'N/A')}</div>
-                        <div class="query-meta">
-                            <span class="query-decision">${q.decision || 'UNKNOWN'}</span>
-                            <span class="query-time">${this.formatDate(q.timestamp)}</span>
+        if (queriesContainer) {
+            if (company.queries && company.queries.length > 0) {
+                // Odwracamy kolejność (najnowsze na górze) i bierzemy 10
+                const recentQueries = [...company.queries].reverse().slice(0, 10);
+                
+                queriesContainer.innerHTML = recentQueries.map(q => {
+                    let decisionClass = 'classification-filtered';
+                    if (q.decision === 'ZNALEZIONE PRODUKTY') decisionClass = 'classification-found';
+                    if (q.decision === 'UTRACONE OKAZJE') decisionClass = 'classification-lost';
+                    
+                    let timeStr = '';
+                    try {
+                         timeStr = new Date(q.timestamp).toLocaleString('pl-PL');
+                    } catch(e) { timeStr = 'Teraz'; }
+
+                    return `
+                        <div class="query-item">
+                            <div class="query-timestamp">${timeStr}</div>
+                            <div class="query-text">${this.escapeHtml(q.text || 'N/A')}</div>
+                            <span class="query-classification ${decisionClass}">
+                                ${q.decision || 'UNKNOWN'}
+                            </span>
                         </div>
-                    </div>
-                `).join('');
-        } else {
-            queriesContainer.innerHTML = '<div class="empty-state">Brak historii zapytań</div>';
+                    `;
+                }).join('');
+            } else {
+                queriesContainer.innerHTML = '<div class="empty-state" style="padding:20px; text-align:center; color:#999">Brak historii zapytań</div>';
+            }
         }
         
-        // Pokaż modal
+        // 5. Pokaż modal
         const modal = document.getElementById('companyModal');
-        modal.classList.add('active');
-        
-        console.log('✅ Pokazano szczegóły firmy:', companyName);
+        if (modal) {
+            modal.classList.add('active');
+            console.log('✅ Otwarto modal dla:', companyName);
+        }
     }
     
     /**

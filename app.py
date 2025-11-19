@@ -724,7 +724,7 @@ def search_suggestions():
         return jsonify({'suggestions': [], 'error': str(e)}), 200
 
 # === NOWY ENDPOINT - FINALNA ANALIZA DLA TCD ===
-#@app.route('/motobot-prototype/api/analyze_query', methods=['POST'])
+@app.route('/motobot-prototype/api/analyze_query', methods=['POST'])
 @limiter.limit("100/minute")
 def analyze_query():
     """
@@ -808,8 +808,22 @@ def analyze_query():
             'explanation': f'Analiza po 800ms pauzy - confidence: {confidence_level}'
         }
         
-        # WYŚLIJ TYLKO DO DEMO TCD (nie do admin dashboard)
+        # WYŚLIJ DO DEMO TCD
         socketio.emit('new_event', event_data, room='client_demo')
+        
+        # WYŚLIJ DO ADMIN DASHBOARD - live feed update
+        live_feed_data = {
+            'organization': 'Unknown',  # Można poprawić przez IP lookup
+            'city': 'Unknown',
+            'country': 'Unknown',
+            'query': sanitized_query,
+            'decision': decision,
+            'category': category,
+            'potential_value': potential_value,
+            'timestamp': datetime.now().isoformat()
+        }
+        socketio.emit('live_feed_update', live_feed_data, room='admin_dashboard')
+        print(f"[WEBSOCKET] Emitted live_feed_update to admin_dashboard: {sanitized_query} -> {decision}")
         
         print(f"[FINAL ANALYSIS] Saved to TCD: {sanitized_query} -> {decision} (value: {potential_value})")
         
