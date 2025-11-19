@@ -25,33 +25,42 @@ import re
 # Sprawdź czy baza istnieje i czy ma tabele
 def init_database():
     """Inicjalizuje bazę danych przy starcie"""
+    print("[STARTUP] Sprawdzam integralność bazy danych...")
+    
+    # 1. GWARANTOWANA NAPRAWA: Zawsze próbuj stworzyć tabelę admin_dashboard_state
+    # To zadziała nawet jak baza już istnieje i ma użytkowników
+    try:
+        AdminDashboardStateManager.init_table()
+        print("[STARTUP] ✅ Wymuszono weryfikację tabeli admin_dashboard_state")
+    except Exception as e:
+        print(f"[STARTUP] ⚠️ Warning przy weryfikacji tabeli admin: {e}")
+
+    # 2. Standardowa procedura dla nowej bazy (użytkownicy itp.)
     conn = sqlite3.connect('dashboard.db')
     cursor = conn.cursor()
     
-    # Sprawdź czy tabela users istnieje
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")
     if not cursor.fetchone():
-        print("[STARTUP] Tworzę WSZYSTKIE tabele...")
+        print("[STARTUP] Baza pusta (brak users) - Tworzę resztę tabel...")
         conn.close()
         
-        # Import funkcji które tworzą tabele
         from auth_manager import ensure_tables_exist
-        ensure_tables_exist()  # Tabele users + clients
+        ensure_tables_exist()
         
-        # Stwórz tabele dla visitor tracking
-        DatabaseManager.init_events_table()  # Tabela events
-        DatabaseManager.init_visitor_tables()  # Tabele visitor_sessions itp.
-        AdminDashboardStateManager.init_table()  # Tabela admin_dashboard_state
+        DatabaseManager.init_events_table()
+        DatabaseManager.init_visitor_tables()
+        # AdminDashboardStateManager.init_table()  <-- TO JUŻ ZROBILIŚMY WYŻEJ
         
-        # Uruchom skrypt haseł
         print("[STARTUP] Ustawiam hasła...")
         import subprocess
         import sys
-        result = subprocess.run([sys.executable, 'skrypthasla.py'], 
-                              capture_output=True, text=True)
-        print(result.stdout)
+        try:
+            subprocess.run([sys.executable, 'skrypthasla.py'], check=True)
+        except Exception as e:
+            print(f"[STARTUP] Błąd skryptu haseł: {e}")
     else:
         conn.close()
+        print("[STARTUP] Baza users już istnieje - pomijam tworzenie podstawowe.")
 
 
 # ========== KONIEC INICJALIZACJI ==========
