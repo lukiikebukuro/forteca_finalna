@@ -18,7 +18,9 @@ import user_agents
 import logging
 from logging.handlers import RotatingFileHandler
 from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address  # Po linii 13
+from flask_limiter.util import get_remote_address
+import hashlib
+import re
 
 # Sprawdź czy baza istnieje i czy ma tabele
 def init_database():
@@ -39,6 +41,7 @@ def init_database():
         # Stwórz tabele dla visitor tracking
         DatabaseManager.init_events_table()  # Tabela events
         DatabaseManager.init_visitor_tables()  # Tabele visitor_sessions itp.
+        AdminDashboardStateManager.init_table()  # Tabela admin_dashboard_state
         
         # Uruchom skrypt haseł
         print("[STARTUP] Ustawiam hasła...")
@@ -98,7 +101,7 @@ if not app.debug:
     app.logger.addHandler(file_handler)
     app.logger.setLevel(logging.INFO)
     
-    # Log startu aplikacji (Krok 2.4 - część 1)
+    # Log startu aplikacji
     app.logger.info('Adept AI Application startup')
 # ===============================
 
@@ -108,10 +111,10 @@ socketio = SocketIO(app,
     async_mode='eventlet',
     logger=True,
     engineio_logger=True,
-    ping_timeout=120,  # Zwiększone z 60 → 120
+    ping_timeout=120,
     ping_interval=25,
-    allow_upgrades=True,  # DODANE: pozwól upgrade do WebSocket
-    transports=['polling', 'websocket']  # DODANE: oba transporty
+    allow_upgrades=True,
+    transports=['polling', 'websocket']
 )
 
 # Initialize bot
@@ -122,6 +125,178 @@ LOST_DEMAND_LOG = 'lost_demand_log.csv'
 
 # Dashboard database configuration
 DATABASE_NAME = 'dashboard.db'
+
+# ================================================================
+# RODO COMPLIANCE FUNCTIONS - DODANE DLA BEZPIECZEŃSTWA
+# ================================================================
+
+def hash_ip_address(ip):
+    """
+    RODO: Haszuje adres IP używając SHA-256
+    Zwraca skrócony hash (16 znaków) dla oszczędności miejsca
+    """
+    if not ip:
+        return 'hash_unknown'
+    
+    try:
+        hash_object = hashlib.sha256(ip.encode('utf-8'))
+        hash_hex = hash_object.hexdigest()
+        return f'hash_{hash_hex[:16]}'
+    except Exception as e:
+        print(f"[ERROR] IP hashing failed: {e}")
+        app.logger.error(f"IP hashing failed: {e}")
+        return 'hash_error'
+
+def mask_ip_address(ip):
+    """
+    RODO: Maskuje ostatni oktet IPv4 lub końcówkę IPv6
+    Przykład: 192.168.1.123 -> 192.168.1.xxx
+    """
+    if not ip:
+        return 'masked'
+    
+    try:
+        # IPv4: 192.168.1.123 -> 192.168.1.xxx
+        if '.' in ip and ip.count('.') == 3:
+            parts = ip.split('.')
+            return f"{parts[0]}.{parts[1]}.{parts[2]}.xxx"
+        
+        # IPv6: 2001:0db8:85a3::8a2e:0370:7334 -> 2001:0db8:85a3::xxxx
+        elif ':' in ip:
+            parts = ip.split(':')
+            return ':'.join(parts[:-2]) + '::xxxx'
+        
+        return 'masked'
+    except Exception as e:
+        print(f"[ERROR] IP masking failed: {e}")
+        app.logger.error(f"IP masking failed: {e}")
+        return 'masked'
+
+def scrub_pii(text):
+    """
+    RODO: Sanityzacja danych osobowych (PII)
+    Usuwa: Email, Telefon, PESEL, Karty Kredytowe, IBAN, NIP
+    
+    KRYTYCZNE: Ta funkcja MUSI działać zarówno na frontend jak i backend!
+    """
+    if not text or not isinstance(text, str):
+        return text
+    
+    scrubbed = text
+    pii_detected = False
+    
+    # Email: user@domain.com
+    original = scrubbed
+    scrubbed = re.sub(
+        r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
+        '[REDACTED_EMAIL]',
+        scrubbed
+    )
+    if scrubbed != original:
+        pii_detected = True
+        app.logger.warning("PII DETECTED: Email address scrubbed")
+    
+    # Polski telefon: +48 123 456 789, 123-456-789, 123456789
+    original = scrubbed
+    scrubbed = re.sub(
+        r'(\+48\s?)?(\d{3}[\s\-]?\d{3}[\s\-]?\d{3})',
+        '[REDACTED_PHONE]',
+        scrubbed
+    )
+    if scrubbed != original:
+        pii_detected = True
+        app.logger.warning("PII DETECTED: Phone number scrubbed")
+    
+    # PESEL: 11 cyfr
+    original = scrubbed
+    scrubbed = re.sub(
+        r'\b\d{11}\b',
+        '[REDACTED_PESEL]',
+        scrubbed
+    )
+    if scrubbed != original:
+        pii_detected = True
+        app.logger.warning("PII DETECTED: PESEL scrubbed")
+    
+    # Karta kredytowa: 16 cyfr (z opcjonalnymi spacjami/myślnikami)
+    original = scrubbed
+    scrubbed = re.sub(
+        r'\b\d{4}[\s\-]?\d{4}[\s\-]?\d{4}[\s\-]?\d{4}\b',
+        '[REDACTED_CARD]',
+        scrubbed
+    )
+    if scrubbed != original:
+        pii_detected = True
+        app.logger.warning("PII DETECTED: Credit card scrubbed")
+    
+    # IBAN: PL followed by 26 digits
+    original = scrubbed
+    scrubbed = re.sub(
+        r'\bPL\d{26}\b',
+        '[REDACTED_IBAN]',
+        scrubbed,
+        flags=re.IGNORECASE
+    )
+    if scrubbed != original:
+        pii_detected = True
+        app.logger.warning("PII DETECTED: IBAN scrubbed")
+    
+    # NIP: 10 cyfr (opcjonalnie z myślnikami)
+    original = scrubbed
+    scrubbed = re.sub(
+        r'\b\d{3}[\-]?\d{3}[\-]?\d{2}[\-]?\d{2}\b',
+        '[REDACTED_NIP]',
+        scrubbed
+    )
+    if scrubbed != original:
+        pii_detected = True
+        app.logger.warning("PII DETECTED: NIP scrubbed")
+    
+    if pii_detected:
+        print(f"[RODO WARNING] PII detected and scrubbed - original length: {len(text)}, scrubbed: {len(scrubbed)}")
+    
+    return scrubbed
+
+def cleanup_old_sessions():
+    """
+    RODO: Data Retention Policy
+    Usuwa sesje starsze niż 30 dni
+    Wywołanie: Cron job lub przy starcie aplikacji
+    """
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        cursor = conn.cursor()
+        
+        # Oblicz datę graniczną (30 dni temu)
+        cutoff_date = (datetime.now() - timedelta(days=30)).isoformat()
+        
+        # Usuń stare sesje
+        cursor.execute('''
+            DELETE FROM visitor_sessions
+            WHERE entry_time < ?
+        ''', (cutoff_date,))
+        
+        deleted_count = cursor.rowcount
+        conn.commit()
+        conn.close()
+        
+        if deleted_count > 0:
+            print(f"[RODO CLEANUP] Removed {deleted_count} sessions older than 30 days")
+            app.logger.info(f"RODO cleanup: Removed {deleted_count} old sessions")
+        
+        return deleted_count
+        
+    except Exception as e:
+        print(f"[ERROR] Session cleanup failed: {e}")
+        app.logger.error(f"Session cleanup failed: {e}", exc_info=True)
+        return 0
+
+def check_do_not_track(request):
+    """
+    RODO: Sprawdza czy użytkownik ma włączone Do Not Track
+    """
+    dnt_header = request.headers.get('DNT') or request.headers.get('dnt')
+    return dnt_header == '1'
 
 # === DASHBOARD CLASSES ===
 
@@ -158,14 +333,17 @@ class DatabaseManager:
     
     @staticmethod
     def add_event(query_text, decision, details, category, brand_type, potential_value, explanation):
-        """Dodaje nowe zdarzenie do bazy"""
+        """Dodaje nowe zdarzenie do bazy - z RODO scrubbing"""
+        # RODO: Sanityzuj query przed zapisem
+        sanitized_query = scrub_pii(query_text)
+        
         conn = sqlite3.connect(DATABASE_NAME)
         cursor = conn.cursor()
         
         cursor.execute('''
             INSERT INTO events (query_text, decision, details, category, brand_type, potential_value, explanation)
             VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (query_text, decision, details, category, brand_type, potential_value, explanation))
+        ''', (sanitized_query, decision, details, category, brand_type, potential_value, explanation))
         
         event_id = cursor.lastrowid
         conn.commit()
@@ -204,6 +382,7 @@ class DatabaseManager:
             }
             for row in events
         ]
+    
     @staticmethod
     def get_today_statistics():
         """Pobiera statystyki z dzisiejszego dnia"""
@@ -266,6 +445,110 @@ class DatabaseManager:
             }
             for row in results
         ]
+
+class AdminDashboardStateManager:
+    """
+    Zarządza persystencją danych admin dashboardu w bazie danych.
+    Zastępuje localStorage server-side storage.
+    """
+    
+    @staticmethod
+    def init_table():
+        """Tworzy tabelę admin_dashboard_state jeśli nie istnieje"""
+        conn = sqlite3.connect(DATABASE_NAME)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS admin_dashboard_state (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                state_key TEXT UNIQUE NOT NULL,
+                state_data TEXT NOT NULL,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # Index dla szybkiego lookup
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_state_key ON admin_dashboard_state(state_key)')
+        
+        conn.commit()
+        conn.close()
+        print("[DATABASE] Admin dashboard state table initialized")
+    
+    @staticmethod
+    def save_state(state_key, data):
+        """
+        Zapisuje stan dashboardu dla danego klucza
+        
+        Args:
+            state_key: 'hot_leads', 'companies', lub 'log_history'
+            data: dict/list do zapisania (będzie JSON-owany)
+        """
+        conn = sqlite3.connect(DATABASE_NAME)
+        cursor = conn.cursor()
+        
+        json_data = json.dumps(data, ensure_ascii=False, default=str)
+        
+        cursor.execute('''
+            INSERT INTO admin_dashboard_state (state_key, state_data, updated_at)
+            VALUES (?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(state_key) 
+            DO UPDATE SET 
+                state_data = excluded.state_data,
+                updated_at = CURRENT_TIMESTAMP
+        ''', (state_key, json_data))
+        
+        conn.commit()
+        conn.close()
+        
+        print(f"[ADMIN_STATE] Saved {state_key}: {len(json_data)} bytes")
+    
+    @staticmethod
+    def get_state(state_key):
+        """
+        Pobiera stan dashboardu dla danego klucza
+        
+        Args:
+            state_key: 'hot_leads', 'companies', lub 'log_history'
+            
+        Returns:
+            dict/list lub None jeśli nie istnieje
+        """
+        conn = sqlite3.connect(DATABASE_NAME)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            SELECT state_data, updated_at
+            FROM admin_dashboard_state
+            WHERE state_key = ?
+        ''', (state_key,))
+        
+        row = cursor.fetchone()
+        conn.close()
+        
+        if row:
+            try:
+                data = json.loads(row[0])
+                print(f"[ADMIN_STATE] Loaded {state_key}: {len(row[0])} bytes (updated: {row[1]})")
+                return data
+            except json.JSONDecodeError as e:
+                print(f"[ADMIN_STATE] ERROR loading {state_key}: {e}")
+                return None
+        
+        print(f"[ADMIN_STATE] No data found for {state_key}")
+        return None
+    
+    @staticmethod
+    def delete_state(state_key):
+        """Usuwa stan dla danego klucza"""
+        conn = sqlite3.connect(DATABASE_NAME)
+        cursor = conn.cursor()
+        
+        cursor.execute('DELETE FROM admin_dashboard_state WHERE state_key = ?', (state_key,))
+        
+        conn.commit()
+        conn.close()
+        
+        print(f"[ADMIN_STATE] Deleted {state_key}")
 
 
 # === FLASK ROUTES ===
@@ -400,8 +683,6 @@ def search_suggestions():
                 # New format with analysis
                 products, confidence_level, suggestion_type, analysis = result
                 
-                # USUNIĘTA integracja z TCD - nie wysyłamy eventów
-                
                 # Determine GA4 event
                 ga4_event_data = bot.determine_ga4_event(analysis)
                 if ga4_event_data:
@@ -457,7 +738,13 @@ def analyze_query():
         
         print(f"[FINAL ANALYSIS] Query: '{query}' | Type: {search_type}")
         
-        if len(query) < 2:
+        # === RODO: SANITYZUJ QUERY ===
+        sanitized_query = scrub_pii(query)
+        if sanitized_query != query:
+            print(f"[RODO] PII scrubbed in analyze_query")
+            app.logger.warning(f"PII scrubbed in analyze_query")
+        
+        if len(sanitized_query) < 2:
             return jsonify({
                 'status': 'success',
                 'message': 'Query too short'
@@ -473,12 +760,12 @@ def analyze_query():
         else:
             # Products - pełna analiza
             result = bot.get_fuzzy_product_matches(
-                query, machine_filter, limit=6, analyze_intent=True
+                sanitized_query, machine_filter, limit=6, analyze_intent=True
             )
             
             if isinstance(result, tuple) and len(result) == 4:
                 products, confidence_level, suggestion_type, analysis = result
-                category = extract_category_from_query(query)
+                category = extract_category_from_query(sanitized_query)
             else:
                 confidence_level = 'HIGH'
                 category = 'unknown'
@@ -496,11 +783,11 @@ def analyze_query():
         # Oblicz wartość tylko dla utraconych okazji
         potential_value = 0
         if decision == 'UTRACONE OKAZJE':
-            potential_value = calculate_lost_value_internal(query)
+            potential_value = calculate_lost_value_internal(sanitized_query)
         
         # ZAPISZ DO BAZY DANYCH
         event_id = DatabaseManager.add_event(
-            query,
+            sanitized_query,
             decision,
             'Finalne zapytanie użytkownika',
             category,
@@ -513,7 +800,7 @@ def analyze_query():
         event_data = {
             'id': event_id,
             'timestamp': datetime.now().strftime('%H:%M:%S'),
-            'query_text': query,
+            'query_text': sanitized_query,
             'decision': decision,
             'details': 'Finalne zapytanie użytkownika',
             'category': category,
@@ -524,7 +811,7 @@ def analyze_query():
         # WYŚLIJ TYLKO DO DEMO TCD (nie do admin dashboard)
         socketio.emit('new_event', event_data, room='client_demo')
         
-        print(f"[FINAL ANALYSIS] Saved to TCD: {query} -> {decision} (value: {potential_value})")
+        print(f"[FINAL ANALYSIS] Saved to TCD: {sanitized_query} -> {decision} (value: {potential_value})")
         
         return jsonify({
             'status': 'success',
@@ -542,6 +829,105 @@ def analyze_query():
             'status': 'error',
             'message': str(e)
         }), 500
+
+
+@app.route('/api/admin/save-state', methods=['POST'])
+@require_admin_access
+def save_admin_state():
+    """
+    Zapisuje stan admin dashboardu do bazy danych
+    
+    Body:
+    {
+        "state_key": "hot_leads" | "companies" | "log_history",
+        "data": <any JSON serializable data>
+    }
+    """
+    try:
+        payload = request.json
+        state_key = payload.get('state_key')
+        data = payload.get('data')
+        
+        if not state_key or data is None:
+            return jsonify({
+                'status': 'error',
+                'message': 'Missing state_key or data'
+            }), 400
+        
+        # Validacja state_key
+        valid_keys = ['hot_leads', 'companies', 'log_history']
+        if state_key not in valid_keys:
+            return jsonify({
+                'status': 'error',
+                'message': f'Invalid state_key. Must be one of: {valid_keys}'
+            }), 400
+        
+        # Zapisz do bazy
+        AdminDashboardStateManager.save_state(state_key, data)
+        
+        return jsonify({
+            'status': 'success',
+            'message': f'Saved {state_key}',
+            'data_size': len(json.dumps(data))
+        })
+        
+    except Exception as e:
+        app.logger.error(f"Error saving admin state: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+
+@app.route('/api/admin/load-state/<state_key>')
+@require_admin_access
+def load_admin_state(state_key):
+    """
+    Ładuje stan admin dashboardu z bazy danych
+    
+    Params:
+        state_key: "hot_leads" | "companies" | "log_history"
+    """
+    try:
+        # Validacja state_key
+        valid_keys = ['hot_leads', 'companies', 'log_history']
+        if state_key not in valid_keys:
+            return jsonify({
+                'status': 'error',
+                'message': f'Invalid state_key. Must be one of: {valid_keys}'
+            }), 400
+        
+        # Pobierz z bazy
+        data = AdminDashboardStateManager.get_state(state_key)
+        
+        if data is None:
+            # Brak danych - zwróć pustą strukturę
+            default_data = {
+                'hot_leads': [],
+                'companies': [],
+                'log_history': []
+            }
+            
+            return jsonify({
+                'status': 'success',
+                'data': default_data.get(state_key, []),
+                'message': 'No saved data, returning empty'
+            })
+        
+        return jsonify({
+            'status': 'success',
+            'data': data
+        })
+        
+    except Exception as e:
+        app.logger.error(f"Error loading admin state: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+
+
 
 # === ADMIN DASHBOARD API ===
 @app.route('/api/admin/visitor-stats')
@@ -799,7 +1185,7 @@ def get_initial_data():
         print(f"[API ERROR] {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-@app.route('/api/reset_demo', methods=['POST'])  # DODAJ TO
+@app.route('/api/reset_demo', methods=['POST'])
 def reset_demo():
     """Resetuje demo - czyści bazę i restartuje symulację"""
     try:
@@ -812,6 +1198,7 @@ def reset_demo():
         return jsonify({'status': 'success', 'message': 'Demo reset successfully'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
+
 @app.route('/api/receive_event', methods=['POST'])
 def receive_real_event():
     """Odbiera prawdziwe eventy z bota (dla integracji)"""
@@ -824,7 +1211,7 @@ def receive_real_event():
             data['decision'],
             data['details'],
             data.get('category', 'unknown'),
-            'standard',  # brand_type
+            'standard',
             data.get('potential_value', 0),
             f"Prawdziwe zapytanie użytkownika"
         )
@@ -932,7 +1319,7 @@ def health_check():
     return jsonify({
         'status': 'OK',
         'service': 'Universal Soldier E-commerce Bot v5.0 - Doktryna Cierpliwego Nasłuchu',
-        'version': '5.1-patient-listening',
+        'version': '5.1-patient-listening-RODO',
         'features': {
             'intent_analysis': True,
             'lost_demand_tracking': True,
@@ -942,21 +1329,13 @@ def health_check():
             'precision_reward': True,
             'dashboard_integration': True,
             'real_time_websocket': True,
-            'debounce_800ms': True
+            'debounce_800ms': True,
+            'rodo_compliant': True,
+            'pii_scrubbing': True,
+            'ip_hashing': True
         },
         'session_active': 'cart' in session
     })
-# ================================================================
-# ROUTES AUTORYZACJI - DODAJ DO app.py PO ISTNIEJĄCYCH ROUTES
-# Importy wymagane na górze pliku
-# ================================================================
-
-# DODAJ TE IMPORTY NA GÓRZE PLIKU app.py:
-# from flask_login import login_user, logout_user, login_required, current_user
-# from auth_manager import init_login_manager, User, require_client_access, require_admin_access, require_debug_access, get_user_dashboard_route, create_default_admin
-
-# INICJALIZACJA FLASK-LOGIN (dodaj po 'app = Flask(__name__)'):
-# login_manager = init_login_manager(app)
 
 # ================================================================
 # ROUTES AUTORYZACJI
@@ -1233,9 +1612,8 @@ def get_raw_logs():
     except Exception as e:
         print(f"[API ERROR] Raw logs failed: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
-    
-# DODAJ TO DO app.py W SEKCJI API ENDPOINTS
 
+# === PDF REPORT FUNCTIONS ===
 @app.route('/api/client/<int:client_id>/weekly-report.pdf')
 @require_client_access
 def get_weekly_pdf_report(client_id):
@@ -1252,7 +1630,6 @@ def get_weekly_pdf_report(client_id):
             return jsonify({'error': 'Klient nie znaleziony'}), 404
         
         # DEMO DATA - w prawdziwej aplikacji pobierane z bazy
-        # Po Twojej kuracji cotygodniowej
         demo_data = {
             'client': client_info,
             'report_date': '13.10.2025',
@@ -1262,35 +1639,19 @@ def get_weekly_pdf_report(client_id):
                 {'name': 'Klocki Ferrari F40', 'category': 'klocki', 'value': 1250, 'frequency': 8},
                 {'name': 'Filtry Porsche 911', 'category': 'filtry', 'value': 890, 'frequency': 6},
                 {'name': 'Opony Michelin 19"', 'category': 'opony', 'value': 760, 'frequency': 5},
-                {'name': 'Amortyzatory Bentley', 'category': 'amortyzatory', 'value': 650, 'frequency': 4},
-                {'name': 'Felgi BMW M3', 'category': 'felgi', 'value': 580, 'frequency': 4},
-                {'name': 'Filtry sportowe K&N', 'category': 'filtry', 'value': 520, 'frequency': 3},
-                {'name': 'Klocki Brembo Racing', 'category': 'klocki', 'value': 480, 'frequency': 3},
-                # ... reszta 40 produktów
             ],
             'recommendations': [
                 'Rozszerz ofertę klocków premium - potencjał 3,250 zł miesięcznie',
                 'Dodaj filtry sportowe - popyt na 12 różnych modeli',
-                'Współpraca z dystrybutorem opon - segment premium wykryty',
-                'Części do supersamochodów - niszowy ale wartościowy segment'
             ]
         }
         
-        # Generuj PDF (prosty HTML → PDF lub używaj biblioteki jak ReportLab)
+        # Generuj PDF HTML
         html_content = generate_pdf_html(demo_data)
         
-        # OPCJA 1: Zwróć HTML (tymczasowo na test)
-        from flask import make_response
         response = make_response(html_content)
         response.headers['Content-Type'] = 'text/html'
         response.headers['Content-Disposition'] = f'inline; filename="raport_utraconych_okazji_{client_id}.html"'
-        
-        # OPCJA 2: Prawdziwy PDF (wymaga biblioteki)
-        # from weasyprint import HTML
-        # pdf = HTML(string=html_content).write_pdf()
-        # response = make_response(pdf)
-        # response.headers['Content-Type'] = 'application/pdf'
-        # response.headers['Content-Disposition'] = f'attachment; filename="raport_{client_id}.pdf"'
         
         return response
         
@@ -1314,7 +1675,6 @@ def generate_pdf_html(data):
             .products-table th, .products-table td {{ border: 1px solid #ddd; padding: 10px; text-align: left; }}
             .products-table th {{ background: #4fc3f7; color: white; }}
             .value {{ color: #ff6b6b; font-weight: bold; }}
-            .category {{ background: #e3f2fd; padding: 2px 8px; border-radius: 4px; font-size: 12px; }}
         </style>
     </head>
     <body>
@@ -1351,7 +1711,7 @@ def generate_pdf_html(data):
             <tr>
                 <td>{i}</td>
                 <td>{product['name']}</td>
-                <td><span class="category">{product['category']}</span></td>
+                <td>{product['category']}</td>
                 <td class="value">{product['value']} zł</td>
                 <td>{product['frequency']}x</td>
             </tr>
@@ -1370,7 +1730,7 @@ def generate_pdf_html(data):
     for rec in data['recommendations']:
         html += f"<li>{rec}</li>"
     
-    html += """
+    html += f"""
             </ol>
         </div>
         
@@ -1383,49 +1743,28 @@ def generate_pdf_html(data):
     """
     
     return html
-    
 
-# ================================================================
-# FUNKCJE POMOCNICZE (dodaj na koniec pliku)
-# ================================================================
+# === RODO: PRIVACY POLICY ENDPOINT ===
+@app.route('/privacy')
+def privacy_policy():
+    """Polityka Prywatności - zgodność z RODO"""
+    return render_template('privacy.html', now=datetime.now())
 
-def get_client_info(client_id):
-    """Pobiera informacje o kliencie z bazy danych"""
-    if not client_id:
-        return None
-        
+@app.route('/api/opt-out', methods=['POST'])
+def api_opt_out():
+    """API endpoint dla opt-out użytkowników"""
     try:
-        conn = sqlite3.connect(DATABASE_NAME)
-        cursor = conn.cursor()
-        
-        cursor.execute('''
-            SELECT id, company_name, domain, subscription_tier, contact_email
-            FROM clients 
-            WHERE id = ? AND is_active = TRUE
-        ''', (client_id,))
-        
-        row = cursor.fetchone()
-        conn.close()
-        
-        if row:
-            return {
-                'id': row[0],
-                'company_name': row[1],
-                'domain': row[2], 
-                'subscription_tier': row[3],
-                'contact_email': row[4]
-            }
-        return None
-        
+        # W przyszłości: zapisz opt-out w bazie per IP/session
+        # Na razie: obsługiwane przez localStorage w JS
+        return jsonify({
+            'status': 'success',
+            'message': 'Tracking disabled successfully'
+        })
     except Exception as e:
-        print(f"[ERROR] Failed to get client info: {e}")
-        return None
-
-# ================================================================
-# INICJALIZACJA ADMIN USER (wywołaj w main lub przy starcie)
-# ================================================================
-    
-
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
 
 # === HELPER FUNCTIONS ===
 def extract_category_from_query(query):
@@ -1445,14 +1784,14 @@ def calculate_lost_value_internal(query):
     
     # Nowe zakresy 500-1000 z bonusami dla kategorii
     base_ranges = {
-        'klocki': (600, 1000),      # Popularna kategoria
-        'filtry': (500, 800),       # Tańsze części  
-        'amortyzatory': (800, 1200), # Drogie części
-        'świece': (500, 700),       # Małe części
-        'akumulatory': (700, 1100), # Średnio drogie
-        'oleje': (600, 900),        # Płyny
-        'tarcze': (700, 1000),      # Duże części
-        'łańcuchy': (600, 900)      # Motocykle
+        'klocki': (600, 1000),
+        'filtry': (500, 800),
+        'amortyzatory': (800, 1200),
+        'świece': (500, 700),
+        'akumulatory': (700, 1100),
+        'oleje': (600, 900),
+        'tarcze': (700, 1000),
+        'łańcuchy': (600, 900)
     }
     
     # Pobierz zakres dla kategorii lub użyj domyślny
@@ -1571,19 +1910,30 @@ def lost_demand_report():
 # === WEBSOCKET EVENTS FOR DASHBOARD ===
 @socketio.on('connect')
 def handle_connect():
-    """Klient podłączył się do WebSocket"""
-    from flask_socketio import join_room
+    """Klient podłączył się do WebSocket - Z AUTENTYKACJĄ"""
+    from flask_socketio import join_room, disconnect
     from flask import request as flask_request
     
     print('[WEBSOCKET] Client connected')
     
-    # Sprawdź czy to admin czy demo TCD (client)
-    # Sprawdzamy przez referer URL lub user role
-    user_agent = flask_request.headers.get('User-Agent', '')
-    referer = flask_request.headers.get('Referer', '')
-    
-    # Jeśli zalogowany - sprawdź rolę
-    if current_user.is_authenticated:
+    # === RODO: ZABEZPIECZENIE WEBSOCKET ===
+    if not current_user.is_authenticated:
+        # Niezalogowany - sprawdź czy to demo page (dozwolone)
+        referer = flask_request.headers.get('Referer', '')
+        
+        if '/demo' in referer or '/motobot-prototype' in referer:
+            # OK - publiczne demo
+            join_room('client_demo')
+            print('[WEBSOCKET] Anonymous user joined client_demo (public demo)')
+            emit('connection_confirmed', {'message': 'Connected to Demo TCD', 'room': 'client'})
+        else:
+            # BLOKUJ - próba dostępu do admin dashboard bez logowania
+            print('[WEBSOCKET] ⚠️ UNAUTHORIZED connection attempt - disconnecting')
+            app.logger.warning(f"Unauthorized WebSocket connection attempt from {flask_request.remote_addr}")
+            disconnect()
+            return
+    else:
+        # Zalogowany - przydziel room wg roli
         if current_user.role in ['admin', 'debug']:
             join_room('admin_dashboard')
             print(f'[WEBSOCKET] Admin {current_user.username} joined admin_dashboard room')
@@ -1592,11 +1942,6 @@ def handle_connect():
             join_room('client_demo')
             print(f'[WEBSOCKET] Client {current_user.username} joined client_demo room')
             emit('connection_confirmed', {'message': 'Connected to Demo TCD', 'room': 'client'})
-    else:
-        # Niezalogowany - domyślnie demo TCD
-        join_room('client_demo')
-        print('[WEBSOCKET] Anonymous user joined client_demo room')
-        emit('connection_confirmed', {'message': 'Connected to Demo TCD', 'room': 'client'})
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -1636,109 +1981,6 @@ def handle_stats_request():
 
 
 
-def get_client_info(client_id):
-    """Pobiera informacje o kliencie z bazy danych"""
-    if not client_id:
-        return None
-        
-    try:
-        conn = sqlite3.connect(DATABASE_NAME)
-        cursor = conn.cursor()
-        
-        cursor.execute('''
-            SELECT id, company_name, domain, subscription_tier, contact_email
-            FROM clients 
-            WHERE id = ? AND is_active = TRUE
-        ''', (client_id,))
-        
-        row = cursor.fetchone()
-        conn.close()
-        
-        if row:
-            return {
-                'id': row[0],
-                'company_name': row[1],
-                'domain': row[2], 
-                'subscription_tier': row[3],
-                'contact_email': row[4]
-            }
-        return None
-        
-    except Exception as e:
-        print(f"[ERROR] Failed to get client info: {e}")
-        return None
-
-
-# === VISITOR TRACKING SYSTEM ===
-
-def ensure_visitor_tables_exist():
-    """Tworzy tabele dla visitor tracking jeśli nie istnieją"""
-    conn = sqlite3.connect(DATABASE_NAME)
-    cursor = conn.cursor()
-    
-    # Tabela sesji odwiedzających
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS visitor_sessions (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            session_id TEXT UNIQUE NOT NULL,
-            
-            -- Podstawowe dane
-            ip_address TEXT,
-            user_agent TEXT,
-            referrer TEXT,
-            page_url TEXT,
-            
-            -- Dane czasowe
-            entry_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            exit_time TIMESTAMP,
-            last_activity TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            session_duration INTEGER DEFAULT 0,
-            
-            -- Dane geograficzne
-            country TEXT,
-            country_code TEXT,
-            city TEXT,
-            region TEXT,
-            latitude REAL,
-            longitude REAL,
-            timezone TEXT,
-            
-            -- Dane organizacji (reverse IP lookup)
-            organization TEXT,
-            isp TEXT,
-            
-            -- Aktywność użytkownika
-            total_messages INTEGER DEFAULT 0,
-            max_scroll_depth INTEGER DEFAULT 0,
-            clicks_count INTEGER DEFAULT 0,
-            
-            -- UTM tracking
-            utm_source TEXT,
-            utm_medium TEXT,
-            utm_campaign TEXT,
-            utm_content TEXT,
-            utm_term TEXT,
-            
-            -- Dane techniczne
-            platform TEXT,
-            language TEXT,
-            viewport TEXT,
-            screen TEXT,
-            
-            -- Status
-            is_active BOOLEAN DEFAULT TRUE,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    
-    # Indeksy
-    cursor.execute('CREATE INDEX IF NOT EXISTS idx_visitor_sessions_entry_time ON visitor_sessions(entry_time)')
-    cursor.execute('CREATE INDEX IF NOT EXISTS idx_visitor_sessions_ip ON visitor_sessions(ip_address)')
-    
-    conn.commit()
-    conn.close()
-    print("[DATABASE] Visitor tracking tables initialized")
-
 # ==== ZADANIE 2.2: WEBSOCKET HANDLER DLA VISITOR_EVENT ====
 @socketio.on('visitor_event')
 def handle_visitor_event_websocket(data):
@@ -1753,8 +1995,15 @@ def handle_visitor_event_websocket(data):
         query = data.get('query', '')
         session_id = data.get('sessionId', 'unknown')
         
-        # Analizuj zapytanie przez istniejący system AI
-        analysis = bot.analyze_query_intent(query)
+        # === RODO: SANITYZUJ QUERY NA BACKENDZIE ===
+        sanitized_query = scrub_pii(query)
+        
+        if sanitized_query != query:
+            print(f"[RODO] PII scrubbed in WebSocket query")
+            app.logger.warning(f"PII scrubbed in WebSocket visitor_event - session {session_id[:8]}")
+        
+        # Analizuj SANITIZED zapytanie przez istniejący system AI
+        analysis = bot.analyze_query_intent(sanitized_query)
         
         # Mapowanie na decisions
         decision_mapping = {
@@ -1765,14 +2014,14 @@ def handle_visitor_event_websocket(data):
         }
         
         decision = decision_mapping.get(analysis['confidence_level'], 'ODFILTROWANE')
-        potential_value = calculate_lost_value_internal(query) if decision == 'UTRACONE OKAZJE' else 0
+        potential_value = calculate_lost_value_internal(sanitized_query) if decision == 'UTRACONE OKAZJE' else 0
         
         # Dodaj do głównego systemu TCD
         event_id = DatabaseManager.add_event(
-            query,
+            sanitized_query,  # SANITIZED!
             decision,
-            f'{data.get("organization", "Unknown")}',  # FIXED: organizacja zamiast Visitor
-            extract_category_from_query(query),
+            f'{data.get("organization", "Unknown")}',
+            extract_category_from_query(sanitized_query),
             'visitor',
             potential_value,
             f"Live visitor query - {analysis['confidence_level']} confidence"
@@ -1782,7 +2031,7 @@ def handle_visitor_event_websocket(data):
         live_feed_data = {
             'id': event_id,
             'timestamp': datetime.now().strftime('%H:%M:%S'),
-            'query': query,
+            'query': sanitized_query,  # SANITIZED!
             'classification': decision,
             'estimatedValue': potential_value,
             'city': data.get('city', 'Unknown'),
@@ -1794,11 +2043,6 @@ def handle_visitor_event_websocket(data):
         print(f"[WEBSOCKET] Broadcasting live_feed_update ONLY to admin_dashboard")
         emit('live_feed_update', live_feed_data, room='admin_dashboard')
         
-        # WYŁĄCZONE - TCD dostaje event z /api/analyze_query ("Finalne zapytanie")
-        # Nie wysyłamy tu new_event bo to powoduje duplikaty!
-        # tcd_event_data = { ... }
-        # socketio.emit('new_event', tcd_event_data, room='client_demo')
-        
         print(f"[WEBSOCKET] Event processed successfully: {decision}")
         
     except Exception as e:
@@ -1806,15 +2050,136 @@ def handle_visitor_event_websocket(data):
         import traceback
         traceback.print_exc()
 
+# === VISITOR TRACKING SYSTEM ===
+
+def ensure_visitor_tables_exist():
+    """Tworzy tabele dla visitor tracking jeśli nie istnieją - RODO COMPLIANT"""
+    conn = sqlite3.connect(DATABASE_NAME)
+    cursor = conn.cursor()
+    
+    # Check if table exists
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='visitor_sessions'")
+    table_exists = cursor.fetchone() is not None
+    
+    if table_exists:
+        # Table exists - check columns and add missing ones
+        cursor.execute("PRAGMA table_info(visitor_sessions)")
+        columns = [col[1] for col in cursor.fetchall()]
+        
+        # Add new columns if missing
+        new_columns = {
+            'ip_hash': 'TEXT',
+            'ip_masked': 'TEXT',
+            'device_type': 'TEXT',
+            'os': 'TEXT',
+            'browser': 'TEXT',
+            'viewport_category': 'TEXT',
+            'anonymous_mode': 'BOOLEAN DEFAULT FALSE',
+            'asn': 'TEXT'
+        }
+        
+        for col_name, col_type in new_columns.items():
+            if col_name not in columns:
+                try:
+                    cursor.execute(f'ALTER TABLE visitor_sessions ADD COLUMN {col_name} {col_type}')
+                    print(f"[DATABASE] Added column: {col_name}")
+                except Exception as e:
+                    print(f"[DATABASE] Column {col_name} error: {e}")
+        
+        # Create indexes (with error handling)
+        indexes = [
+            ('idx_visitor_sessions_entry_time', 'entry_time'),
+            ('idx_visitor_sessions_org', 'organization'),
+            ('idx_visitor_sessions_hash', 'ip_hash')
+        ]
+        
+        for idx_name, idx_column in indexes:
+            try:
+                cursor.execute(f'CREATE INDEX IF NOT EXISTS {idx_name} ON visitor_sessions({idx_column})')
+            except Exception as e:
+                print(f"[DATABASE] Index {idx_name} warning: {e}")
+        
+    else:
+        # Table doesn't exist - create new RODO-compliant table
+        cursor.execute('''
+            CREATE TABLE visitor_sessions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                session_id TEXT UNIQUE NOT NULL,
+                
+                -- RODO: Anonimizowane IP
+                ip_hash TEXT,
+                ip_masked TEXT,
+                
+                -- Podstawowe dane
+                user_agent TEXT,
+                referrer TEXT,
+                page_url TEXT,
+                
+                -- Dane czasowe
+                entry_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                exit_time TIMESTAMP,
+                last_activity TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                session_duration INTEGER DEFAULT 0,
+                
+                -- Dane geograficzne
+                country TEXT,
+                country_code TEXT,
+                city TEXT,
+                region TEXT,
+                timezone TEXT,
+                
+                -- Dane organizacji
+                organization TEXT,
+                isp TEXT,
+                asn TEXT,
+                
+                -- Aktywność użytkownika
+                total_messages INTEGER DEFAULT 0,
+                max_scroll_depth INTEGER DEFAULT 0,
+                clicks_count INTEGER DEFAULT 0,
+                
+                -- UTM tracking
+                utm_source TEXT,
+                utm_medium TEXT,
+                utm_campaign TEXT,
+                utm_content TEXT,
+                utm_term TEXT,
+                
+                -- Dane techniczne
+                device_type TEXT,
+                os TEXT,
+                browser TEXT,
+                viewport_category TEXT,
+                language TEXT,
+                
+                -- RODO flags
+                anonymous_mode BOOLEAN DEFAULT FALSE,
+                
+                -- Status
+                is_active BOOLEAN DEFAULT TRUE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # Create indexes
+        cursor.execute('CREATE INDEX idx_visitor_sessions_entry_time ON visitor_sessions(entry_time)')
+        cursor.execute('CREATE INDEX idx_visitor_sessions_org ON visitor_sessions(organization)')
+        cursor.execute('CREATE INDEX idx_visitor_sessions_hash ON visitor_sessions(ip_hash)')
+        
+        print("[DATABASE] Created new visitor_sessions table (GDPR Compliant)")
+    
+    conn.commit()
+    conn.close()
+    print("[DATABASE] Visitor tracking tables initialized (GDPR Compliant)")
 
 @app.route('/api/visitor-tracking', methods=['POST'])
+@limiter.limit("100/minute")  # RODO: Rate limiting przeciw spam
 def visitor_tracking():
-    """API endpoint do odbierania danych visitor tracking"""
+    """API endpoint do odbierania danych visitor tracking - RODO COMPLIANT"""
     try:
         # FORCE JSON parsing z lepszym error handling
         if not request.is_json:
             print(f"[WARNING] Request without JSON content-type: {request.content_type}")
-            # Try to parse anyway
             try:
                 data = request.get_json(force=True)
             except:
@@ -1847,7 +2212,7 @@ def visitor_tracking():
         return jsonify({'error': 'Internal server error'}), 500
 
 def handle_session_start(session_id, data):
-    """Obsługuje rozpoczęcie sesji odwiedzającego"""
+    """Obsługuje rozpoczęcie sesji odwiedzającego - RODO COMPLIANT"""
     try:
         conn = sqlite3.connect(DATABASE_NAME)
         cursor = conn.cursor()
@@ -1855,64 +2220,89 @@ def handle_session_start(session_id, data):
         # FIX: Parsuj entry_time i usuń timezone
         entry_time = data.get('entry_time')
         if isinstance(entry_time, str):
-            # Parse ISO datetime i usuń timezone info
             try:
-                # 'from dateutil import parser' ZOSTAŁO PRZENIESIONE NA GÓRĘ PLIKU
                 entry_time_dt = parser.parse(entry_time)
                 entry_time = entry_time_dt.replace(tzinfo=None).isoformat()
             except Exception as e_parser:
-                # Log błędu parsowania i użyj fallback
                 print(f"[WARNING] Dateutil parse error: {e_parser}. Falling back to now.")
                 app.logger.warning(f"Dateutil parse error for entry_time '{entry_time}': {e_parser}")
                 entry_time = datetime.now().isoformat()
         else:
-            # Fallback dla braku daty
             entry_time = datetime.now().isoformat()
-            
-        # Zapisz sesję
+        
+        # === RODO: Pobierz raw IP TYLKO dla geolokalizacji ===
+        raw_ip = data.get('ip_address')
+        
+        # Po geolokalizacji - ZAHASZUJ i ZAMASKUJ
+        ip_hash = hash_ip_address(raw_ip) if raw_ip else 'hash_unknown'
+        ip_masked = mask_ip_address(raw_ip) if raw_ip else 'masked'
+        
+        # RODO: NIE LOGUJ RAW IP - tylko masked
+        print(f"[RODO] IP processed: masked={ip_masked}, hash={ip_hash[:20]}...")
+        
+        # Sprawdź Do Not Track
+        anonymous_mode = data.get('anonymous_mode', False)
+        
+        # === ZAPISZ SESJĘ (BEZ raw IP!) ===
         cursor.execute('''
             INSERT OR REPLACE INTO visitor_sessions (
-                session_id, ip_address, user_agent, referrer, page_url,
+                session_id, ip_hash, ip_masked, user_agent, referrer, page_url,
                 entry_time, country, city, organization, 
-                utm_source, utm_medium, platform, language
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                utm_source, utm_medium, device_type, os, browser, language,
+                anonymous_mode
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             session_id,
-            data.get('ip_address'),
+            ip_hash,
+            ip_masked,
             data.get('user_agent'),
             data.get('referrer'),
             data.get('page_url'),
-            entry_time,  # ← FIXED: bez timezone
+            entry_time,
             data.get('country'),
             data.get('city'),
             data.get('org'),
             data.get('utm_source'),
             data.get('utm_medium'),
-            data.get('platform'),
-            data.get('language')
+            data.get('device_type', 'Desktop'),
+            data.get('os', 'Unknown'),
+            data.get('browser', 'Unknown'),
+            data.get('language'),
+            anonymous_mode
         ))
         
         conn.commit()
         conn.close()
         
-        print(f"[VISITOR TRACKING] Session saved: {session_id[:8]}... from {data.get('org', 'Unknown')}")
-        app.logger.info(f"Visitor session started: {session_id[:8]}... from {data.get('org', 'Unknown')}")
-        return {'status': 'success', 'message': 'Session started'}
+        org_name = data.get('org', 'Unknown')
+        print(f"[VISITOR TRACKING] Session saved: {session_id[:8]}... from {org_name} (RODO compliant)")
+        app.logger.info(f"Visitor session started: {session_id[:8]}... from {org_name}")
+        
+        return {'status': 'success', 'message': 'Session started (GDPR compliant)'}
         
     except Exception as e:
         print(f"[ERROR] Session start failed: {e}")
         import traceback
         traceback.print_exc()
-        app.logger.error(f"Handle session start failed: {e}", exc_info=True) # Dodany logging błędu
+        app.logger.error(f"Handle session start failed: {e}", exc_info=True)
         return {'status': 'error', 'message': str(e)}
 
 def handle_bot_query(session_id, data):
-    """Obsługuje zapytanie do bota - KLUCZOWY event dla TCD"""
+    """Obsługuje zapytanie do bota - KLUCZOWY event dla TCD - RODO COMPLIANT"""
     try:
-        query = data.get('query', '')
+        # === RODO: SANITYZUJ QUERY PRZED ZAPISEM (BACKEND DEFENSE) ===
+        raw_query = data.get('query', '')
+        sanitized_query = scrub_pii(raw_query)
         
-        # Analizuj zapytanie przez istniejący system AI
-        analysis = bot.analyze_query_intent(query)
+        # Check if PII was detected
+        if sanitized_query != raw_query:
+            print(f"[RODO WARNING] PII detected and scrubbed in query (BACKEND)")
+            print(f"  Original length: {len(raw_query)}")
+            print(f"  Scrubbed length: {len(sanitized_query)}")
+            app.logger.warning(f"PII scrubbed from query (backend) - session {session_id[:8]}")
+        
+        # Analizuj SANITIZED query (nie raw!)
+        analysis = bot.analyze_query_intent(sanitized_query)
         
         # Mapowanie na decisions
         decision_mapping = {
@@ -1923,48 +2313,19 @@ def handle_bot_query(session_id, data):
         }
         
         decision = decision_mapping.get(analysis['confidence_level'], 'ODFILTROWANE')
-        potential_value = calculate_lost_value_internal(query) if decision == 'UTRACONE OKAZJE' else 0
+        potential_value = calculate_lost_value_internal(sanitized_query) if decision == 'UTRACONE OKAZJE' else 0
         
-        # WYŁĄCZONE - duplikat z WebSocket handler (@socketio.on('visitor_event'))
-        # event_id = DatabaseManager.add_event(
-        #     query,
-        #     decision,
-        #     f'Visitor query from session {session_id[:8]}',
-        #     extract_category_from_query(query),
-        #     'visitor',
-        #     potential_value,
-        #     f"Visitor tracking: {analysis['confidence_level']} confidence"
-        # )
-        
-        # Zwróć tylko status - WebSocket handler zajmuje się dodawaniem do bazy
-        
-        # WYŁĄCZONE - duplikat z WebSocket handler (linia 1455)
-        # event_data = {
-        #     'id': event_id,
-        #     'timestamp': datetime.now().strftime('%H:%M:%S'),
-        #     'query_text': query,
-        #     'decision': decision,
-        #     'details': f'Visitor: {get_visitor_context(session_id)}',
-        #     'category': extract_category_from_query(query),
-        #     'potential_value': potential_value,
-        #     'explanation': f'Visitor query - confidence: {analysis["confidence_level"]}',
-        #     'session_id': session_id[:8]
-        # }
-        # 
-        # socketio.emit('new_event', event_data)  # WYŁĄCZONE - używamy live_feed_update
-        
-        # === POPRAWIONY RETURN ===
-        # Usunięto odwołanie do 'event_id', które nie jest już tutaj definiowane.
         return {
             'status': 'success',
             'classification': decision,
             'confidence': analysis['confidence_level'],
-            'potential_value': potential_value
+            'potential_value': potential_value,
+            'pii_detected': sanitized_query != raw_query
         }
         
     except Exception as e:
         print(f"[ERROR] Bot query tracking failed: {e}")
-        app.logger.error(f"Handle bot query failed: {e}", exc_info=True) # Dodany logging błędu
+        app.logger.error(f"Handle bot query failed: {e}", exc_info=True)
         return {'status': 'error', 'message': str(e)}
 
 def get_visitor_context(session_id):
@@ -1997,11 +2358,37 @@ def get_visitor_context(session_id):
         print(f"[ERROR] Failed to get visitor context: {e}")
         return 'Unknown'
 
-# app.py (Wklej to np. po linii 1598)
-
-
-
-
+def get_client_info(client_id):
+    """Pobiera informacje o kliencie z bazy danych"""
+    if not client_id:
+        return None
+        
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            SELECT id, company_name, domain, subscription_tier, contact_email
+            FROM clients 
+            WHERE id = ? AND is_active = TRUE
+        ''', (client_id,))
+        
+        row = cursor.fetchone()
+        conn.close()
+        
+        if row:
+            return {
+                'id': row[0],
+                'company_name': row[1],
+                'domain': row[2], 
+                'subscription_tier': row[3],
+                'contact_email': row[4]
+            }
+        return None
+        
+    except Exception as e:
+        print(f"[ERROR] Failed to get client info: {e}")
+        return None
 
 # === MAIN APPLICATION STARTUP ===
 if __name__ == '__main__':
@@ -2011,25 +2398,28 @@ if __name__ == '__main__':
         
         # Initialize dashboard database
         DatabaseManager.initialize_database()
-        # Initialize visitor tracking tables
+        
+        # Initialize visitor tracking tables (RODO compliant)
         ensure_visitor_tables_exist()
         
-        # Clear old events (older than 30 days)
+        # === RODO: CLEANUP OLD DATA ===
         try:
+            # Clean old events (older than 30 days)
             conn = sqlite3.connect(DATABASE_NAME)
             cursor = conn.cursor()
             cutoff_date = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
             cursor.execute('DELETE FROM events WHERE date(timestamp) < ?', (cutoff_date,))
-            deleted_count = cursor.rowcount
+            deleted_events = cursor.rowcount
             conn.commit()
             conn.close()
-            if deleted_count > 0:
-                print(f"[DATABASE] Cleared {deleted_count} old events")
+            if deleted_events > 0:
+                print(f"[RODO CLEANUP] Cleared {deleted_events} old events")
+            
+            # Clean old visitor sessions (older than 30 days)
+            deleted_sessions = cleanup_old_sessions()
+            
         except Exception as e:
-            print(f"[DATABASE] Error clearing old events: {e}")
-        
-        # Start battle simulator
-        
+            print(f"[DATABASE] Error clearing old data: {e}")
         
         print("=" * 70)
         print("🎯 STUDIO ADEPT AI - DOKTRYNA CIERPLIWEGO NASŁUCHU v5.1")
@@ -2039,12 +2429,15 @@ if __name__ == '__main__':
         print("   🤖 Motobot: /motobot-prototype")
         print("   📊 Dashboard: /dashboard")
         print("   🎮 Demo (Bot + Dashboard): /demo")
+        print("   🛡️ Privacy Policy: /privacy")
         print("=" * 70)
         print("✅ Unified system started!")
         print("   ⏱️  Debounce: 800ms for TCD updates")
         print("   🎯 Live Feed: Real-time user feedback")
         print("   📊 Metrics: Only final queries counted")
+        print("   🛡️ RODO: IP hashing, PII scrubbing, 30-day retention")
         print("=" * 70)
+        
         ensure_tables_exist()
 
         # Inicjalizuj hasła przy pierwszym uruchomieniu

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polityka Prywatności | Studio Adept AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .privacy-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 60px;
+            margin-bottom: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            font-size: 1.1em;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            font-size: 1.8em;
+            color: #667eea;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h3 {
+            font-size: 1.3em;
+            color: #764ba2;
+            margin: 25px 0 15px 0;
+        }
+
+        .section p {
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .info-box {
+            background: #f8f9ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .info-box.important {
+            background: #fff4e6;
+            border-left-color: #ff9800;
+        }
+
+        .info-box.success {
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+        }
+
+        .data-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .data-list li {
+            padding: 12px;
+            margin: 8px 0;
+            background: #f5f5f5;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .data-list li:before {
+            content: "✓";
+            color: #4caf50;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .data-list.not-collected li:before {
+            content: "✗";
+            color: #f44336;
+        }
+
+        .cta-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .cta-box h3 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn.secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+        }
+
+        .technical-details {
+            background: #f5f5f5;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .technical-details code {
+            background: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #d63384;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: white;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .icon {
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 768px) {
+            .privacy-card {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .section h2 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="privacy-card">
+            <div class="header">
+                <h1>🛡️ Polityka Prywatności</h1>
+                <div class="subtitle">Studio Adept AI - Zgodność z RODO (GDPR)</div>
+                <div style="margin-top: 15px; color: #999; font-size: 0.9em;">
+                    Ostatnia aktualizacja: {{ now.strftime('%d.%m.%Y') if now else '2025' }}
+                </div>
+            </div>
+
+            <!-- WPROWADZENIE -->
+            <div class="section">
+                <h2><span class="icon">📋</span> Wprowadzenie</h2>
+                <p>
+                    Studio Adept AI ("my", "nas", "nasz") zobowiązuje się do ochrony prywatności użytkowników naszych systemów analitycznych. 
+                    Niniejsza Polityka Prywatności wyjaśnia, jakie dane zbieramy, jak je wykorzystujemy i jakie prawa przysługują użytkownikom 
+                    zgodnie z Rozporządzeniem o Ochronie Danych Osobowych (RODO/GDPR).
+                </p>
+                
+                <div class="info-box success">
+                    <strong>🎯 Nasza misja:</strong> Dostarczamy analitykę biznesową dla e-commerce, 
+                    <strong>minimalizując</strong> zbieranie danych osobowych i <strong>maksymalizując</strong> prywatność użytkowników.
+                </div>
+            </div>
+
+            <!-- JAKIE DANE ZBIERAMY -->
+            <div class="section">
+                <h2><span class="icon">📊</span> Jakie dane zbieramy</h2>
+                
+                <h3>✅ Dane, które ZBIERAMY (uzasadnienie biznesowe)</h3>
+                <ul class="data-list">
+                    <li><strong>Firma/Organizacja:</strong> Nazwa dostawcy internetu (ISP) lub firmy - <em>niezbędne do identyfikacji klientów B2B</em></li>
+                    <li><strong>Miasto i Kraj:</strong> Geolokalizacja na poziomie miasta - <em>analiza rynków regionalnych</em></li>
+                    <li><strong>Zapytania w wyszukiwarce:</strong> Treść wyszukiwań (po sanityzacji PII) - <em>wykrywanie utraconego popytu</em></li>
+                    <li><strong>Typ urządzenia:</strong> Mobile/Desktop/Tablet - <em>optymalizacja UX</em></li>
+                    <li><strong>Przeglądarka i System:</strong> Kategoria (np. "Chrome", "Windows") - <em>kompatybilność techniczna</em></li>
+                    <li><strong>Parametry UTM:</strong> Źródło kampanii marketingowej - <em>analiza skuteczności reklam</em></li>
+                </ul>
+
+                <h3>❌ Dane, których NIE ZBIERAMY</h3>
+                <ul class="data-list not-collected">
+                    <li><strong>Surowe adresy IP:</strong> Nigdy nie przechowujemy pełnych adresów IP pracowników</li>
+                    <li><strong>Dane osobowe:</strong> Imiona, nazwiska, adresy email (chyba że dobrowolnie podane)</li>
+                    <li><strong>PESEL, NIP, numery kart:</strong> Automatycznie usuwane przez system sanityzacji</li>
+                    <li><strong>Precyzyjna lokalizacja:</strong> Nie zbieramy współrzędnych GPS ani kodów pocztowych</li>
+                    <li><strong>Fingerprinting urządzenia:</strong> Nie tworzymy unikalnych identyfikatorów sprzętu</li>
+                </ul>
+
+                <div class="info-box important">
+                    <strong>⚠️ Sanityzacja w czasie rzeczywistym:</strong><br>
+                    Jeśli użytkownik przez pomyłkę wpisze dane osobowe (email, PESEL, telefon) w wyszukiwarkę, 
+                    nasz system <strong>automatycznie usuwa</strong> te dane przed zapisem, zastępując je tokenem <code>[REDACTED]</code>.
+                </div>
+            </div>
+
+            <!-- JAK CHRONIMY DANE -->
+            <div class="section">
+                <h2><span class="icon">🔒</span> Jak chronimy Twoje dane</h2>
+
+                <h3>1. Anonimizacja adresów IP</h3>
+                <p>
+                    Adresy IP są wykorzystywane <strong>wyłącznie</strong> do geolokalizacji i identyfikacji organizacji (ASN). 
+                    Natychmiast po pobraniu tych informacji:
+                </p>
+                <div class="technical-details">
+                    <strong>Proces anonimizacji:</strong><br>
+                    1. Raw IP: <code>192.168.1.123</code> → Geolokalizacja API → Miasto + Firma<br>
+                    2. Hashing: <code>SHA-256(IP)</code> → <code>hash_7f8a9b2c3d4e5f6a</code> (nieodwracalne)<br>
+                    3. Masking: <code>192.168.1.xxx</code> (dla debugowania)<br>
+                    4. <strong style="color: #f44336;">Raw IP jest NATYCHMIAST USUWANE</strong> - nie trafia do bazy danych
+                </div>
+
+                <h3>2. Sanityzacja zapytań (PII Scrubbing)</h3>
+                <p>
+                    Każde zapytanie przechodzi przez filtr wykrywający wzorce danych osobowych:
+                </p>
+                <div class="technical-details">
+                    <strong>Wykrywane wzorce:</strong><br>
+                    • Email: <code>user@domain.com</code> → <code>[REDACTED_EMAIL]</code><br>
+                    • Telefon: <code>+48 123 456 789</code> → <code>[REDACTED_PHONE]</code><br>
+                    • PESEL: <code>92010112345</code> → <code>[REDACTED_PESEL]</code><br>
+                    • Karta: <code>1234 5678 9012 3456</code> → <code>[REDACTED_CARD]</code><br>
+                    • IBAN: <code>PL61109010140000...</code> → <code>[REDACTED_IBAN]</code>
+                </div>
+
+                <h3>3. Minimalizacja fingerprinting</h3>
+                <p>
+                    Zamiast zbierać szczegółowe dane o urządzeniu (które mogą służyć do śledzenia), 
+                    zapisujemy tylko <strong>kategorie</strong>:
+                </p>
+                <ul class="data-list">
+                    <li>Zamiast "Windows 10.0.19044.1889" → "Windows"</li>
+                    <li>Zamiast "Chrome 119.0.6045.123" → "Chrome"</li>
+                    <li>Zamiast "1920x1080" → "desktop" (kategoria viewportu)</li>
+                </ul>
+
+                <h3>4. Respektowanie "Do Not Track"</h3>
+                <p>
+                    Jeśli użytkownik ma włączone DNT w przeglądarce, system automatycznie:
+                </p>
+                <ul class="data-list">
+                    <li>NIE pobiera geolokalizacji IP</li>
+                    <li>NIE zapisuje kontekstu sesji</li>
+                    <li>Przechowuje tylko anonimowe zapytania (bez identyfikatora organizacji)</li>
+                </ul>
+            </div>
+
+            <!-- RETENCJA DANYCH -->
+            <div class="section">
+                <h2><span class="icon">⏳</span> Jak długo przechowujemy dane</h2>
+                
+                <div class="info-box">
+                    <strong>Data Retention Policy: 30 dni</strong><br><br>
+                    Wszystkie dane sesji użytkowników są <strong>automatycznie usuwane</strong> po 30 dniach. 
+                    System wykonuje czyszczenie codziennie przy starcie aplikacji.
+                </div>
+
+                <p>
+                    <strong>Uzasadnienie:</strong> 30-dniowe okno wystarczy do analizy trendów biznesowych 
+                    (wykrywanie utraconych produktów, optymalizacja oferty), jednocześnie minimalizując ryzyko 
+                    gromadzenia nadmiernych danych.
+                </p>
+
+                <div class="technical-details">
+                    <strong>Automatyczne czyszczenie:</strong><br>
+                    <code>DELETE FROM visitor_sessions WHERE entry_time < DATE('now', '-30 days')</code>
+                </div>
+            </div>
+
+            <!-- PRAWA UŻYTKOWNIKA -->
+            <div class="section">
+                <h2><span class="icon">⚖️</span> Twoje prawa zgodnie z RODO</h2>
+
+                <p>Jako użytkownik przysługują Ci następujące prawa:</p>
+
+                <h3>🔍 Prawo dostępu do danych</h3>
+                <p>
+                    Możesz zażądać informacji o tym, jakie dane o Tobie przechowujemy. 
+                    Skontaktuj się z nami podając identyfikator sesji (widoczny w konsoli przeglądarki).
+                </p>
+
+                <h3>🗑️ Prawo do usunięcia ("prawo do bycia zapomnianym")</h3>
+                <p>
+                    Możesz zażądać natychmiastowego usunięcia swoich danych. 
+                    Wyślij żądanie na <a href="mailto:privacy@studioadeptai.com">privacy@studioadeptai.com</a> 
+                    z identyfikatorem sesji.
+                </p>
+
+                <h3>🚫 Prawo do sprzeciwu (opt-out)</h3>
+                <p>
+                    Możesz w każdej chwili wyłączyć śledzenie poprzez konsolę przeglądarki:
+                </p>
+                <div class="technical-details">
+                    <strong>Jak wyłączyć tracking:</strong><br>
+                    1. Otwórz konsolę przeglądarki (F12)<br>
+                    2. Wpisz: <code>satelitaOptOut()</code><br>
+                    3. Odśwież stronę<br><br>
+                    <strong>Aby włączyć ponownie:</strong> <code>satelitaOptIn()</code>
+                </div>
+
+                <h3>📝 Prawo do przenoszenia danych</h3>
+                <p>
+                    Możesz otrzymać swoje dane w formacie JSON na żądanie.
+                </p>
+
+                <h3>✏️ Prawo do sprostowania</h3>
+                <p>
+                    Jeśli zauważysz błędne informacje (np. nieprawidłowa geolokalizacja), poinformuj nas.
+                </p>
+            </div>
+
+            <!-- PODSTAWA PRAWNA -->
+            <div class="section">
+                <h2><span class="icon">📜</span> Podstawa prawna przetwarzania</h2>
+
+                <p>Przetwarzamy dane na podstawie:</p>
+
+                <ul class="data-list">
+                    <li><strong>Prawnie uzasadniony interes (Art. 6 ust. 1 lit. f RODO):</strong> 
+                        Analiza zachowań użytkowników dla optymalizacji oferty e-commerce i wykrywania utraconego popytu</li>
+                    <li><strong>Wykonanie umowy (Art. 6 ust. 1 lit. b RODO):</strong> 
+                        Świadczenie usług analitycznych dla klientów B2B</li>
+                    <li><strong>Zgoda użytkownika (Art. 6 ust. 1 lit. a RODO):</strong> 
+                        W przypadku dobrowolnego podania danych kontaktowych</li>
+                </ul>
+
+                <div class="info-box">
+                    <strong>⚖️ Test proporcjonalności:</strong><br>
+                    Nasze przetwarzanie spełnia test proporcjonalności RODO:<br>
+                    • <strong>Cel:</strong> Identyfikacja luk w ofercie produktowej (interes biznesowy)<br>
+                    • <strong>Konieczność:</strong> Dane są minimalne i niezbędne do celu<br>
+                    • <strong>Proporcjonalność:</strong> Korzyści biznesowe > Wpływ na prywatność<br>
+                    • <strong>Zabezpieczenia:</strong> Anonimizacja, sanityzacja, 30-dniowa retencja
+                </div>
+            </div>
+
+            <!-- PLIKI COOKIES -->
+            <div class="section">
+                <h2><span class="icon">🍪</span> Pliki Cookies</h2>
+
+                <p>
+                    Nasz system wykorzystuje <strong>wyłącznie cookies sesyjne</strong> (session storage) 
+                    do przechowywania stanu wyszukiwarki (np. filtr pojazdu). 
+                    Cookies są usuwane po zamknięciu przeglądarki.
+                </p>
+
+                <div class="info-box">
+                    <strong>NIE UŻYWAMY:</strong><br>
+                    ✗ Cookies śledzących stron trzecich<br>
+                    ✗ Cookies reklamowych<br>
+                    ✗ Cookies analitycznych (Google Analytics) - używamy własnego systemu
+                </div>
+            </div>
+
+            <!-- UDOSTĘPNIANIE DANYCH -->
+            <div class="section">
+                <h2><span class="icon">🤝</span> Czy udostępniamy dane stronom trzecim?</h2>
+
+                <p><strong style="font-size: 1.2em; color: #4caf50;">NIE.</strong></p>
+
+                <p>
+                    Dane analityczne są przetwarzane wyłącznie wewnętrznie przez Studio Adept AI 
+                    i udostępniane klientowi (właścicielowi sklepu e-commerce) w postaci <strong>zagregowanych raportów</strong>.
+                </p>
+
+                <p><strong>Wyjątki:</strong></p>
+                <ul class="data-list">
+                    <li><strong>API geolokalizacji:</strong> Krótkotrwałe zapytanie do <code>ipapi.co</code> dla określenia miasta (IP nie jest przechowywane przez dostawcę)</li>
+                    <li><strong>Wymóg prawny:</strong> Jeśli organ władzy zażąda danych na podstawie obowiązującego prawa</li>
+                </ul>
+
+                <div class="info-box important">
+                    <strong>🔐 Brak integracji z Big Tech:</strong><br>
+                    Nie używamy Google Analytics, Facebook Pixel ani innych narzędzi śledzących stron trzecich. 
+                    100% przetwarzania odbywa się na naszych serwerach.
+                </div>
+            </div>
+
+            <!-- BEZPIECZEŃSTWO -->
+            <div class="section">
+                <h2><span class="icon">🛡️</span> Bezpieczeństwo techniczne</h2>
+
+                <p>Nasze zabezpieczenia obejmują:</p>
+
+                <ul class="data-list">
+                    <li><strong>HTTPS/TLS:</strong> Szyfrowanie transmisji danych</li>
+                    <li><strong>Hashing SHA-256:</strong> Nieodwracalna anonimizacja IP</li>
+                    <li><strong>Sanityzacja PII:</strong> Automatyczne wykrywanie i usuwanie danych osobowych</li>
+                    <li><strong>Rate Limiting:</strong> Ochrona przed nadużyciami (100 req/min)</li>
+                    <li><strong>Rotating Logs:</strong> Automatyczna archiwizacja i rotacja logów systemowych</li>
+                    <li><strong>Access Control:</strong> Wielopoziomowy system uprawnień (client/admin/debug)</li>
+                </ul>
+            </div>
+
+            <!-- KONTAKT -->
+            <div class="cta-box">
+                <h3>💬 Masz pytania dotyczące prywatności?</h3>
+                <p style="margin: 15px 0;">
+                    Skontaktuj się z naszym Inspektorem Ochrony Danych (DPO):
+                </p>
+                <a href="mailto:privacy@studioadeptai.com" class="btn">
+                    📧 privacy@studioadeptai.com
+                </a>
+                <a href="/" class="btn secondary">
+                    🏠 Powrót do strony głównej
+                </a>
+            </div>
+
+            <!-- ZMIANY W POLITYCE -->
+            <div class="section">
+                <h2><span class="icon">🔄</span> Zmiany w Polityce Prywatności</h2>
+
+                <p>
+                    Zastrzegamy sobie prawo do aktualizacji niniejszej Polityki Prywatności. 
+                    O istotnych zmianach poinformujemy użytkowników poprzez:
+                </p>
+                <ul class="data-list">
+                    <li>Powiadomienie na stronie głównej</li>
+                    <li>Email do zarejestrowanych użytkowników (jeśli mamy dane kontaktowe)</li>
+                    <li>Aktualizację daty "Ostatnia aktualizacja" na górze dokumentu</li>
+                </ul>
+
+                <p>
+                    Zalecamy okresowe przeglądanie tej strony w celu śledzenia zmian.
+                </p>
+            </div>
+
+            <!-- ORGAN NADZORCZY -->
+            <div class="section">
+                <h2><span class="icon">⚖️</span> Prawo do skargi</h2>
+
+                <p>
+                    Jeśli uważasz, że przetwarzanie Twoich danych osobowych narusza RODO, 
+                    masz prawo wnieść skargę do organu nadzorczego:
+                </p>
+
+                <div class="info-box">
+                    <strong>Urząd Ochrony Danych Osobowych (UODO)</strong><br>
+                    ul. Stawki 2, 00-193 Warszawa<br>
+                    Tel.: +48 22 531 03 00<br>
+                    Email: kancelaria@uodo.gov.pl<br>
+                    Web: <a href="https://uodo.gov.pl" target="_blank">uodo.gov.pl</a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            <p>
+                <strong>Studio Adept AI</strong> | Polityka Prywatności<br>
+                © 2025 Wszelkie prawa zastrzeżone<br><br>
+                <a href="/">Strona główna</a> | 
+                <a href="/demo">Demo</a> | 
+                <a href="mailto:contact@studioadeptai.com">Kontakt</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Log do konsoli dla użytkowników technicznych
+        console.log('%c🛡️ PRIVACY INFO', 'color: #667eea; font-size: 16px; font-weight: bold;');
+        console.log('%cOpt-out z trackingu: satelitaOptOut()', 'color: #666; font-size: 12px;');
+        console.log('%cOpt-in do trackingu: satelitaOptIn()', 'color: #666; font-size: 12px;');
+        console.log('%cPokaż dane sesji: getVisitorSummary()', 'color: #666; font-size: 12px;');
+    </script>
+</body>
+</html>
