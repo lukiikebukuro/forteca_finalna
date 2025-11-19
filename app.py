@@ -2446,76 +2446,79 @@ def fix_database_now():
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
-# === MAIN APPLICATION STARTUP ===
-if __name__ == '__main__':
-    with app.app_context():
-        # Initialize bot data
-        bot.initialize_data()
-        
-        # Initialize dashboard database
-        DatabaseManager.initialize_database()
-        
-        # Initialize visitor tracking tables (RODO compliant)
-        ensure_visitor_tables_exist()
-        
-        # === RODO: CLEANUP OLD DATA ===
-        try:
-            # Clean old events (older than 30 days)
-            conn = sqlite3.connect(DATABASE_NAME)
-            cursor = conn.cursor()
-            cutoff_date = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
-            cursor.execute('DELETE FROM events WHERE date(timestamp) < ?', (cutoff_date,))
-            deleted_events = cursor.rowcount
-            conn.commit()
-            conn.close()
-            if deleted_events > 0:
-                print(f"[RODO CLEANUP] Cleared {deleted_events} old events")
-            
-            # Clean old visitor sessions (older than 30 days)
-            deleted_sessions = cleanup_old_sessions()
-            
-        except Exception as e:
-            print(f"[DATABASE] Error clearing old data: {e}")
-        
-        print("=" * 70)
-        print("🎯 STUDIO ADEPT AI - DOKTRYNA CIERPLIWEGO NASŁUCHU v5.1")
-        print("=" * 70)
-        print("🏢 Features enabled:")
-        print("   🌐 Wizytówka: /")
-        print("   🤖 Motobot: /motobot-prototype")
-        print("   📊 Dashboard: /dashboard")
-        print("   🎮 Demo (Bot + Dashboard): /demo")
-        print("   🛡️ Privacy Policy: /privacy")
-        print("=" * 70)
-        print("✅ Unified system started!")
-        print("   ⏱️  Debounce: 800ms for TCD updates")
-        print("   🎯 Live Feed: Real-time user feedback")
-        print("   📊 Metrics: Only final queries counted")
-        print("   🛡️ RODO: IP hashing, PII scrubbing, 30-day retention")
-        print("=" * 70)
-        
-        ensure_tables_exist()
+# ================================================================
+# URUCHAMIANIE PRODUKCYJNE (To wykona się ZAWSZE, nawet na Renderze)
+# ================================================================
 
-        # Inicjalizuj hasła przy pierwszym uruchomieniu
-        try:
-            conn = sqlite3.connect('dashboard.db')
-            cursor = conn.cursor()
-            cursor.execute('SELECT COUNT(*) FROM users')
-            user_count = cursor.fetchone()[0]
-            conn.close()
-            
-            if user_count == 0:
-                print("[STARTUP] Baza pusta - tworzę użytkowników...")
-                import subprocess
-                subprocess.run(['python', 'skrypthasla.py'])
-        except:
-            print("[STARTUP] Tabela users nie istnieje - tworzę...")
+# 1. Upewnij się, że mamy kontekst aplikacji
+with app.app_context():
+    # 2. Inicjalizuj dane bota
+    bot.initialize_data()
+    
+    # 3. Inicjalizuj bazę danych dla Dashboardu
+    DatabaseManager.initialize_database()
+    
+    # 4. Inicjalizuj tabele visitor tracking (RODO)
+    ensure_visitor_tables_exist()
+    
+    # === RODO: CLEANUP OLD DATA ===
+    try:
+        # Clean old events (older than 30 days)
+        conn = sqlite3.connect(DATABASE_NAME)
+        cursor = conn.cursor()
+        cutoff_date = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
+        cursor.execute('DELETE FROM events WHERE date(timestamp) < ?', (cutoff_date,))
+        deleted_events = cursor.rowcount
+        conn.commit()
+        conn.close()
+        if deleted_events > 0:
+            print(f"[RODO CLEANUP] Cleared {deleted_events} old events")
+        
+        # Clean old visitor sessions (older than 30 days)
+        deleted_sessions = cleanup_old_sessions()
+        
+    except Exception as e:
+        print(f"[DATABASE] Error clearing old data: {e}")
+
+    print("=" * 70)
+    print("🎯 STUDIO ADEPT AI - DOKTRYNA CIERPLIWEGO NASŁUCHU v5.1")
+    print("✅ Unified system started (Production Mode)")
+    
+    ensure_tables_exist()
+
+    # Inicjalizuj hasła przy pierwszym uruchomieniu
+    try:
+        conn = sqlite3.connect('dashboard.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT COUNT(*) FROM users')
+        user_count = cursor.fetchone()[0]
+        conn.close()
+        
+        if user_count == 0:
+            print("[STARTUP] Baza pusta - tworzę użytkowników...")
             import subprocess
-            subprocess.run(['python', 'skrypthasla.py'])
-        
-        print("🔐 Sistema Autoryzacji aktywny")
-        print("👤 Default admin: admin / admin123")
-        
-        init_database()
-        
-        socketio.run(app, debug=True, host='0.0.0.0', port=5000)
+            import sys
+            subprocess.run([sys.executable, 'skrypthasla.py'])
+    except:
+        print("[STARTUP] Tabela users nie istnieje - tworzę...")
+        import subprocess
+        import sys
+        subprocess.run([sys.executable, 'skrypthasla.py'])
+    
+    print("🔐 System Autoryzacji aktywny")
+    
+    # === KRYTYCZNE: NAPRAWA BAZY ===
+    # To wywołanie jest teraz poza blokiem 'main', więc Gunicorn je wykona!
+    init_database()
+
+
+# ================================================================
+# URUCHAMIANIE LOKALNE (Tylko przy python app.py)
+# ================================================================
+if __name__ == '__main__':
+    print("=" * 70)
+    print("🎯 STUDIO ADEPT AI - LOCAL DEV MODE")
+    print("=" * 70)
+    
+    # Uruchom serwer dev
+    socketio.run(app, debug=True, host='0.0.0.0', port=5000)
