@@ -1181,6 +1181,10 @@ def get_visitor_stats():
             'status': 'error',
             'message': str(e)
         }), 500
+    
+@app.route('/tech')
+def tech_docs():
+    return render_template('tech.html')    
 
 # === DASHBOARD API ROUTES ===
 @app.route('/dashboard')
