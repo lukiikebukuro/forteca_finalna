@@ -180,8 +180,8 @@
                             <div class="footer-right">
     <div class="tech-stack">AI-Powered Commerce</div>
     <div class="support-info">
-        <a href="mailto:kontakt.adept@gmail.com" class="support-link">
-            📧 kontakt.adept@gmail.com
+        <a href="mailto:kontakt@adeptai.pl" class="support-link">
+            📧 kontakt@adeptai.pl
         </a>
     </div>
 </div>
@@ -465,11 +465,18 @@
             <strong>Decyzję o stałej współpracy ("Partnerstwo Strategiczne") podejmujesz na podstawie LICZB, a nie prezentacji.</strong>
         </p>
         
-        <div style="text-align: center;">
-            <a href="mailto:lukasz@adeptai.pl?subject=Zapytanie%20o%20Wycenę%20Pilotażu%20Satelita" 
-               style="background-color: #d32f2f; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 1.1em; display: inline-block; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.2s;">
-                ZAMÓW WYCENĘ PILOTAŻU →
+        <div class="cta-wrapper">
+            <a href="mailto:kontakt@adeptai.pl?subject=Zapytanie%20o%20Wycenę%20Pilotażu%20Satelita" class="enterprise-cta-main">
+                <span class="cta-icon-wrapper">
+                    <span class="cta-icon">⚡</span>
+                    <span class="cta-pulse"></span>
+                </span>
+                <span class="cta-title">ZAMÓW WYCENĘ PILOTAŻU</span>
+                <span class="cta-arrow">→</span>
             </a>
+            <div class="alternative-contact-cta">
+                lub skontaktuj się bezpośrednio na <a href="mailto:kontakt@adeptai.pl" class="alt-email">kontakt@adeptai.pl</a>
+            </div>
         </div>
         
     
@@ -587,7 +594,7 @@
     </div>
 </section>
 
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 <script src="{{ url_for('static', filename='script.js') }}?v=1.2" defer></script>
 <script src="{{ url_for('static', filename='dashboard.js') }}" defer></script>
@@ -885,27 +892,231 @@ footer button,
     }
 }
 
+/* ========================================
+    ENTERPRISE CTA BUTTON - Footer Email
+    ======================================== */
 
-/* Bot column musi być relative dla CTA bar */
-.bot-column {
-    position: relative !important;
+/* ========================================
+    MAIN CTA BUTTON - Główny przycisk w ofercie
+    ======================================== */
+
+.cta-wrapper {
+    text-align: center;
+    padding: 30px 0;
 }
 
-/* Fix dla overlappingu z TCD */
-.demo-container {
+.enterprise-cta-main {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 40px;
+    background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 50%, #d32f2f 100%);
+    background-size: 200% 100%;
+    border-radius: 16px;
+    text-decoration: none;
+    color: white;
     position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    box-shadow: 
+        0 8px 24px rgba(211, 47, 47, 0.5),
+        0 0 0 2px rgba(255, 255, 255, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    animation: gentle-pulse 3s ease-in-out infinite;
 }
 
-.bot-column {
+@keyframes gentle-pulse {
+    0%, 100% {
+        box-shadow: 
+            0 8px 24px rgba(211, 47, 47, 0.5),
+            0 0 0 2px rgba(255, 255, 255, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    50% {
+        box-shadow: 
+            0 8px 32px rgba(211, 47, 47, 0.7),
+            0 0 0 3px rgba(255, 255, 255, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+}
+
+.enterprise-cta-main::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s ease;
+}
+
+.enterprise-cta-main:hover::before {
+    left: 100%;
+}
+
+.enterprise-cta-main:hover {
+    transform: translateY(-4px) scale(1.02);
+    background-position: 100% 0;
+    box-shadow: 
+        0 12px 36px rgba(211, 47, 47, 0.6),
+        0 0 0 3px rgba(255, 255, 255, 0.2),
+        inset 0 2px 0 rgba(255, 255, 255, 0.3);
+}
+
+.enterprise-cta-main:active {
+    transform: translateY(-2px) scale(0.98);
+}
+
+.enterprise-cta-main .cta-icon-wrapper {
     position: relative;
-    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.dashboard-column {
+.enterprise-cta-main .cta-icon {
+    font-size: 32px;
     position: relative;
-    z-index: 5;
+    z-index: 2;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+    animation: icon-float 2s ease-in-out infinite;
 }
-</style>
 
-</body>
-</html>
+@keyframes icon-float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-3px);
+    }
+}
+
+.enterprise-cta-main .cta-pulse {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    animation: pulse-ring-main 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-ring-main {
+    0% {
+        transform: scale(0.8);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.4);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+}
+
+.enterprise-cta-main .cta-title {
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    line-height: 1.2;
+    text-transform: uppercase;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.enterprise-cta-main .cta-arrow {
+    font-size: 24px;
+    font-weight: 900;
+    animation: arrow-bounce 1.5s ease-in-out infinite;
+}
+
+@keyframes arrow-bounce {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(5px);
+    }
+}
+
+.alternative-contact-cta {
+    margin-top: 16px;
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.6;
+}
+
+.alternative-contact-cta .alt-email {
+    color: #d32f2f;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.alternative-contact-cta .alt-email:hover {
+    color: #b71c1c;
+    text-decoration: underline;
+}
+
+/* Responsive dla głównego CTA */
+@media (max-width: 1200px) {
+    .enterprise-cta-main {
+        padding: 18px 35px;
+        gap: 14px;
+    }
+    
+    .enterprise-cta-main .cta-icon {
+        font-size: 28px;
+    }
+    
+    .enterprise-cta-main .cta-title {
+        font-size: 16px;
+    }
+    
+    .enterprise-cta-main .cta-arrow {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 768px) {
+    .enterprise-cta-main {
+        padding: 16px 30px;
+        gap: 12px;
+    }
+    
+    .enterprise-cta-main .cta-icon {
+        font-size: 24px;
+    }
+    
+    .enterprise-cta-main .cta-title {
+        font-size: 14px;
+        letter-spacing: 0.5px;
+    }
+    
+    .enterprise-cta-main .cta-arrow {
+        font-size: 20px;
+    }
+    
+    .alternative-contact-cta {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .enterprise-cta-main {
+        padding: 14px 24px;
+        gap: 10px;
+        flex-direction: column;
+    }
+    
+    .enterprise-cta-main .cta-title {
+        font-size: 13px;
+    }
+    
+    .alternative-contact-cta {
+        font-size: 12px;
+        padding: 0 15px;
+    }
+}
