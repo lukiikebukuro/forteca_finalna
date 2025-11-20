@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satelita Analytics Platform - Dokumentacja Techniczna</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #f5f7fa;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .nav {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        
+        .nav h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .nav ul {
+            list-style: none;
+        }
+        
+        .nav li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .nav li:last-child {
+            border-bottom: none;
+        }
+        
+        .nav a {
+            color: #1a1a1a;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .nav a:hover {
+            color: #667eea;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 35px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        
+        .section h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .section h3 {
+            color: #2d3748;
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        .section h4 {
+            color: #4a5568;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .info-box {
+            background: #f7fafc;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+        
+        .warning-box {
+            background: #fffaf0;
+            border-left: 4px solid #f6ad55;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+        
+        .success-box {
+            background: #f0fff4;
+            border-left: 4px solid #48bb78;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+        
+        .code-block {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        
+        .code-inline {
+            background: #e2e8f0;
+            color: #2d3748;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        .endpoint {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .endpoint-method {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.85em;
+            margin-right: 10px;
+        }
+        
+        .method-get {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .method-post {
+            background: #bee3f8;
+            color: #1a365d;
+        }
+        
+        .method-delete {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .method-ws {
+            background: #feebc8;
+            color: #7c2d12;
+        }
+        
+        .endpoint-path {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            color: #2d3748;
+        }
+        
+        .params-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .params-table th,
+        .params-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .params-table th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .params-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+        
+        .badge-security {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .badge-required {
+            background: #feebc8;
+            color: #7c2d12;
+        }
+        
+        .badge-optional {
+            background: #e6fffa;
+            color: #234e52;
+        }
+        
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .tech-item {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .tech-item h4 {
+            color: #667eea;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .footer {
+            background: #2d3748;
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 50px;
+        }
+        
+        .security-icon {
+            color: #48bb78;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        
+        ul, ol {
+            margin-left: 25px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .tech-stack {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🛰️ Satelita Analytics Platform</h1>
+        <div class="subtitle">Dokumentacja Techniczna v3.0 | Lost Demand Detection & B2B Intelligence System</div>
+    </div>
+    
+    <div class="container">
+        <div class="nav">
+            <h2>📋 Spis Treści</h2>
+            <ul>
+                <li><a href="#overview">1. Przegląd Systemu</a></li>
+                <li><a href="#architecture">2. Architektura</a></li>
+                <li><a href="#api">3. API Endpoints</a></li>
+                <li><a href="#websockets">4. WebSocket Protocol</a></li>
+                <li><a href="#security">5. Bezpieczeństwo & RODO</a></li>
+                <li><a href="#auth">6. System Autoryzacji</a></li>
+                <li><a href="#deployment">7. Deployment & Infrastruktura</a></li>
+                <li><a href="#integration">8. Integracja</a></li>
+            </ul>
+        </div>
+        
+        <!-- SECTION 1: OVERVIEW -->
+        <div class="section" id="overview">
+            <h2>1. Przegląd Systemu</h2>
+            
+            <div class="info-box">
+                <strong>🎯 Misja:</strong> Satelita to inteligentny system analityczny wykrywający utracony popyt w e-commerce oraz identyfikujący leady B2B w czasie rzeczywistym.
+            </div>
+            
+            <h3>Kluczowe Funkcje</h3>
+            <ul>
+                <li><strong>Lost Demand Detection:</strong> Analiza zapytań użytkowników kończących się "brak wyników" z kategoryzacją przyczyn (brak w asortymencie vs błąd wyszukiwarki)</li>
+                <li><strong>B2B Lead Intelligence:</strong> Deanonimizacja ruchu firmowego w czasie rzeczywistym z alertami dla działu handlowego</li>
+                <li><strong>Real-Time Analytics Dashboard:</strong> 3-poziomowa architektura (P1: Klient, P2: Admin Cockpit, P3: Deep Analytics)</li>
+                <li><strong>GDPR Compliance:</strong> IP hashing, PII scrubbing, data retention policies, opt-out mechanism</li>
+            </ul>
+            
+            <h3>Technologie</h3>
+            <div class="tech-stack">
+                <div class="tech-item">
+                    <h4>Backend</h4>
+                    <p>Python 3.10+<br>
+                    Flask 2.3+<br>
+                    Flask-SocketIO<br>
+                    SQLite3</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Frontend</h4>
+                    <p>Vanilla JavaScript<br>
+                    WebSocket API<br>
+                    Chart.js<br>
+                    HTML5/CSS3</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Infrastruktura</h4>
+                    <p>Render.com (ISO 27001)<br>
+                    Cloudflare CDN + DDoS<br>
+                    Eventlet WSGI Server<br>
+                    SSL/TLS</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Security</h4>
+                    <p>SHA-256 IP Hashing<br>
+                    PII Scrubbing (Regex)<br>
+                    Flask-Limiter<br>
+                    CORS Protection</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SECTION 2: ARCHITECTURE -->
+        <div class="section" id="architecture">
+            <h2>2. Architektura Systemu</h2>
+            
+            <h3>2.1. Wysokopoziomowa Architektura</h3>
+            <div class="code-block">
+┌─────────────────────────────────────────────────────────────────┐
+│                      CLIENT BROWSER                             │
+│  ┌──────────────────┐        ┌──────────────────────────┐      │
+│  │  Demo Interface  │        │  Admin Dashboard (P2)    │      │
+│  │  (Public)        │        │  (Authenticated)         │      │
+│  └────────┬─────────┘        └──────────┬───────────────┘      │
+└───────────┼────────────────────────────┼──────────────────────┘
+            │                             │
+            │ HTTPS/WSS                   │ HTTPS/WSS
+            │                             │
+┌───────────▼─────────────────────────────▼──────────────────────┐
+│                   CLOUDFLARE CDN + DDoS                         │
+│                   (SSL Termination)                             │
+└───────────┬─────────────────────────────┬──────────────────────┘
+            │                             │
+┌───────────▼─────────────────────────────▼──────────────────────┐
+│                    FLASK APPLICATION                            │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │            EVENTLET WSGI SERVER                         │   │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │   │
+│  │  │   REST API   │  │  WebSocket   │  │  Auth Layer  │  │   │
+│  │  │  (Flask)     │  │ (SocketIO)   │  │ (Flask-Login)│  │   │
+│  │  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  │   │
+│  └─────────┼──────────────────┼──────────────────┼──────────┘   │
+│            │                  │                  │              │
+│  ┌─────────▼──────────────────▼──────────────────▼──────────┐  │
+│  │              BUSINESS LOGIC LAYER                        │  │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │  │
+│  │  │ Lost Demand  │  │  B2B Lead    │  │   RODO       │  │  │
+│  │  │  Classifier  │  │  Detection   │  │  Compliance  │  │  │
+│  │  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  │  │
+│  └─────────┼──────────────────┼──────────────────┼──────────┘  │
+│            │                  │                  │              │
+│  ┌─────────▼──────────────────▼──────────────────▼──────────┐  │
+│  │                   DATA LAYER                             │  │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │  │
+│  │  │   SQLite3    │  │  CSV Logs    │  │  Session     │  │  │
+│  │  │   Database   │  │ (Lost Demand)│  │   Store      │  │  │
+│  │  └──────────────┘  └──────────────┘  └──────────────┘  │  │
+│  └──────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+            </div>
+            
+            <h3>2.2. Komponenty Systemu</h3>
+            
+            <h4>Frontend Components</h4>
+            <ul>
+                <li><strong>visitor_tracking.js:</strong> Client-side tracking script (GDPR compliant)</li>
+                <li><strong>admin_dashboard.js:</strong> Real-time admin interface with WebSocket updates</li>
+                <li><strong>demo_page.html:</strong> Public-facing demo interface</li>
+            </ul>
+            
+            <h4>Backend Components</h4>
+            <ul>
+                <li><strong>app.py:</strong> Main Flask application (2500+ lines)</li>
+                <li><strong>auth_manager.py:</strong> Authentication & authorization system</li>
+                <li><strong>ecommerce_bot.py:</strong> Lost demand classification engine</li>
+                <li><strong>DatabaseManager:</strong> SQLite abstraction layer</li>
+            </ul>
+            
+            <h3>2.3. Data Flow</h3>
+            <div class="info-box">
+                <strong>Przykładowy przepływ danych dla zapytania użytkownika:</strong>
+                <ol>
+                    <li>User wpisuje query w wyszukiwarce (np. "klocki BMW E46")</li>
+                    <li><code>visitor_tracking.js</code> przechwytuje query i wysyła do <code>/track-analytics</code></li>
+                    <li>Backend wykonuje PII scrubbing i IP hashing (RODO)</li>
+                    <li>Query trafia do <code>EcommerceBot.classify_query()</code></li>
+                    <li>System wykrywa czy to: found/lost_demand/filtered_out</li>
+                    <li>Jeśli lost_demand → zapisuje do <code>lost_demand_log.csv</code></li>
+                    <li>WebSocket emituje event do wszystkich połączonych dashboardów</li>
+                    <li>Dashboard P2 (admin) otrzymuje real-time update</li>
+                </ol>
+            </div>
+        </div>
+        
+        <!-- SECTION 3: API ENDPOINTS -->
+        <div class="section" id="api">
+            <h2>3. API Endpoints</h2>
+            
+            <h3>3.1. Public Endpoints (No Auth)</h3>
+            
+            <div class="endpoint">
+                <div>
+                    <span class="endpoint-method method-get">GET</span>
+                    <span class="endpoint-path">/</span>
+                </div>
+                <p><strong>Opis:</strong> Landing page / Demo interface</p>
+                <p><strong>Response:</strong> HTML (demo_page.html)</p>
+            </div>
+            
+            <div class="endpoint">
+                <div>
+                    <span class="endpoint-method method-post">POST</span>
+                    <span class="endpoint-path">/motobot-prototype/track-analytics</span>
+                </div>
+                <p><strong>Opis:</strong> Główny endpoint do trackingu user queries</p>
+                <p><strong>Request Body:</strong></p>
+                <div class="code-block">{
+  "query": "klocki bmw e46",
+  "ip": "192.168.1.100",
+  "timestamp": "2025-01-15T10:30:00Z",
+  "user_agent": "Mozilla/5.0...",
+  "session_id": "session_123456"
+}</div>
+                <p><strong>Response:</strong></p>
+                <div class="code-block">{
+  "status": "success",
+  "classification": "lost_demand",
+  "reason": "product_not_in_inventory"
+}</div>
+                <span class="badge badge-security">RODO: IP Hashed</span>
+                <span class="badge badge-security">PII Scrubbed</span>
+            </div>
+            
+            <div class="endpoint">
+                <div>
+                    <span class="endpoint-method method-post">POST</span>
+                    <span class="endpoint-path">/motobot-prototype/report-lost-demand</span>
+                </div>
+                <p><strong>Opis:</strong> Explicit reporting of lost demand (gdy wyszukiwarka zwraca 0 results)</p>
+                <p><strong>Request Body:</strong></p>
+                <div class="code-block">{
+  "query": "filtr oleju XYZCorp",
+  "reason": "no_results",
+  "metadata": {
+    "search_engine": "internal",
+    "results_count": 0
+  }
+}</div>
+            </div>
+            
+            <div class="endpoint">
+                <div>
+                    <span class="endpoint-method method-get">GET</span>
+                    <span class="endpoint-path">/motobot-prototype/health</span>
+                </div>
+                <p><strong>Opis:</strong> Health check endpoint (monitoring)</p>
+                <p><strong>Response:</strong></p>
+                <div class="code-block">{
+  "status": "healthy",
+  "uptime": 86400,
+  "version": "3.0"
+}</div>
+            </div>
+            
+            <h3>3.2. Authenticated Endpoints (Require Login)</h3>
+            
+            <div class="endpoint">
+                <div>
+                    <span class="endpoint-method method-post">POST</span>
+                    <span class="endpoint-path">/login</span>
+                </div>
+                <p><strong>Opis:</strong> User authentication</p>
+                <p><strong>Request Body:</strong></p>
+                <div class="code-block">{
+  "username": "admin",
+  "password": "secure_password"
+}</div>
+                <p><strong>Response:</strong> Redirect to appropriate dashboard based on role</p>
+                <span class="badge badge-required">Session Cookie</span>
+            </div>
+            
+            <div class="endpoint">
+                <div>
+                    <span class="endpoint-method method-get">GET</span>
+                    <span class="endpoint-path">/client-dashboard</span>
+                </div>
+                <p><strong>Opis:</strong> Client dashboard (P1) - Basic analytics view</p>
+                <p><strong>Auth:</strong> <code>@require_client_access</code></p>
+                <p><strong>Response:</strong> HTML dashboard</p>
+            </div>
+            
+            <div class="endpoint">
+                <div>
+                    <span class="endpoint-method method-get">GET</span>
+                    <span class="endpoint-path">/admin-dashboard</span>
+                </div>
+                <p><strong>Opis:</strong> Admin dashboard (P2) - Full analytics + controls</p>
+                <p><strong>Auth:</strong> <code>@require_admin_access</code></p>
+                <p><strong>Response:</strong> HTML dashboard with real-time WebSocket feed</p>
+            </div>
+            
+            <div class="endpoint">
+                <div>
+                    <span class="endpoint-method method-get">GET</span>
+                    <span class="endpoint-path">/debug-dashboard</span>
+                </div>
+                <p><strong>Opis:</strong> Debug dashboard (P3) - Deep analytics & raw logs</p>
+                <p><strong>Auth:</strong> <code>@require_debug_access</code></p>
+            </div>
+            
+            <div class="endpoint">
+                <div>
+                    <span class="endpoint-method method-get">GET</span>
+                    <span class="endpoint-path">/api/admin/global-stats</span>
+                </div>
+                <p><strong>Opis:</strong> Globalne statystyki systemu (wszystkie klienci)</p>
+                <p><strong>Auth:</strong> <code>@require_admin_access</code></p>
+                <p><strong>Response:</strong></p>
+                <div class="code-block">{
+  "total_visitors": 1523,
+  "b2b_visitors": 47,
+  "lost_opportunities": 312,
+  "lost_revenue_estimate": 156000,
+  "top_lost_queries": [
+    {"query": "klocki ferrari", "count": 23},
+    {"query": "filtr XYZ", "count": 18}
+  ]
+}</div>
+            </div>
+            
+            <div class="endpoint">
+                <div>
+                    <span class="endpoint-method method-get">GET</span>
+                    <span class="endpoint-path">/api/client/{client_id}/weekly-report.pdf</span>
+                </div>
+                <p><strong>Opis:</strong> Generuje cotygodniowy raport PDF dla klienta</p>
+                <p><strong>Auth:</strong> <code>@require_admin_access</code> lub owner</p>
+                <p><strong>Response:</strong> PDF file (application/pdf)</p>
+            </div>
+            
+            <h3>3.3. Admin Control Endpoints</h3>
+            
+            <div class="endpoint">
+                <div>
+                    <span class="endpoint-method method-post">POST</span>
+                    <span class="endpoint-path">/api/admin/save-state</span>
+                </div>
+                <p><strong>Opis:</strong> Zapisuje stan dashboardu (filters, view preferences)</p>
+                <p><strong>Auth:</strong> <code>@require_admin_access</code></p>
+            </div>
+            
+            <div class="endpoint">
+                <div>
+                    <span class="endpoint-method method-get">GET</span>
+                    <span class="endpoint-path">/api/admin/load-state/{state_key}</span>
+                </div>
+                <p><strong>Opis:</strong> Ładuje zapisany stan dashboardu</p>
+            </div>
+            
+            <div class="endpoint">
+                <div>
+                    <span class="endpoint-method method-get">GET</span>
+                    <span class="endpoint-path">/api/admin/visitor-stats</span>
+                </div>
+                <p><strong>Opis:</strong> Real-time visitor statistics</p>
+            </div>
+        </div>
+        
+        <!-- SECTION 4: WEBSOCKETS -->
+        <div class="section" id="websockets">
+            <h2>4. WebSocket Protocol</h2>
+            
+            <div class="info-box">
+                <strong>🔌 Connection:</strong> Satelita używa Socket.IO (Flask-SocketIO) dla real-time communication między backendem a dashboardami.
+            </div>
+            
+            <h3>4.1. WebSocket Events</h3>
+            
+            <div class="endpoint">
+                <div>
+                    <span class="endpoint-method method-ws">WS</span>
+                    <span class="endpoint-path">connect</span>
+                </div>
+                <p><strong>Opis:</strong> Client connects to WebSocket</p>
+                <p><strong>Server Response:</strong></p>
+                <div class="code-block">emit('connection_established', {
+  'status': 'connected',
+  'client_id': 'ws_client_123'
+})</div>
+            </div>
+            
+            <div class="endpoint">
+                <div>
+                    <span class="endpoint-method method-ws">WS</span>
+                    <span class="endpoint-path">request_current_stats</span>
+                </div>
+                <p><strong>Opis:</strong> Client requests current dashboard stats</p>
+                <p><strong>Server Response:</strong></p>
+                <div class="code-block">emit('stats_update', {
+  'found_products': 234,
+  'lost_opportunities': 45,
+  'filtered_out': 12,
+  'lost_revenue': 67500
+})</div>
+            </div>
+            
+            <div class="endpoint">
+                <div>
+                    <span class="endpoint-method method-ws">WS</span>
+                    <span class="endpoint-path">visitor_event</span>
+                </div>
+                <p><strong>Opis:</strong> Real-time visitor activity event</p>
+                <p><strong>Payload:</strong></p>
+                <div class="code-block">{
+  'event_type': 'query_analyzed',
+  'query': 'klocki BMW X3',
+  'classification': 'lost_demand',
+  'visitor_type': 'b2b',
+  'company_name': 'AutoParts Sp. z o.o.',
+  'timestamp': '2025-01-15T10:30:45Z'
+}</div>
+                <p><strong>Broadcasting:</strong> Event jest broadcastowany do wszystkich połączonych admin dashboards</p>
+            </div>
+            
+            <h3>4.2. Connection Configuration</h3>
+            <div class="code-block">// Backend (Python)
+socketio = SocketIO(app, 
+    cors_allowed_origins="*",
+    async_mode='eventlet',
+    ping_timeout=120,
+    ping_interval=25,
+    transports=['polling', 'websocket']
+)
+
+// Frontend (JavaScript)
+const socket = io({
+    transports: ['polling', 'websocket'],
+    upgrade: true,
+    reconnection: true,
+    reconnectionAttempts: 5,
+    reconnectionDelay: 1000
+});</div>
+            
+            <h3>4.3. Security</h3>
+            <ul>
+                <li><strong>Origin Validation:</strong> CORS configured (Cloudflare whitelisted)</li>
+                <li><strong>Session Validation:</strong> WebSocket connections validate Flask session</li>
+                <li><strong>Rate Limiting:</strong> Max 100 messages/minute per connection</li>
+            </ul>
+        </div>
+        
+        <!-- SECTION 5: SECURITY & RODO -->
+        <div class="section" id="security">
+            <h2>5. Bezpieczeństwo & RODO Compliance</h2>
+            
+            <div class="success-box">
+                <strong>✅ Certyfikacja:</strong> System operuje na infrastrukturze Render.com z certyfikatem ISO 27001 oraz wykorzystuje Cloudflare CDN z ochroną DDoS.
+            </div>
+            
+            <h3>5.1. RODO Compliance Measures</h3>
+            
+            <h4>IP Address Anonymization</h4>
+            <div class="code-block">def hash_ip_address(ip):
+    """
+    RODO: Haszuje adres IP używając SHA-256
+    Zwraca skrócony hash (16 znaków)
+    """
+    hash_object = hashlib.sha256(ip.encode('utf-8'))
+    hash_hex = hash_object.hexdigest()
+    return f'hash_{hash_hex[:16]}'
+
+# Przykład:
+# Input:  192.168.1.100
+# Output: hash_a665a45920410605</div>
+            
+            <h4>PII Scrubbing (Personally Identifiable Information)</h4>
+            <p>System automatycznie wykrywa i usuwa następujące dane osobowe:</p>
+            <table class="params-table">
+                <tr>
+                    <th>Typ Danych</th>
+                    <th>Pattern</th>
+                    <th>Zamiana</th>
+                </tr>
+                <tr>
+                    <td>Email</td>
+                    <td><code>user@domain.com</code></td>
+                    <td><code>[REDACTED_EMAIL]</code></td>
+                </tr>
+                <tr>
+                    <td>Telefon (PL)</td>
+                    <td><code>+48 123 456 789</code></td>
+                    <td><code>[REDACTED_PHONE]</code></td>
+                </tr>
+                <tr>
+                    <td>PESEL</td>
+                    <td><code>11 cyfr</code></td>
+                    <td><code>[REDACTED_PESEL]</code></td>
+                </tr>
+                <tr>
+                    <td>Karta Kredytowa</td>
+                    <td><code>1234 5678 9012 3456</code></td>
+                    <td><code>[REDACTED_CARD]</code></td>
+                </tr>
+                <tr>
+                    <td>IBAN</td>
+                    <td><code>PL + 26 cyfr</code></td>
+                    <td><code>[REDACTED_IBAN]</code></td>
+                </tr>
+                <tr>
+                    <td>NIP</td>
+                    <td><code>123-456-78-90</code></td>
+                    <td><code>[REDACTED_NIP]</code></td>
+                </tr>
+            </table>
+            
+            <h4>Data Retention Policy</h4>
+            <div class="code-block">def cleanup_old_sessions():
+    """
+    RODO: Data Retention Policy
+    Usuwa sesje starsze niż 30 dni
+    Wywołanie: Daily cron job
+    """
+    cutoff_date = (datetime.now() - timedelta(days=30)).isoformat()
+    cursor.execute('''
+        DELETE FROM visitor_sessions
+        WHERE entry_time < ?
+    ''', (cutoff_date,))</div>
+            
+            <h4>User Opt-Out Mechanism</h4>
+            <div class="code-block">// Frontend (JavaScript)
+// User może opt-out w dowolnym momencie
+VisitorTracker.optOut();  // Wyłącza tracking
+VisitorTracker.optIn();   // Włącza tracking
+
+// Sprawdzenie Do Not Track header
+if (navigator.doNotTrack === '1') {
+    console.log('DNT enabled - anonymous mode');
+    this.anonymousMode = true;
+}</div>
+            
+            <h3>5.2. Security Layers</h3>
+            
+            <h4>Application Security</h4>
+            <ul>
+                <li><span class="security-icon">✓</span> <strong>Flask-Limiter:</strong> Rate limiting (1000 req/day, 100 req/hour per IP)</li>
+                <li><span class="security-icon">✓</span> <strong>Session Security:</strong> HTTPOnly cookies, SameSite=Lax, Secure flag (production)</li>
+                <li><span class="security-icon">✓</span> <strong>CSRF Protection:</strong> Flask-WTF CSRF tokens</li>
+                <li><span class="security-icon">✓</span> <strong>SQL Injection Prevention:</strong> Parameterized queries (SQLite3)</li>
+                <li><span class="security-icon">✓</span> <strong>XSS Prevention:</strong> Input sanitization, Content-Type headers</li>
+            </ul>
+            
+            <h4>Infrastructure Security</h4>
+            <ul>
+                <li><span class="security-icon">✓</span> <strong>Cloudflare CDN:</strong> DDoS protection, WAF, Bot management</li>
+                <li><span class="security-icon">✓</span> <strong>SSL/TLS:</strong> HTTPS enforced, TLS 1.2+ only</li>
+                <li><span class="security-icon">✓</span> <strong>Render.com:</strong> ISO 27001 certified infrastructure</li>
+                <li><span class="security-icon">✓</span> <strong>Environment Variables:</strong> Secrets stored in env vars (not in code)</li>
+            </ul>
+            
+            <h4>Logging & Monitoring</h4>
+            <div class="code-block"># Rotating log files (10MB max, 5 backups)
+file_handler = RotatingFileHandler(
+    'adept_ai_app.log',
+    maxBytes=10*1024*1024,
+    backupCount=5
+)
+
+# Log PII detection events
+if pii_detected:
+    app.logger.warning("PII DETECTED: Email address scrubbed")</div>
+            
+            <h3>5.3. Privacy Policy</h3>
+            <p>Pełna polityka prywatności dostępna pod: <code>/privacy</code></p>
+            <p>Zawiera:</p>
+            <ul>
+                <li>Zakres zbieranych danych</li>
+                <li>Cel przetwarzania</li>
+                <li>Podstawa prawna (Art. 6 RODO)</li>
+                <li>Okres przechowywania (30 dni)</li>
+                <li>Prawa użytkownika (dostęp, usunięcie, przenoszenie)</li>
+                <li>Kontakt do Administratora Danych</li>
+            </ul>
+        </div>
+        
+        <!-- SECTION 6: AUTH SYSTEM -->
+        <div class="section" id="auth">
+            <h2>6. System Autoryzacji</h2>
+            
+            <h3>6.1. Role-Based Access Control</h3>
+            <p>System używa 3-poziomowego modelu ról:</p>
+            
+            <table class="params-table">
+                <tr>
+                    <th>Rola</th>
+                    <th>Dostęp</th>
+                    <th>Permissions</th>
+                </tr>
+                <tr>
+                    <td><strong>Client</strong></td>
+                    <td>P1 Dashboard</td>
+                    <td>
+                        • Widok własnych statystyk<br>
+                        • Pobieranie raportów PDF<br>
+                        • Podstawowa analityka
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Admin</strong></td>
+                    <td>P2 Admin Cockpit</td>
+                    <td>
+                        • Wszystkie uprawnienia Client<br>
+                        • Globalny widok wszystkich klientów<br>
+                        • Real-time WebSocket feed<br>
+                        • Zarządzanie stanem dashboardu<br>
+                        • Eksport danych CSV
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Debug</strong></td>
+                    <td>P3 Debug Dashboard</td>
+                    <td>
+                        • Wszystkie uprawnienia Admin<br>
+                        • Raw logs access<br>
+                        • Database queries<br>
+                        • System diagnostics
+                    </td>
+                </tr>
+            </table>
+            
+            <h3>6.2. Authentication Flow</h3>
+            <div class="code-block"># 1. User submits credentials
+POST /login
+{
+  "username": "admin",
+  "password": "secure_password"
+}
+
+# 2. Backend validates (Flask-Login + Werkzeug)
+user = User.get_by_username(username)
+if check_password_hash(user.password_hash, password):
+    login_user(user)
+    
+# 3. Session cookie created (24h lifetime)
+Set-Cookie: session=...; HttpOnly; SameSite=Lax
+
+# 4. Redirect based on role
+if user.is_client():
+    redirect('/client-dashboard')
+elif user.is_admin():
+    redirect('/admin-dashboard')
+elif user.is_debug():
+    redirect('/debug-dashboard')</div>
+            
+            <h3>6.3. Authorization Decorators</h3>
+            <div class="code-block"># Client access (minimum role: client)
+@app.route('/client-dashboard')
+@login_required
+@require_client_access
+def client_dashboard():
+    return render_template('client_dashboard.html')
+
+# Admin access (minimum role: admin)
+@app.route('/admin-dashboard')
+@login_required
+@require_admin_access
+def admin_dashboard():
+    return render_template('admin_dashboard.html')
+
+# Debug access (role: debug only)
+@app.route('/debug-dashboard')
+@login_required
+@require_debug_access
+def debug_dashboard():
+    return render_template('debug_dashboard.html')</div>
+            
+            <h3>6.4. Password Security</h3>
+            <ul>
+                <li><strong>Hashing:</strong> Werkzeug PBKDF2-SHA256 (600,000 iterations)</li>
+                <li><strong>Salt:</strong> Automatic per-password unique salt</li>
+                <li><strong>Storage:</strong> Hashed passwords in SQLite (<code>users</code> table)</li>
+                <li><strong>Password Reset:</strong> Manual process (contact admin)</li>
+            </ul>
+        </div>
+        
+        <!-- SECTION 7: DEPLOYMENT -->
+        <div class="section" id="deployment">
+            <h2>7. Deployment & Infrastruktura</h2>
+            
+            <h3>7.1. Render.com Configuration</h3>
+            <div class="code-block"># render.yaml
+services:
+  - type: web
+    name: satelita-analytics
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn -k eventlet -w 1 app:app"
+    envVars:
+      - key: SECRET_KEY
+        sync: false  # Generated secret
+      - key: PYTHON_VERSION
+        value: "3.10.0"
+    healthCheckPath: /motobot-prototype/health</div>
+            
+            <h3>7.2. Requirements</h3>
+            <div class="code-block"># requirements.txt (core dependencies)
+Flask==2.3.0
+Flask-SocketIO==5.3.4
+Flask-Login==0.6.2
+Flask-Limiter==3.3.1
+eventlet==0.33.3
+Werkzeug==2.3.0
+python-dateutil==2.8.2
+user-agents==2.2.0
+requests==2.31.0</div>
+            
+            <h3>7.3. Database Initialization</h3>
+            <div class="code-block"># Automatic on first run
+def init_database():
+    """Tworzy wszystkie wymagane tabele"""
+    ensure_tables_exist()  # users, sessions, auth
+    DatabaseManager.init_events_table()  # events
+    DatabaseManager.init_visitor_tables()  # visitors, sessions
+    AdminDashboardStateManager.init_table()  # dashboard_state</div>
+            
+            <h3>7.4. Environment Variables (Production)</h3>
+            <table class="params-table">
+                <tr>
+                    <th>Variable</th>
+                    <th>Description</th>
+                    <th>Required</th>
+                </tr>
+                <tr>
+                    <td><code>SECRET_KEY</code></td>
+                    <td>Flask session encryption key</td>
+                    <td>✅ Yes</td>
+                </tr>
+                <tr>
+                    <td><code>DATABASE_URL</code></td>
+                    <td>SQLite database path (default: dashboard.db)</td>
+                    <td>❌ Optional</td>
+                </tr>
+                <tr>
+                    <td><code>CLOUDFLARE_ZONE_ID</code></td>
+                    <td>Cloudflare zone identifier</td>
+                    <td>❌ Optional</td>
+                </tr>
+                <tr>
+                    <td><code>RENDER_EXTERNAL_URL</code></td>
+                    <td>Auto-set by Render (for redirects)</td>
+                    <td>✅ Auto</td>
+                </tr>
+            </table>
+            
+            <h3>7.5. Cloudflare Configuration</h3>
+            <ul>
+                <li><strong>SSL/TLS:</strong> Full (strict) mode</li>
+                <li><strong>Security Level:</strong> High</li>
+                <li><strong>WAF:</strong> OWASP Core Ruleset enabled</li>
+                <li><strong>Bot Fight Mode:</strong> Enabled</li>
+                <li><strong>DDoS Protection:</strong> Always-on</li>
+                <li><strong>Caching:</strong> Disabled for API endpoints (cache /static only)</li>
+            </ul>
+        </div>
+        
+        <!-- SECTION 8: INTEGRATION -->
+        <div class="section" id="integration">
+            <h2>8. Integracja z E-commerce</h2>
+            
+            <h3>8.1. Quick Start (5 minut)</h3>
+            
+            <div class="warning-box">
+                <strong>⚡ Bezinwazyjne wdrożenie:</strong> System działa jako niezależny skrypt analityczny. Nie wymaga zmian w Waszym silniku e-commerce ani bazie danych.
+            </div>
+            
+            <h4>Krok 1: Dodaj skrypt trackingowy</h4>
+            <p>Dodaj jedną linijkę kodu przed zamknięciem <code>&lt;/body&gt;</code> w Waszym szablonie:</p>
+            <div class="code-block">&lt;!-- Satelita Analytics --&gt;
+&lt;script src="https://your-domain.com/static/visitor_tracking.js" defer&gt;&lt;/script&gt;</div>
+            
+            <h4>Krok 2: Integracja z wyszukiwarką (opcjonalna)</h4>
+            <p>Aby wykrywać "brak wyników", dodaj callback w Waszej wyszukiwarce:</p>
+            <div class="code-block">// Gdy wyszukiwarka zwraca 0 wyników
+if (searchResults.length === 0) {
+    fetch('https://your-domain.com/motobot-prototype/report-lost-demand', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            query: userQuery,
+            reason: 'no_results'
+        })
+    });
+}</div>
+            
+            <h4>Krok 3: Dodaj API key (dla autentykacji)</h4>
+            <div class="code-block">// W visitor_tracking.js (przed deploymentem)
+const SATELITA_API_KEY = 'your_api_key_here';</div>
+            
+            <h3>8.2. Platformy E-commerce</h3>
+            
+            <h4>Shopify Integration</h4>
+            <div class="code-block">1. Przejdź do: Online Store → Themes → Edit Code
+2. Otwórz: theme.liquid
+3. Wklej skrypt przed &lt;/body&gt;
+4. Save</div>
+            
+            <h4>WooCommerce Integration</h4>
+            <div class="code-block">1. W WordPress: Appearance → Theme Editor
+2. Wybierz: footer.php
+3. Wklej skrypt przed wp_footer()
+4. Update File</div>
+            
+            <h4>PrestaShop Integration</h4>
+            <div class="code-block">1. Modules → Module Manager → Upload Module
+2. Stwórz moduł satelita_tracking
+3. W hookDisplayFooter() dodaj skrypt
+4. Activate</div>
+            
+            <h3>8.3. Custom Integration (REST API)</h3>
+            <p>Dla custom e-commerce, możecie wysyłać dane bezpośrednio przez REST API:</p>
+            <div class="code-block">// Przykład: Własna integracja w PHP
+function trackQuery($query, $results_count) {
+    $data = [
+        'query' => $query,
+        'results_count' => $results_count,
+        'timestamp' => date('c'),
+        'session_id' => session_id()
+    ];
+    
+    $ch = curl_init('https://your-domain.com/motobot-prototype/track-analytics');
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_exec($ch);
+    curl_close($ch);
+}</div>
+            
+            <h3>8.4. Weryfikacja Integracji</h3>
+            <p>Po wdrożeniu, sprawdź:</p>
+            <ol>
+                <li>Otwórz konsolę przeglądarki (F12)</li>
+                <li>Szukaj: <code>🛰️ SATELITA v2.0: Visitor Tracker initialized</code></li>
+                <li>Wykonaj test query w wyszukiwarce</li>
+                <li>Sprawdź Admin Dashboard → Live Feed (powinieneś zobaczyć event)</li>
+            </ol>
+            
+            <div class="success-box">
+                <strong>✅ Sukces!</strong> Jeśli widzisz eventy w Live Feed, integracja działa poprawnie.
+            </div>
+        </div>
+        
+        <!-- FOOTER -->
+        <div class="section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <h2 style="color: white; border-bottom: 3px solid white;">📞 Kontakt & Wsparcie</h2>
+            <p style="font-size: 1.1em; margin-top: 20px;">
+                <strong>Studio Adept AI</strong><br>
+                Email: <a href="mailto:kontakt@adeptai.pl" style="color: #ffd700;">kontakt@adeptai.pl</a><br>
+                Dokumentacja: <a href="https://docs.adeptai.pl" style="color: #ffd700;">docs.adeptai.pl</a><br>
+                Support: 24/7 (email), 9-17 CET (telefon)
+            </p>
+            <p style="margin-top: 20px; opacity: 0.9;">
+                <strong>Certyfikacje:</strong> ISO 27001 (Render.com Infrastructure), RODO Compliant<br>
+                <strong>SLA:</strong> 99.9% uptime guarantee, <1s response time (p95)
+            </p>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>&copy; 2025 Studio Adept AI | Satelita Analytics Platform v3.0</p>
+        <p style="margin-top: 10px; opacity: 0.8;">Dokumentacja wygenerowana: <?php echo date('Y-m-d H:i:s'); ?></p>
+    </div>
+</body>
+</html>
