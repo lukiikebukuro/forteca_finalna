@@ -1,17 +1,18 @@
 {
   "welcome_message_lines": [
-    "🚗 <strong>Witaj w Auto Parts Pro | Adept AI (Moto) Demo</strong> ⚡",
-    "Testujesz silnik AI. Zobacz, jak wykrywamy utracony popyt.",
-    "Przetestuj:",
-    "1. <strong>kloki bosh e90</strong> (Literówki)",
-    "2. <strong>GDB1748</strong> (Kody)",
-    "3. <strong>części beemka</strong> (Slang)",
+    "🚗 <strong>Witaj w Centrum Analitycznym Adept AI (Moto)</strong> ⚡",
+    "To nie jest zwykły chatbot. To analityk, który widzi braki w magazynie.",
     "",
-    "🔥 <strong>Test Utraconego Popytu:</strong>",
-    "<ul>",
-    "<li><strong>klocki ferrari</strong> (Premium spoza oferty)</li>",
-    "<li><strong>klocki bmw x3</strong> (Model spoza oferty)</li>",
-    "<li><strong>filtr oleju XYZCorp</strong> (Nieznana marka) lub <strong>akumulator VTX-5000</strong> (Nieznany kod)</li>",
-    "</ul>"
+    "📉 <strong>SCENARIUSZ 1: Wykrywanie Utraconego Popytu</strong>",
+    "<i>(Wpisz produkt, którego nie mamy, aby zobaczyć raport)</i>",
+    "1. <strong>klocki ferrari</strong> (Marka Premium spoza oferty)",
+    "2. <strong>klocki bmw x3</strong> (Model spoza oferty)",
+    "3. <strong>filtr oleju XYZCorp</strong> (Nieznana marka)",
+    "",
+    "🛡️ <strong>SCENARIUSZ 2: Ratowanie Sprzedaży</strong>",
+    "<i>(Zobacz, jak system rozumie błędy i intencję)</i>",
+    "4. <strong>kloki bosh e90</strong> (Literówki)",
+    "5. <strong>GDB1748</strong> (Kody)",
+    "6. <strong>części beemka</strong> (Slang)"
   ]
 }
