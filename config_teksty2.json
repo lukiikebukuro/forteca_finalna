@@ -5,13 +5,16 @@
     "",
     "📉 <strong>SCENARIUSZE TESTOWE: Wykrywanie Utraconego Popytu</strong>",
     "<i>(Wpisz te frazy. System wie, że konkretna konfiguracja nie istnieje)</i>",
-    "1. <strong>iPhone 13 Różowy</strong> (Brak koloru - Mamy czarny)",
-    "2. <strong>Laptop 64GB RAM</strong> (Brak konfiguracji - Mamy 32GB)",
+    "1. <strong>iPhone 13 pink</strong> (Brak koloru - Mamy niebieski, system to rozróżnia)",
+    "2. <strong>Laptop RTX 4090</strong> (Brak karty graficznej - Mamy RTX 4070, system zgłasza brak High-End)",
     "3. <strong>TV 100 cali</strong> (Brak rozmiaru - Mamy max 85 cali)",
-    "4. <strong>OnePlus 11</strong> (Brak marki - Szukają konkurencji)",
+    "4. <strong>OnePlus 11</strong> (Brak marki - Klient szuka konkurencji)",
     "",
     "5. <strong>Samsung S25</strong> (Popyt na nowość - Mamy S24)",
     "6. <strong>Dell XPS 14</strong> (Brak matrycy - Mamy 13 i 15 cali)",
-    "7. <strong>kanapka z serem</strong> (Filtracja śmieci)"
+    "7. <strong>kanapka z serem</strong> (Filtracja śmieci)",
+    "",
+    "💡 <strong>TESTUJ ŚMIAŁO:</strong> Baza zawiera ponad 2500 realnych produktów (Apple, Samsung, Sony itp.).",
+    "Spróbuj zagiąć system własnymi zapytaniami. Nasz zespół weryfikuje każdą anomalię ręcznie."
   ]
 }
