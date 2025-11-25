@@ -1,18 +1,17 @@
 {
   "welcome_message_lines": [
-    "🚗 <strong>Witaj w Centrum Analitycznym Adept AI (Moto)</strong> ⚡",
-    "To nie jest zwykły chatbot. To analityk, który widzi braki w magazynie.",
+    "🚗 <strong>Centrum Analityczne Adept AI (Moto)</strong> ⚡",
+    "To nie jest zwykły chatbot. To analityk, który widzi braki w Twoim magazynie.",
     "",
-    "📉 <strong>SCENARIUSZ 1: Wykrywanie Utraconego Popytu</strong>",
-    "<i>(Wpisz produkt, którego nie mamy, aby zobaczyć raport)</i>",
-    "1. <strong>klocki ferrari</strong> (Marka Premium spoza oferty)",
-    "2. <strong>klocki bmw x3</strong> (Model spoza oferty)",
-    "3. <strong>filtr oleju XYZCorp</strong> (Nieznana marka)",
+    "📉 <strong>SCENARIUSZE TESTOWE: Wykrywanie Utraconego Popytu</strong>",
+    "<i>(Wpisz te frazy. System wie, czego nie masz i policzy stratę)</i>",
+    "1. <strong>Tarcza hamulcowa 280mm</strong> (Brak wymiaru - Mamy 300mm)",
+    "2. <strong>Olej 10W40</strong> (Brak parametru - Mamy 5W30)",
+    "3. <strong>Akumulator 65Ah</strong> (Brak pojemności - Mamy 60Ah i 74Ah)",
+    "4. <strong>Klocki Ferrari</strong> (Brak marki - Klient szuka Premium)",
     "",
-    "🛡️ <strong>SCENARIUSZ 2: Ratowanie Sprzedaży</strong>",
-    "<i>(Zobacz, jak system rozumie błędy i intencję)</i>",
-    "4. <strong>kloki bosh e90</strong> (Literówki)",
-    "5. <strong>GDB1748</strong> (Kody)",
-    "6. <strong>części beemka</strong> (Slang)"
+    "5. <strong>Amortyzator 1.7 Opel</strong> (Brak zastosowania - Mamy do Golfa)",
+    "6. <strong>Klocki BMW E46</strong> (Brak generacji - Mamy do E90)",
+    "7. <strong>jaka pogodaa</strong> (filtracja nonsensu)"
   ]
 }

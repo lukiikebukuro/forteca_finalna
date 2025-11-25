@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoParts Pro - Demo + Analytics Dashboard</title>
+    <title>ElektroParts Pro - Demo + Analytics Dashboard</title>
     <meta name="description" content="Universal Soldier - Bot e-commerce z dashboardem analitycznym">
     
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚗</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📱</text></svg>">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -70,29 +70,29 @@
                 Instalacja chatbota jest opcjonalna, a nie wymagana. Nasz System Analityczny może działać w tle, nasłuchując Państwa obecnej wyszukiwarki. Poniżej w ofercie wyjaśniamy szczegóły.
             </div>
             <div class="bot-content">
-                <div class="app-container" data-api-prefix="/motobot-prototype">
-                    <div style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <div class="app-container" data-api-prefix="/elektrobot-prototype">
+                    <div style="background: linear-gradient(135deg, #10b981 0%, #047857 100%); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1);">
     
     <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="font-size: 18px;">🚗</span>
-        <span style="color: white; font-weight: 700; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase;">Tryb: MOTORYZACJA</span>
+        <span style="font-size: 18px;">📱</span>
+        <span style="color: white; font-weight: 700; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase;">Tryb: ELEKTRONIKA</span>
     </div>
 
-    <a href="/elektrobot-prototype" style="
-        background-color: #10b981; 
+    <a href="/motobot-prototype" style="
+        background-color: #2563eb; 
         color: white; 
         text-decoration: none; 
         padding: 8px 16px; 
         border-radius: 6px; 
         font-size: 12px; 
         font-weight: 700; 
-        border: 1px solid #059669;
+        border: 1px solid #1d4ed8;
         box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         transition: all 0.2s;
         display: flex;
         align-items: center;
         gap: 6px;">
-        <span>📱</span> Przełącz na ELEKTRONIKĘ →
+        <span>🚗</span> Przełącz na MOTORYZACJĘ →
     </a>
 </div>
                     
@@ -101,7 +101,7 @@
     .app-header {
         background: #fff;
         border-bottom: 1px solid #e2e8f0;
-        padding: 12px 20px; /* Mniejsze marginesy */
+        padding: 12px 20px;
     }
     
     .header-content {
@@ -112,7 +112,7 @@
         margin: 0 auto;
     }
 
-    /* LEWA STRONA - LOGO */
+    /* LEWA STRONA */
     .logo-section {
         display: flex;
         align-items: center;
@@ -120,17 +120,17 @@
     }
     .logo-icon {
         font-size: 24px;
-        background: #eff6ff;
+        background: #ecfdf5; /* Lekka zieleń tła dla ikony */
         width: 40px;
         height: 40px;
         display: flex;
         align-items: center;
         justify-content: center;
         border-radius: 8px;
-        border: 1px solid #dbeafe;
+        border: 1px solid #d1fae5;
     }
     .logo-text h1 {
-        font-size: 18px; /* Mniejszy, bardziej pro */
+        font-size: 18px;
         font-weight: 700;
         color: #1e293b;
         margin: 0;
@@ -145,7 +145,7 @@
         font-weight: 600;
     }
 
-    /* PRAWA STRONA - BADGE I CTA */
+    /* PRAWA STRONA */
     .header-right {
         display: flex;
         align-items: center;
@@ -153,7 +153,7 @@
     }
     .header-badges {
         display: flex;
-        gap: 8px; /* Mniejsze odstępy między badgami */
+        gap: 8px;
     }
 
     /* TECHNICZNE BADGE */
@@ -162,7 +162,7 @@
         align-items: center;
         gap: 6px;
         padding: 6px 12px;
-        border-radius: 6px; /* Lekko zaokrąglone, nie tabletki */
+        border-radius: 6px;
         font-size: 11px;
         font-weight: 600;
         background: #f8fafc;
@@ -170,12 +170,11 @@
         white-space: nowrap;
     }
     
-    /* KOLORY BADGY */
     .badge-blue { color: #2563eb; background: #eff6ff; border-color: #bfdbfe; }
     .badge-green { color: #059669; background: #ecfdf5; border-color: #a7f3d0; }
     .badge-gray { color: #475569; background: #f1f5f9; border-color: #cbd5e1; }
 
-   /* --- ATOMOWY PRZYCISK CTA (ŻÓŁTY + PULS) --- */
+    /* --- ATOMOWY PRZYCISK CTA (ŻÓŁTY + PULS) --- */
     
     .header-cta-link {
         display: flex;
@@ -257,7 +256,7 @@
 <header class="app-header">
     <div class="header-content">
         <div class="logo-section">
-            <div class="logo-icon">🔧</div>
+            <div class="logo-icon">📱</div>
             <div class="logo-text">
                 <h1>Adept AI | Demand Intelligence</h1>
                 <span class="logo-subtitle">System LDI (Lost Demand Intelligence)</span>
@@ -294,7 +293,7 @@
         <div class="chat-header">
             <div class="chat-status">
                 <div class="status-indicator"></div>
-                <span>Adept AI | LDI Moto - <strong>MONITORING ACTIVE</strong></span>
+                <span>Adept AI | LDI System - <strong>MONITORING ACTIVE</strong></span>
             </div>
             <div class="header-controls">
                 <div class="cart-counter" id="cart-counter" style="display:none;">
@@ -308,7 +307,7 @@
         </div>
         
         <div id="messages-container" class="messages-container">
-        </div>
+            </div>
         
         <div class="input-section">
             <div id="button-container" class="button-container">
@@ -319,27 +318,23 @@
                     <input
                         type="text"
                         id="user-input"
-                        placeholder="Wprowadź numer części, nazwę (np. Klocki BMW E46) lub VIN..."
+                        placeholder="Wprowadź model produktu (np. iPhone 15, Samsung S24)..."
                         autocomplete="off"
                         maxlength="500"
                     >
                     <button id="send-btn" class="send-btn" type="submit">
-                        <span>Analizuj</span>
-                        <span class="btn-icon">🔍</span>
+                        <span>Analizuj</span> <span class="btn-icon">🔍</span>
                     </button>
                 </form>
                 <div class="input-hint">
-                    <small>🛡️ System LDI weryfikuje dostępność w TecDoc i magazynach (Number Guard™ Active)</small>
+                    <small>🛡️ System LDI weryfikuje stany magazynowe w czasie rzeczywistym (Number Guard™ Active)</small>
                 </div>
             </div>
         </div>
     </div>
 </main>
                     
-                    <!-- STOPKA WYŁĄCZONA - zabiera miejsce
-                    <footer class="app-footer" style="display: none;">
-                    </footer>
-                    -->
+                    
                 </div>
             </div>
         </div>
@@ -438,6 +433,51 @@
     <span class="stat-label">Potencjał utracony</span>
     <span class="stat-value" id="successRate">0%</span>
 </div>
+
+<style>
+    /* OVERRIDE DLA ELEKTRONIKI - MATRIX GREEN */
+    
+    /* 1. Belka tytułowa */
+    .chat-header {
+        background: linear-gradient(135deg, #065f46 0%, #10b981 100%) !important;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3) !important;
+    }
+
+    /* 2. Przycisk wyślij */
+    .send-btn {
+        background-color: #10b981 !important;
+    }
+    .send-btn:hover {
+        background-color: #059669 !important;
+    }
+
+    /* 3. Status indicator (Kropka) */
+    .status-indicator {
+        background-color: #34d399 !important;
+        box-shadow: 0 0 8px #34d399 !important;
+    }
+
+    /* 4. Dymki bota (lewa krawędź) */
+    .bot-message {
+        border-left: 4px solid #10b981 !important;
+    }
+
+    /* --- NOWY DODATEK: ZIELONA RAMKA (PODŁOGA) NA DOLE --- */
+    .chat-interface {
+        /* Gruba, solidna zielona belka zamykająca dół */
+        border-bottom: 6px solid #10b981 !important;
+        
+        /* Opcjonalnie: zaokrąglamy dolne rogi, żeby pasowało do reszty (jeśli reszta jest okrągła) */
+        border-bottom-left-radius: 12px !important;
+        border-bottom-right-radius: 12px !important;
+        
+        /* Opcjonalnie: delikatny cień wewnętrzny na dole dla głębi */
+        box-shadow: inset 0 -15px 15px -15px rgba(6, 95, 70, 0.3) !important;
+        
+        overflow: hidden !important; /* Żeby nic nie wystawało */
+    }
+    /* ---------------------------------------------------- */
+</style>
                                 
                                 <div class="stat-row">
                                     <span class="stat-label">Utracona wartość</span>
@@ -449,23 +489,6 @@
                 </section>
             </div>
         </div>
-
-
-        <style>
-    /* DODATEK DO MOTO: NIEBIESKA PODŁOGA */
-    .chat-interface {
-        /* Solidna NIEBIESKA belka na dole */
-        border-bottom: 6px solid #2563eb !important; /* Royal Blue */
-        
-        border-bottom-left-radius: 12px !important;
-        border-bottom-right-radius: 12px !important;
-        
-        /* Cień dopasowany do niebieskiego */
-        box-shadow: inset 0 -15px 15px -15px rgba(37, 99, 235, 0.3) !important;
-        
-        overflow: hidden !important;
-    }
-</style>
     </div> <div class="offer-notification" id="offerNotification">
     <div class="notification-content">
         <span class="notification-icon">💰</span>
@@ -636,7 +659,7 @@
         </p>
         
         <div class="cta-wrapper">
-            <a href="/cdn-cgi/l/email-protection#bdd6d2d3c9dcd6c9fddcd9d8cdc9dcd493cdd182cec8dfd7d8dec980e7dccdc4c9dcd3d4d8988f8dd2988f8deac4ded8d37924988f8dedd4d1d2c9dc7801c8988f8deedcc9d8d1d4c9dc" class="enterprise-cta-main">
+            <a href="/cdn-cgi/l/email-protection#086367667c69637c48696c6d787c6961267864377b7d6a626d6b7c35526978717c6966616d2d3a38672d3a385f716b6d66cc912d3a38586164677c69cdb47d2d3a385b697c6d64617c69" class="enterprise-cta-main">
                 <span class="cta-icon-wrapper">
                     <span class="cta-icon">⚡</span>
                     <span class="cta-pulse"></span>
@@ -645,7 +668,7 @@
                 <span class="cta-arrow">→</span>
             </a>
             <div class="alternative-contact-cta">
-                lub skontaktuj się bezpośrednio na <a href="/cdn-cgi/l/email-protection#f2999d9c86939986b29396978286939bdc829e" class="alt-email"><span class="__cf_email__" data-cfemail="c1aaaeafb5a0aab581a0a5a4b1b5a0a8efb1ad">[email&#160;protected]</span></a>
+                lub skontaktuj się bezpośrednio na <a href="/cdn-cgi/l/email-protection#7a1115140e1b110e3a1b1e1f0a0e1b13540a16" class="alt-email"><span class="__cf_email__" data-cfemail="23484c4d57424857634247465357424a0d534f">[email&#160;protected]</span></a>
             </div>
         </div>
         
@@ -767,12 +790,12 @@
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 
-<!-- 🔥 SOURCE DETECTION - MOTO -->
+<!-- 🔥 SOURCE DETECTION - ELEKTRO -->
 <script>
-    window.BOT_SOURCE = 'moto';
+    window.BOT_SOURCE = 'elektro';
 </script>
 
-<script src="{{ url_for('static', filename='script.js') }}?v=1.2" defer></script>
+<script src="{{ url_for('static', filename='script_elektro.js') }}?v=1.2" defer></script>
 <script src="{{ url_for('static', filename='dashboard.js') }}" defer></script>
 
 <script>
@@ -846,7 +869,7 @@
     align-items: center;
     gap: 8px;
     padding: 8px 16px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     color: white;
     border-radius: 8px;
     text-decoration: none;

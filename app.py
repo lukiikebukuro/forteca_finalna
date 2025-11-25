@@ -3,7 +3,18 @@ from flask_login import login_user, logout_user, login_required, current_user
 from auth_manager import init_login_manager, User, require_client_access, require_admin_access, require_debug_access, get_user_dashboard_route, setup_default_users, ensure_tables_exist
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash, make_response
 from datetime import datetime, timezone, timedelta
-from ecommerce_bot import EcommerceBot
+
+# 🔥 DUAL BOT IMPORT - MOTO + ELEKTRO
+from ecommerce_bot import EcommerceBot as MotoBot
+try:
+    from elektro_bot import EcommerceBot as ElektroBot
+    ELEKTRO_BOT_AVAILABLE = True
+    print("✅ Elektro bot imported successfully")
+except ImportError as e:
+    print(f"⚠️ Elektro bot not available: {e}")
+    ELEKTRO_BOT_AVAILABLE = False
+    ElektroBot = None
+
 from dateutil import parser
 import sqlite3
 import json
@@ -126,8 +137,37 @@ socketio = SocketIO(app,
     transports=['polling', 'websocket']
 )
 
-# Initialize bot
-bot = EcommerceBot()
+# 🔥 DUAL BOT INITIALIZATION - MOTO + ELEKTRO
+print("🚀 Initializing DUAL BOT system...")
+moto_bot = MotoBot()
+print("✅ Moto bot initialized")
+
+if ELEKTRO_BOT_AVAILABLE:
+    elektro_bot = ElektroBot()
+    print("✅ Elektro bot initialized")
+else:
+    elektro_bot = None
+    print("⚠️ Elektro bot disabled - using moto only")
+
+# Backward compatibility - 'bot' defaults to moto_bot
+bot = moto_bot
+
+# 🎯 DECISION MAPPINGS - RÓŻNE DLA KAŻDEJ BRANŻY!
+# MOTORYZACJA: Krótkie nazwy produktów → MEDIUM = niepewne → ODFILTROWANE
+MOTO_DECISION_MAPPING = {
+    'HIGH': 'ZNALEZIONE PRODUKTY',
+    'MEDIUM': 'ODFILTROWANE',  # ❌ dla motoryzacji
+    'LOW': 'ODFILTROWANE',
+    'NO_MATCH': 'UTRACONE OKAZJE'
+}
+
+# ELEKTRONIKA: Długie nazwy produktów → MEDIUM = dobre dopasowanie → FOUND!
+ELEKTRO_DECISION_MAPPING = {
+    'HIGH': 'ZNALEZIONE PRODUKTY',
+    'MEDIUM': 'ZNALEZIONE PRODUKTY',  # ✅ dla elektroniki!
+    'LOW': 'ODFILTROWANE',
+    'NO_MATCH': 'UTRACONE OKAZJE'
+}
 
 # Lost demand log file
 LOST_DEMAND_LOG = 'lost_demand_log.csv'
@@ -583,10 +623,27 @@ def demo_page():
     """Demo page with bot and dashboard split screen"""
     return render_template('demo_page.html')
 
+# 🔥 ELEKTRO BOT ROUTES - NEW!
+@app.route('/elektrobot-prototype')
+def elektrobot_index():
+    """Main page of elektrobot with bot interface"""
+    if not ELEKTRO_BOT_AVAILABLE:
+        flash('Elektro bot is not available', 'error')
+        return redirect(url_for('motobot_index'))
+    return render_template('demo_page_elektro.html')
+
+@app.route('/demo/elektro')
+def elektro_demo_page():
+    """Elektro demo page with bot and dashboard split screen"""
+    if not ELEKTRO_BOT_AVAILABLE:
+        flash('Elektro bot is not available', 'error')
+        return redirect(url_for('demo_page'))
+    return render_template('demo_page_elektro.html')
+
 @app.route('/motobot-prototype/bot/start', methods=['POST'])
 @limiter.limit("20/minute")
 def bot_start():
-    """Initialize bot session"""
+    """Initialize bot session - MOTO"""
     try:
         session.permanent = True
         session['cart'] = []
@@ -594,13 +651,44 @@ def bot_start():
         session['machine_filter'] = None
         
         # Get initial greeting
-        initial_response = bot.get_initial_greeting()
+        initial_response = moto_bot.get_initial_greeting()
         
         return jsonify({'reply': initial_response})
     
     except Exception as e:
-        print(f"[ERROR] Bot start error: {e}")
+        print(f"[ERROR] Moto bot start error: {e}")
         app.logger.error(f"Bot start error: {e}", exc_info=True)
+        return jsonify({
+            'reply': {
+                'text_message': f'Wystąpił błąd podczas inicjalizacji: {str(e)}',
+                'buttons': [
+                    {'text': 'Spróbuj ponownie', 'action': 'restart'}
+                ]
+            }
+        }), 500
+
+# 🔥 ELEKTRO BOT START - NEW!
+@app.route('/elektrobot-prototype/bot/start', methods=['POST'])
+@limiter.limit("20/minute")
+def elektro_bot_start():
+    """Initialize bot session - ELEKTRO"""
+    if not ELEKTRO_BOT_AVAILABLE:
+        return jsonify({'error': 'Elektro bot not available'}), 503
+        
+    try:
+        session.permanent = True
+        session['cart'] = []
+        session['context'] = None
+        session['machine_filter'] = None
+        
+        # Get initial greeting
+        initial_response = elektro_bot.get_initial_greeting()
+        
+        return jsonify({'reply': initial_response})
+    
+    except Exception as e:
+        print(f"[ERROR] Elektro bot start error: {e}")
+        app.logger.error(f"Elektro bot start error: {e}", exc_info=True)
         return jsonify({
             'reply': {
                 'text_message': f'Wystąpił błąd podczas inicjalizacji: {str(e)}',
@@ -613,29 +701,68 @@ def bot_start():
 @app.route('/motobot-prototype/bot/send', methods=['POST'])
 @limiter.limit("100/minute")
 def bot_send():
-    """Handle user messages - BEZ integracji z TCD"""
+    """Handle user messages - MOTO"""
     try:
         data = request.get_json()
         user_message = data.get('message', '')
         button_action = data.get('button_action', '')
         
-        print(f"[DEBUG] Message: {user_message}, Action: {button_action}")
-        app.logger.info(f"Received message: '{user_message}', Action: '{button_action}'")
+        print(f"[DEBUG] Moto Message: {user_message}, Action: {button_action}")
+        app.logger.info(f"Moto received: '{user_message}', Action: '{button_action}'")
         
         # Process button action or text message
         if button_action:
-            reply = bot.handle_button_action(button_action)
+            reply = moto_bot.handle_button_action(button_action)
         elif user_message:
-            # USUNIĘTA integracja z TCD - tylko odpowiedź bota
-            reply = bot.process_message(user_message)
+            reply = moto_bot.process_message(user_message)
         else:
             return jsonify({'error': 'No message or action provided'}), 400
         
         return jsonify({'reply': reply})
     
     except Exception as e:
-        print(f"[ERROR] Bot send error: {e}")
-        app.logger.error(f"Bot send error: {e}", exc_info=True)
+        print(f"[ERROR] Moto bot send error: {e}")
+        app.logger.error(f"Moto bot send error: {e}", exc_info=True)
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'reply': {
+                'text_message': 'Wystąpił błąd podczas przetwarzania żądania.',
+                'buttons': [
+                    {'text': 'Powrót do menu', 'action': 'main_menu'}
+                ]
+            }
+        }), 500
+
+# 🔥 ELEKTRO BOT SEND - NEW!
+@app.route('/elektrobot-prototype/bot/send', methods=['POST'])
+@limiter.limit("100/minute")
+def elektro_bot_send():
+    """Handle user messages - ELEKTRO"""
+    if not ELEKTRO_BOT_AVAILABLE:
+        return jsonify({'error': 'Elektro bot not available'}), 503
+        
+    try:
+        data = request.get_json()
+        user_message = data.get('message', '')
+        button_action = data.get('button_action', '')
+        
+        print(f"[DEBUG] Elektro Message: {user_message}, Action: {button_action}")
+        app.logger.info(f"Elektro received: '{user_message}', Action: '{button_action}'")
+        
+        # Process button action or text message
+        if button_action:
+            reply = elektro_bot.handle_button_action(button_action)
+        elif user_message:
+            reply = elektro_bot.process_message(user_message)
+        else:
+            return jsonify({'error': 'No message or action provided'}), 400
+        
+        return jsonify({'reply': reply})
+    
+    except Exception as e:
+        print(f"[ERROR] Elektro bot send error: {e}")
+        app.logger.error(f"Elektro bot send error: {e}", exc_info=True)
         import traceback
         traceback.print_exc()
         return jsonify({
@@ -650,7 +777,7 @@ def bot_send():
 @app.route('/motobot-prototype/search-suggestions', methods=['POST'])
 @limiter.limit("100/minute")
 def search_suggestions():
-    """Real-time search suggestions - BEZ integracji z TCD (tylko sugestie)"""
+    """Real-time search suggestions - MOTO"""
     try:
         data = request.get_json()
         query = data.get('query', '').strip()
@@ -666,7 +793,7 @@ def search_suggestions():
         
         if search_type == 'faq':
             # FAQ search
-            faq_results = bot.get_fuzzy_faq_matches(query, limit=5)
+            faq_results = moto_bot.get_fuzzy_faq_matches(query, limit=5)
             for faq, score in faq_results:
                 suggestions.append({
                     'id': faq['id'],
@@ -684,7 +811,7 @@ def search_suggestions():
             # Search products with intent analysis
             machine_filter = session.get('machine_filter')
             
-            result = bot.get_fuzzy_product_matches(
+            result = moto_bot.get_fuzzy_product_matches(
                 query, machine_filter, limit=6, analyze_intent=True
             )
             
@@ -693,10 +820,10 @@ def search_suggestions():
                 products, confidence_level, suggestion_type, analysis = result
                 
                 # Determine GA4 event
-                ga4_event_data = bot.determine_ga4_event(analysis)
+                ga4_event_data = moto_bot.determine_ga4_event(analysis)
                 if ga4_event_data:
                     ga4_event = ga4_event_data['event']
-                    bot.send_ga4_event(ga4_event_data)
+                    moto_bot.send_ga4_event(ga4_event_data)
                 
                 # Prepare suggestions
                 for product, score in products:
@@ -712,11 +839,11 @@ def search_suggestions():
                         'brand': product['brand']
                     })
                 
-                # Log lost demand if needed (optional - można zostawić dla GA4)
+                # Log lost demand if needed (optional)
                 if confidence_level == 'NO_MATCH':
                     log_lost_demand(query, analysis)
         
-        print(f"[SUGGESTIONS] Query: '{query}' | Type: {search_type} | Confidence: {confidence_level} | GA4: {ga4_event}")
+        print(f"[MOTO SUGGESTIONS] Query: '{query}' | Type: {search_type} | Confidence: {confidence_level} | GA4: {ga4_event}")
         
         return jsonify({
             'suggestions': suggestions,
@@ -726,8 +853,96 @@ def search_suggestions():
         })
     
     except Exception as e:
-        print(f"[ERROR] Search suggestions error: {e}")
-        app.logger.error(f"Search suggestions error: {e}", exc_info=True)
+        print(f"[ERROR] Moto search suggestions error: {e}")
+        app.logger.error(f"Moto search suggestions error: {e}", exc_info=True)
+        import traceback
+        traceback.print_exc()
+        return jsonify({'suggestions': [], 'error': str(e)}), 200
+# 🔥 ELEKTRO SEARCH SUGGESTIONS - NEW!
+@app.route('/elektrobot-prototype/search-suggestions', methods=['POST'])
+@limiter.limit("100/minute")
+def elektro_search_suggestions():
+    """Real-time search suggestions - ELEKTRO"""
+    if not ELEKTRO_BOT_AVAILABLE:
+        return jsonify({'suggestions': [], 'error': 'Elektro bot not available'}), 503
+        
+    try:
+        data = request.get_json()
+        query = data.get('query', '').strip()
+        search_type = data.get('type', 'products')
+        
+        # Minimum 2 characters to search
+        if len(query) < 2:
+            return jsonify({'suggestions': [], 'confidence_level': 'NONE'})
+        
+        suggestions = []
+        confidence_level = 'HIGH'
+        ga4_event = None
+        
+        if search_type == 'faq':
+            # FAQ search
+            faq_results = elektro_bot.get_fuzzy_faq_matches(query, limit=5)
+            for faq, score in faq_results:
+                suggestions.append({
+                    'id': faq['id'],
+                    'text': faq['question'],
+                    'type': 'faq',
+                    'score': int(score),
+                    'category': faq.get('category', 'FAQ'),
+                    'question': faq['question'],
+                    'answer': faq['answer']
+                })
+            
+            confidence_level = 'HIGH' if suggestions else 'NO_MATCH'
+            
+        else:
+            # Search products with intent analysis
+            machine_filter = session.get('machine_filter')
+            
+            result = elektro_bot.get_fuzzy_product_matches(
+                query, machine_filter, limit=6, analyze_intent=True
+            )
+            
+            if isinstance(result, tuple) and len(result) == 4:
+                # New format with analysis
+                products, confidence_level, suggestion_type, analysis = result
+                
+                # Determine GA4 event
+                ga4_event_data = elektro_bot.determine_ga4_event(analysis)
+                if ga4_event_data:
+                    ga4_event = ga4_event_data['event']
+                    elektro_bot.send_ga4_event(ga4_event_data)
+                
+                # Prepare suggestions
+                for product, score in products:
+                    stock_status = 'available' if product['stock'] > 10 else 'limited' if product['stock'] > 0 else 'out'
+                    suggestions.append({
+                        'id': product['id'],
+                        'text': product['name'],
+                        'type': 'product',
+                        'score': int(score),
+                        'price': f"{product['price']:.2f} zł",
+                        'stock': product['stock'],
+                        'stock_status': stock_status,
+                        'brand': product['brand']
+                    })
+                
+                # Log lost demand if needed (optional)
+                if confidence_level == 'NO_MATCH':
+                    log_lost_demand(query, analysis)
+        
+        print(f"[ELEKTRO SUGGESTIONS] Query: '{query}' | Type: {search_type} | Confidence: {confidence_level} | GA4: {ga4_event}")
+        
+        return jsonify({
+            'suggestions': suggestions,
+            'query': query,
+            'confidence_level': confidence_level,
+            'ga4_event': ga4_event
+        })
+    
+    except Exception as e:
+        print(f"[ERROR] Elektro search suggestions error: {e}")
+        app.logger.error(f"Elektro search suggestions error: {e}", exc_info=True)
         import traceback
         traceback.print_exc()
         return jsonify({'suggestions': [], 'error': str(e)}), 200
@@ -782,7 +997,7 @@ def analyze_query():
         # Mapowanie confidence → decision
         decision_mapping = {
             'HIGH': 'ZNALEZIONE PRODUKTY',
-            'MEDIUM': 'ODFILTROWANE', 
+            'MEDIUM': 'ZNALEZIONE PRODUKTY',  # ✅ FIX: MEDIUM też jest Found dla elektroniki!
             'NO_MATCH': 'UTRACONE OKAZJE',
             'LOW': 'ODFILTROWANE'
         }
@@ -2021,6 +2236,17 @@ def handle_visitor_event_websocket(data):
         # Wyciągnij dane
         query = data.get('query', '')
         session_id = data.get('sessionId', 'unknown')
+        source = data.get('source', 'moto')  # 🔥 NEW: wykryj źródło
+        
+        # 🔥 WYBIERZ WŁAŚCIWEGO BOTA
+        if source == 'elektro' and ELEKTRO_BOT_AVAILABLE:
+            active_bot = elektro_bot
+            decision_mapping = ELEKTRO_DECISION_MAPPING
+            print(f"[WEBSOCKET] Using ELEKTRO bot for analysis")
+        else:
+            active_bot = moto_bot
+            decision_mapping = MOTO_DECISION_MAPPING
+            print(f"[WEBSOCKET] Using MOTO bot for analysis")
         
         # === RODO: SANITYZUJ QUERY NA BACKENDZIE ===
         sanitized_query = scrub_pii(query)
@@ -2029,17 +2255,10 @@ def handle_visitor_event_websocket(data):
             print(f"[RODO] PII scrubbed in WebSocket query")
             app.logger.warning(f"PII scrubbed in WebSocket visitor_event - session {session_id[:8]}")
         
-        # Analizuj SANITIZED zapytanie przez istniejący system AI
-        analysis = bot.analyze_query_intent(sanitized_query)
+        # Analizuj SANITIZED zapytanie przez właściwego bota
+        analysis = active_bot.analyze_query_intent(sanitized_query)
         
-        # Mapowanie na decisions
-        decision_mapping = {
-            'HIGH': 'ZNALEZIONE PRODUKTY',
-            'MEDIUM': 'ODFILTROWANE', 
-            'LOW': 'ODFILTROWANE',
-            'NO_MATCH': 'UTRACONE OKAZJE'
-        }
-        
+        # Użyj decision_mapping wybranego na podstawie źródła (zdefiniowanego wyżej)
         decision = decision_mapping.get(analysis['confidence_level'], 'ODFILTROWANE')
         potential_value = calculate_lost_value_internal(sanitized_query) if decision == 'UTRACONE OKAZJE' else 0
         
@@ -2320,6 +2539,17 @@ def handle_bot_query(session_id, data):
         # === RODO: SANITYZUJ QUERY PRZED ZAPISEM (BACKEND DEFENSE) ===
         raw_query = data.get('query', '')
         sanitized_query = scrub_pii(raw_query)
+        source = data.get('source', 'moto')  # 🔥 NEW: detect source
+        
+        # 🔥 WYBIERZ WŁAŚCIWEGO BOTA
+        if source == 'elektro' and ELEKTRO_BOT_AVAILABLE:
+            active_bot = elektro_bot
+            decision_mapping = ELEKTRO_DECISION_MAPPING
+            print(f"[BOT_QUERY] Using ELEKTRO bot for analysis")
+        else:
+            active_bot = moto_bot
+            decision_mapping = MOTO_DECISION_MAPPING
+            print(f"[BOT_QUERY] Using MOTO bot for analysis")
         
         # Check if PII was detected
         if sanitized_query != raw_query:
@@ -2328,17 +2558,10 @@ def handle_bot_query(session_id, data):
             print(f"  Scrubbed length: {len(sanitized_query)}")
             app.logger.warning(f"PII scrubbed from query (backend) - session {session_id[:8]}")
         
-        # Analizuj SANITIZED query (nie raw!)
-        analysis = bot.analyze_query_intent(sanitized_query)
+        # Analizuj SANITIZED query przez właściwego bota
+        analysis = active_bot.analyze_query_intent(sanitized_query)
         
-        # Mapowanie na decisions
-        decision_mapping = {
-            'HIGH': 'ZNALEZIONE PRODUKTY',
-            'MEDIUM': 'ODFILTROWANE', 
-            'LOW': 'ODFILTROWANE',
-            'NO_MATCH': 'UTRACONE OKAZJE'
-        }
-        
+        # Użyj decision_mapping wybranego na podstawie źródła
         decision = decision_mapping.get(analysis['confidence_level'], 'ODFILTROWANE')
         potential_value = calculate_lost_value_internal(sanitized_query) if decision == 'UTRACONE OKAZJE' else 0
         
@@ -2457,7 +2680,7 @@ def fix_database_now():
 # 1. Upewnij się, że mamy kontekst aplikacji
 with app.app_context():
     # 2. Inicjalizuj dane bota
-    bot.initialize_data()
+    #bot.initialize_data()
     
     # 3. Inicjalizuj bazę danych dla Dashboardu
     DatabaseManager.initialize_database()

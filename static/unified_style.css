@@ -4365,3 +4365,44 @@ pricing-main {
     transition: all 0.3s ease; 
     transform: scale(1.05) translateZ(0); /* Utrzymujemy akcelerację */
 }
+
+
+/* ============================================== */
+/* 🚑 RATUNEK DLA LAPTOPÓW (Ekrany < 900px)      */
+/* ============================================== */
+
+@media screen and (max-height: 900px) {
+    
+    /* 1. Zmniejszamy główne pudło */
+    .chat-interface {
+        height: 75vh !important; /* Zajmij tylko 75% wysokości ekranu */
+        min-height: 450px;       /* Ale nie mniej niż tyle */
+        margin: 0 auto;
+    }
+
+    /* 2. Zmniejszamy marginesy strony */
+    .main-content {
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+        display: flex;
+        align-items: center;     /* Wyśrodkuj w pionie */
+        justify-content: center;
+        height: 100vh;           /* Cała strona na wysokość ekranu */
+    }
+
+    /* 3. Odchudzamy nagłówek czatu */
+    .chat-header {
+        padding: 10px 15px !important;
+        min-height: auto !important;
+    }
+    
+    /* 4. Zmniejszamy odstępy w wiadomościach */
+    .messages-container {
+        padding: 15px !important;
+    }
+    
+    /* 5. Input też trochę mniejszy */
+    .input-section {
+        padding: 10px 15px !important;
+    }
+}

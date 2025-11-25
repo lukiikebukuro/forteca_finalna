@@ -537,7 +537,8 @@ class VisitorTracker {
                         country: sessionInfo.country || 'Unknown',
                         organization: sessionInfo.organization || 'Unknown',
                         sessionId: this.sessionId,
-                        anonymous: this.anonymousMode
+                        anonymous: this.anonymousMode,
+                        source: window.BOT_SOURCE || 'moto' // 🔥 NEW: detect source
                     };
                     
                     this.socket.emit('visitor_event', eventData);
@@ -550,7 +551,8 @@ class VisitorTracker {
                     time_since_entry: Date.now() - this.entryTime.getTime(),
                     city: sessionInfo.city || 'Unknown',
                     country: sessionInfo.country || 'Unknown',
-                    organization: sessionInfo.organization || 'Unknown'
+                    organization: sessionInfo.organization || 'Unknown',
+                    source: window.BOT_SOURCE || 'moto' // 🔥 NEW: detect source
                 });
                 
                 // Call original function with ORIGINAL query (bot needs it)

@@ -41,13 +41,27 @@ def load_welcome_message_from_config():
 # Ta zmienna będzie zawierać gotowy tekst powitania
 GLOBAL_WELCOME_MESSAGE = load_welcome_message_from_config()
 
+def load_products_from_json(filepath='products.json'):
+    """Ładuje produkty z pliku JSON."""
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            return data.get('products', [])
+    except FileNotFoundError:
+        print(f"BŁĄD: Nie znaleziono pliku {filepath}. Używam pustej listy produktów.")
+        return []
+    except Exception as e:
+        print(f"BŁĄD podczas ładowania {filepath}: {e}")
+        return []
+
 class EcommerceBot:
-    def __init__(self):
+    def __init__(self, products_path='products.json'):
         self.product_database = {}
         self.faq_database = {}
         self.orders_database = {}
         self.current_context = None
         self.search_cache = {}
+        self.products_path = products_path  # Zapisz ścieżkę
         
         # === UNIWERSALNA BAZA WIEDZY MOTORYZACYJNA (ROZSZERZONA) ===
         self.UNIVERSAL_AUTOMOTIVE_KNOWLEDGE = {
@@ -405,103 +419,87 @@ class EcommerceBot:
         ZASÓB B (50%): Słownik wiedzy dla looks_like_product_query
         """
         
-        # ZASÓB A (50%) - FAKTYCZNE PRODUKTY W SYSTEMIE (rozszerzone z 30 do 80+ produktów)
+        print("📦 MOTO BOT INITIALIZE_DATA() STARTED!")
+        
+        # ZASÓB A (50%) - FAKTYCZNE PRODUKTY W SYSTEMIE (HARDCODED - 68 sztuk)
+        # Produkty motoryzacyjne z products.json - wbudowane bezpośrednio w kod
+        products_data = [
+            {'id': 'KH001', 'name': 'Klocki hamulcowe przód Bosch BMW E90 320i', 'category': 'hamulce', 'brand': 'Bosch', 'model': '0986494104', 'price': 189.0, 'stock': 45},
+            {'id': 'KH002', 'name': 'Klocki hamulcowe tył ATE Mercedes W204 C200', 'category': 'hamulce', 'brand': 'ATE', 'model': '13.0460-7218', 'price': 156.0, 'stock': 38},
+            {'id': 'KH003', 'name': 'Klocki hamulcowe Ferodo Audi A4 B8 2.0 TDI', 'category': 'hamulce', 'brand': 'Ferodo', 'model': 'FDB4050', 'price': 245.0, 'stock': 22},
+            {'id': 'KH004', 'name': 'Klocki hamulcowe TRW VW Golf VII 1.4 TSI', 'category': 'hamulce', 'brand': 'TRW', 'model': 'GDB1748', 'price': 135.0, 'stock': 67},
+            {'id': 'KH005', 'name': 'Klocki hamulcowe Brembo Toyota Corolla E12', 'category': 'hamulce', 'brand': 'Brembo', 'model': 'P83052', 'price': 156.0, 'stock': 73},
+            {'id': 'KH006', 'name': 'Klocki hamulcowe przód Textar Ford Focus MK3', 'category': 'hamulce', 'brand': 'Textar', 'model': '2456701', 'price': 178.0, 'stock': 41},
+            {'id': 'KH007', 'name': 'Klocki hamulcowe ceramiczne ATE BMW M3 E92', 'category': 'hamulce', 'brand': 'ATE', 'model': '13.0470-7241', 'price': 845.0, 'stock': 8},
+            {'id': 'KH008', 'name': 'Klocki hamulcowe Pagid Opel Astra J 1.7 CDTI', 'category': 'hamulce', 'brand': 'Pagid', 'model': 'T1323', 'price': 167.0, 'stock': 29},
+            {'id': 'KH009', 'name': 'Klocki hamulcowe Zimmermann Skoda Octavia III 1.6 TDI', 'category': 'hamulce', 'brand': 'Zimmermann', 'model': '23914.165.1', 'price': 142.0, 'stock': 54},
+            {'id': 'KH010', 'name': 'Klocki hamulcowe Ate Renault Megane III 1.5 dCi', 'category': 'hamulce', 'brand': 'ATE', 'model': '13.0460-7265', 'price': 134.0, 'stock': 47},
+            {'id': 'TH001', 'name': 'Tarcza hamulcowa przednia Brembo BMW E90 320mm', 'category': 'hamulce', 'brand': 'Brembo', 'model': '09.9772.11', 'price': 420.0, 'stock': 18},
+            {'id': 'TH002', 'name': 'Tarcza hamulcowa tylna ATE Mercedes W204 300mm', 'category': 'hamulce', 'brand': 'ATE', 'model': '24.0330-0184', 'price': 285.0, 'stock': 25},
+            {'id': 'TH003', 'name': 'Tarcza hamulcowa Zimmermann VW Golf VII przód 312mm', 'category': 'hamulce', 'brand': 'Zimmermann', 'model': '100.3234.20', 'price': 198.0, 'stock': 34},
+            {'id': 'TH004', 'name': 'Tarcza hamulcowa perforowana Pagid Audi A6 C7 345mm', 'category': 'hamulce', 'brand': 'Pagid', 'model': '54877PRO', 'price': 567.0, 'stock': 12},
+            {'id': 'TH005', 'name': 'Tarcza hamulcowa TRW Toyota Avensis T27 294mm', 'category': 'hamulce', 'brand': 'TRW', 'model': 'DF6123S', 'price': 156.0, 'stock': 31},
+            {'id': 'FO001', 'name': 'Filtr oleju Mann HU719/7x BMW N47 N57 diesel', 'category': 'filtry', 'brand': 'Mann', 'model': 'HU719/7x', 'price': 62.0, 'stock': 120},
+            {'id': 'FO002', 'name': 'Filtr oleju Mahle OX371D Mercedes OM651 2.2 CDI', 'category': 'filtry', 'brand': 'Mahle', 'model': 'OX371D', 'price': 45.0, 'stock': 89},
+            {'id': 'FO003', 'name': 'Filtr oleju Bosch F026407022 VW 1.9 2.0 TDI', 'category': 'filtry', 'brand': 'Bosch', 'model': 'F026407022', 'price': 38.0, 'stock': 156},
+            {'id': 'FO004', 'name': 'Filtr oleju Hengst H90W04 Audi A3 8P 1.9 TDI', 'category': 'filtry', 'brand': 'Hengst', 'model': 'H90W04', 'price': 41.0, 'stock': 78},
+            {'id': 'FO005', 'name': 'Filtr oleju UFI 25.073.00 Fiat Punto 1.3 Multijet', 'category': 'filtry', 'brand': 'UFI', 'model': '25.073.00', 'price': 34.0, 'stock': 95},
+            {'id': 'FP001', 'name': 'Filtr paliwa Bosch F026402836 PSA 1.6 2.0 HDI', 'category': 'filtry', 'brand': 'Bosch', 'model': 'F026402836', 'price': 89.0, 'stock': 85},
+            {'id': 'FP002', 'name': 'Filtr paliwa Mann WK830/7 BMW E90 320d', 'category': 'filtry', 'brand': 'Mann', 'model': 'WK830/7', 'price': 76.0, 'stock': 67},
+            {'id': 'FA001', 'name': 'Filtr powietrza K&N 33-2990 sportowy uniwersalny', 'category': 'filtry', 'brand': 'K&N', 'model': '33-2990', 'price': 285.0, 'stock': 35},
+            {'id': 'FA002', 'name': 'Filtr powietrza Mann C2774/1 BMW E90 E91 E92', 'category': 'filtry', 'brand': 'Mann', 'model': 'C2774/1', 'price': 67.0, 'stock': 89},
+            {'id': 'FA003', 'name': 'Filtr powietrza Mahle LX1006 Mercedes W204 C220 CDI', 'category': 'filtry', 'brand': 'Mahle', 'model': 'LX1006', 'price': 58.0, 'stock': 72},
+            {'id': 'FK001', 'name': 'Filtr kabinowy węglowy Mann CUK2939 Audi A4 A6', 'category': 'filtry', 'brand': 'Mann', 'model': 'CUK2939', 'price': 95.0, 'stock': 68},
+            {'id': 'FK002', 'name': 'Filtr kabinowy Bosch 1987432414 VW Golf VII Passat B8', 'category': 'filtry', 'brand': 'Bosch', 'model': '1987432414', 'price': 73.0, 'stock': 84},
+            {'id': 'AM001', 'name': 'Amortyzator przód Bilstein B4 VW Golf VII 1.4 TSI', 'category': 'zawieszenie', 'brand': 'Bilstein', 'model': '22-266767', 'price': 520.0, 'stock': 15},
+            {'id': 'AM002', 'name': 'Amortyzator tył KYB Excel-G Ford Focus MK3 1.6', 'category': 'zawieszenie', 'brand': 'KYB', 'model': '349034', 'price': 385.0, 'stock': 24},
+            {'id': 'AM003', 'name': 'Amortyzator przód Sachs Opel Astra J 1.7 CDTI', 'category': 'zawieszenie', 'brand': 'Sachs', 'model': '314896', 'price': 425.0, 'stock': 19},
+            {'id': 'AM004', 'name': 'Amortyzator sportowy Koni Yellow BMW E46 330i', 'category': 'zawieszenie', 'brand': 'Koni', 'model': '8741-1394SPORT', 'price': 1250.0, 'stock': 6},
+            {'id': 'AM005', 'name': 'Amortyzator Monroe G8069 Toyota Corolla E12 1.4 VVTi', 'category': 'zawieszenie', 'brand': 'Monroe', 'model': 'G8069', 'price': 298.0, 'stock': 33},
+            {'id': 'SZ001', 'name': 'Świeca zapłonowa NGK Laser Iridium ILZKR7B11', 'category': 'zapłon', 'brand': 'NGK', 'model': 'ILZKR7B11', 'price': 45.0, 'stock': 280},
+            {'id': 'SZ002', 'name': 'Świeca zapłonowa Bosch Platinum Plus FR7DPP33', 'category': 'zapłon', 'brand': 'Bosch', 'model': 'FR7DPP33', 'price': 38.0, 'stock': 320},
+            {'id': 'SZ003', 'name': 'Świeca żarowa Beru PSG006 Mercedes 2.2 CDI', 'category': 'zapłon', 'brand': 'Beru', 'model': 'PSG006', 'price': 78.0, 'stock': 145},
+            {'id': 'SZ004', 'name': 'Świeca zapłonowa Champion RC9YC uniwersalna', 'category': 'zapłon', 'brand': 'Champion', 'model': 'RC9YC', 'price': 22.0, 'stock': 450},
+            {'id': 'SZ005', 'name': 'Świeca zapłonowa Denso IK20TT Honda Civic 1.8 VTEC', 'category': 'zapłon', 'brand': 'Denso', 'model': 'IK20TT', 'price': 52.0, 'stock': 167},
+            {'id': 'AK001', 'name': 'Akumulator Varta Blue Dynamic 74Ah 680A E12', 'category': 'elektryka', 'brand': 'Varta', 'model': 'E12', 'price': 420.0, 'stock': 38},
+            {'id': 'AK002', 'name': 'Akumulator Bosch S4 Silver 60Ah 540A S4005', 'category': 'elektryka', 'brand': 'Bosch', 'model': 'S4005', 'price': 350.0, 'stock': 45},
+            {'id': 'AK003', 'name': 'Akumulator Exide Premium 95Ah 800A EA955', 'category': 'elektryka', 'brand': 'Exide', 'model': 'EA955', 'price': 567.0, 'stock': 23},
+            {'id': 'AK004', 'name': 'Akumulator Yuasa YBX3000 45Ah 330A YBX3012', 'category': 'elektryka', 'brand': 'Yuasa', 'model': 'YBX3012', 'price': 289.0, 'stock': 41},
+            {'id': 'OL001', 'name': 'Olej silnikowy Castrol Edge 5W30 Titanium FST 5L', 'category': 'oleje', 'brand': 'Castrol', 'model': 'Edge 5W30', 'price': 165.0, 'stock': 92},
+            {'id': 'OL002', 'name': 'Olej silnikowy Mobil 1 ESP 0W40 syntetyczny 4L', 'category': 'oleje', 'brand': 'Mobil', 'model': 'ESP 0W40', 'price': 189.0, 'stock': 78},
+            {'id': 'OL003', 'name': 'Olej silnikowy Shell Helix Ultra 5W40 API SN 5L', 'category': 'oleje', 'brand': 'Shell', 'model': 'Helix Ultra', 'price': 145.0, 'stock': 110},
+            {'id': 'OL004', 'name': 'Olej silnikowy Total Quartz 9000 0W30 longlife 4L', 'category': 'oleje', 'brand': 'Total', 'model': 'Quartz 9000', 'price': 178.0, 'stock': 65},
+            {'id': 'OL005', 'name': 'Olej silnikowy Motul 8100 X-cess 5W40 5L', 'category': 'oleje', 'brand': 'Motul', 'model': '8100 X-cess', 'price': 234.0, 'stock': 47},
+            {'id': 'OL006', 'name': 'Olej przekładniowy Liqui Moly Top Tec ATF 1200 1L', 'category': 'oleje', 'brand': 'Liqui Moly', 'model': 'Top Tec ATF', 'price': 89.0, 'stock': 156},
+            {'id': 'OP001', 'name': 'Opona Continental ContiWinterContact TS850 205/55R16', 'category': 'opony', 'brand': 'Continental', 'model': 'TS850', 'price': 456.0, 'stock': 28},
+            {'id': 'OP002', 'name': 'Opona Michelin Pilot Sport 4 225/45R17 94Y', 'category': 'opony', 'brand': 'Michelin', 'model': 'Pilot Sport 4', 'price': 678.0, 'stock': 34},
+            {'id': 'OP003', 'name': 'Opona Bridgestone Turanza T005 195/65R15 91H', 'category': 'opony', 'brand': 'Bridgestone', 'model': 'Turanza T005', 'price': 345.0, 'stock': 67},
+            {'id': 'WA001', 'name': 'Wahacz przedni lewy Febi BMW E90 E91 31126760269', 'category': 'zawieszenie', 'brand': 'Febi', 'model': '40760', 'price': 234.0, 'stock': 19},
+            {'id': 'PR001', 'name': 'Przegub napędowy zewnętrzny GSP VW Golf V 1.9 TDI', 'category': 'napęd', 'brand': 'GSP', 'model': '601023', 'price': 189.0, 'stock': 42},
+            {'id': 'MKH001', 'name': 'Klocki hamulcowe EBC Yamaha R6 2003-2016 przód', 'category': 'hamulce', 'brand': 'EBC', 'model': 'FA252HH', 'price': 145.0, 'stock': 32},
+            {'id': 'MKH002', 'name': 'Klocki hamulcowe Brembo Honda CBR600RR 2005-2016', 'category': 'hamulce', 'brand': 'Brembo', 'model': '07BB26RC', 'price': 178.0, 'stock': 27},
+            {'id': 'MKH003', 'name': 'Klocki hamulcowe TRW Suzuki GSX-R1000 2009-2016', 'category': 'hamulce', 'brand': 'TRW', 'model': 'MCB748SRQ', 'price': 156.0, 'stock': 38},
+            {'id': 'MLN001', 'name': 'Łańcuch napędowy DID 520VX3 Yamaha R6 gold', 'category': 'napęd', 'brand': 'DID', 'model': '520VX3-114', 'price': 345.0, 'stock': 38},
+            {'id': 'MLN002', 'name': 'Łańcuch RK Racing 525XSO Honda CBR1000RR', 'category': 'napęd', 'brand': 'RK', 'model': '525XSO-120', 'price': 567.0, 'stock': 23},
+            {'id': 'MFO001', 'name': 'Filtr oleju HiFlo Honda CBR600RR 2003-2018', 'category': 'filtry', 'brand': 'HiFlo', 'model': 'HF303RC', 'price': 34.0, 'stock': 125},
+            {'id': 'MOP001', 'name': 'Opona motocyklowa Michelin Pilot Road 4 120/70ZR17', 'category': 'opony', 'brand': 'Michelin', 'model': 'Pilot Road 4', 'price': 234.0, 'stock': 45},
+            {'id': 'DKH001', 'name': 'Klocki hamulcowe Textar Mercedes Sprinter 906 przód', 'category': 'hamulce', 'brand': 'Textar', 'model': '2430801', 'price': 267.0, 'stock': 34},
+            {'id': 'DKH002', 'name': 'Klocki hamulcowe Ferodo VW Crafter 2006-2016 tył', 'category': 'hamulce', 'brand': 'Ferodo', 'model': 'FDB4114', 'price': 298.0, 'stock': 26},
+            {'id': 'DFO001', 'name': 'Filtr oleju Mann W712/94 Sprinter Vito 2.2 CDI', 'category': 'filtry', 'brand': 'Mann', 'model': 'W712/94', 'price': 78.0, 'stock': 89},
+            {'id': 'DFO002', 'name': 'Filtr oleju Mahle OX254D Iveco Daily 3.0 HTP', 'category': 'filtry', 'brand': 'Mahle', 'model': 'OX254D', 'price': 67.0, 'stock': 75},
+            {'id': 'DAM001', 'name': 'Amortyzator przód Monroe Ford Transit MK7 2006-2014', 'category': 'zawieszenie', 'brand': 'Monroe', 'model': '743049SP', 'price': 456.0, 'stock': 18},
+            {'id': 'LK001', 'name': 'Klocki hamulcowe Brembo Porsche 911 997 Turbo carbon ceramic', 'category': 'hamulce', 'brand': 'Brembo', 'model': 'P50086', 'price': 2340.0, 'stock': 4},
+            {'id': 'LK002', 'name': 'Klocki hamulcowe Pagid Lamborghini Gallardo LP560', 'category': 'hamulce', 'brand': 'Pagid', 'model': 'RSC1', 'price': 1890.0, 'stock': 3},
+            {'id': 'TU001', 'name': 'Filtr powietrza sportowy K&N RU-3530 uniwersalny stożek', 'category': 'filtry', 'brand': 'K&N', 'model': 'RU-3530', 'price': 189.0, 'stock': 67},
+            {'id': 'TU002', 'name': 'Intercooler Mishimoto uniwersalny 600x300x76mm', 'category': 'chłodzenie', 'brand': 'Mishimoto', 'model': 'MMINT-UNI-23', 'price': 1234.0, 'stock': 12},
+        ]
+        
+        print(f"🔥🔥🔥 MOTO BOT PRODUCTS LOADED: {len(products_data)} 🔥🔥🔥")
+        if len(products_data) > 0:
+            print(f"🔥 First product: {products_data[0]['name']}")
+        
         self.product_database = {
-            'products': [
-                # === SAMOCHODY OSOBOWE - KLOCKI HAMULCOWE ===
-                {'id': 'KH001', 'name': 'Klocki hamulcowe przód Bosch BMW E90 320i', 'category': 'hamulce', 'machine': 'osobowy', 'brand': 'Bosch', 'model': '0986494104', 'price': 189.00, 'stock': 45},
-                {'id': 'KH002', 'name': 'Klocki hamulcowe tył ATE Mercedes W204 C200', 'category': 'hamulce', 'machine': 'osobowy', 'brand': 'ATE', 'model': '13.0460-7218', 'price': 156.00, 'stock': 38},
-                {'id': 'KH003', 'name': 'Klocki hamulcowe Ferodo Audi A4 B8 2.0 TDI', 'category': 'hamulce', 'machine': 'osobowy', 'brand': 'Ferodo', 'model': 'FDB4050', 'price': 245.00, 'stock': 22},
-                {'id': 'KH004', 'name': 'Klocki hamulcowe TRW VW Golf VII 1.4 TSI', 'category': 'hamulce', 'machine': 'osobowy', 'brand': 'TRW', 'model': 'GDB1748', 'price': 135.00, 'stock': 67},
-                {'id': 'KH005', 'name': 'Klocki hamulcowe Brembo Toyota Corolla E12', 'category': 'hamulce', 'machine': 'osobowy', 'brand': 'Brembo', 'model': 'P83052', 'price': 156.00, 'stock': 73},
-                {'id': 'KH006', 'name': 'Klocki hamulcowe przód Textar Ford Focus MK3', 'category': 'hamulce', 'machine': 'osobowy', 'brand': 'Textar', 'model': '2456701', 'price': 178.00, 'stock': 41},
-                {'id': 'KH007', 'name': 'Klocki hamulcowe ceramiczne ATE BMW M3 E92', 'category': 'hamulce', 'machine': 'osobowy', 'brand': 'ATE', 'model': '13.0470-7241', 'price': 845.00, 'stock': 8},
-                {'id': 'KH008', 'name': 'Klocki hamulcowe Pagid Opel Astra J 1.7 CDTI', 'category': 'hamulce', 'machine': 'osobowy', 'brand': 'Pagid', 'model': 'T1323', 'price': 167.00, 'stock': 29},
-                {'id': 'KH009', 'name': 'Klocki hamulcowe Zimmermann Skoda Octavia III 1.6 TDI', 'category': 'hamulce', 'machine': 'osobowy', 'brand': 'Zimmermann', 'model': '23914.165.1', 'price': 142.00, 'stock': 54},
-                {'id': 'KH010', 'name': 'Klocki hamulcowe Ate Renault Megane III 1.5 dCi', 'category': 'hamulce', 'machine': 'osobowy', 'brand': 'ATE', 'model': '13.0460-7265', 'price': 134.00, 'stock': 47},
-                
-                # TARCZE HAMULCOWE (rozszerzone)
-                {'id': 'TH001', 'name': 'Tarcza hamulcowa przednia Brembo BMW E90 320mm', 'category': 'hamulce', 'machine': 'osobowy', 'brand': 'Brembo', 'model': '09.9772.11', 'price': 420.00, 'stock': 18},
-                {'id': 'TH002', 'name': 'Tarcza hamulcowa tylna ATE Mercedes W204 300mm', 'category': 'hamulce', 'machine': 'osobowy', 'brand': 'ATE', 'model': '24.0330-0184', 'price': 285.00, 'stock': 25},
-                {'id': 'TH003', 'name': 'Tarcza hamulcowa Zimmermann VW Golf VII przód 312mm', 'category': 'hamulce', 'machine': 'osobowy', 'brand': 'Zimmermann', 'model': '100.3234.20', 'price': 198.00, 'stock': 34},
-                {'id': 'TH004', 'name': 'Tarcza hamulcowa perforowana Pagid Audi A6 C7 345mm', 'category': 'hamulce', 'machine': 'osobowy', 'brand': 'Pagid', 'model': '54877PRO', 'price': 567.00, 'stock': 12},
-                {'id': 'TH005', 'name': 'Tarcza hamulcowa TRW Toyota Avensis T27 294mm', 'category': 'hamulce', 'machine': 'osobowy', 'brand': 'TRW', 'model': 'DF6123S', 'price': 156.00, 'stock': 31},
-                
-                # FILTRY (rozszerzone)
-                {'id': 'FO001', 'name': 'Filtr oleju Mann HU719/7x BMW N47 N57 diesel', 'category': 'filtry', 'machine': 'osobowy', 'brand': 'Mann', 'model': 'HU719/7x', 'price': 62.00, 'stock': 120},
-                {'id': 'FO002', 'name': 'Filtr oleju Mahle OX371D Mercedes OM651 2.2 CDI', 'category': 'filtry', 'machine': 'osobowy', 'brand': 'Mahle', 'model': 'OX371D', 'price': 45.00, 'stock': 89},
-                {'id': 'FO003', 'name': 'Filtr oleju Bosch F026407022 VW 1.9 2.0 TDI', 'category': 'filtry', 'machine': 'osobowy', 'brand': 'Bosch', 'model': 'F026407022', 'price': 38.00, 'stock': 156},
-                {'id': 'FO004', 'name': 'Filtr oleju Hengst H90W04 Audi A3 8P 1.9 TDI', 'category': 'filtry', 'machine': 'osobowy', 'brand': 'Hengst', 'model': 'H90W04', 'price': 41.00, 'stock': 78},
-                {'id': 'FO005', 'name': 'Filtr oleju UFI 25.073.00 Fiat Punto 1.3 Multijet', 'category': 'filtry', 'machine': 'osobowy', 'brand': 'UFI', 'model': '25.073.00', 'price': 34.00, 'stock': 95},
-                {'id': 'FP001', 'name': 'Filtr paliwa Bosch F026402836 PSA 1.6 2.0 HDI', 'category': 'filtry', 'machine': 'osobowy', 'brand': 'Bosch', 'model': 'F026402836', 'price': 89.00, 'stock': 85},
-                {'id': 'FP002', 'name': 'Filtr paliwa Mann WK830/7 BMW E90 320d', 'category': 'filtry', 'machine': 'osobowy', 'brand': 'Mann', 'model': 'WK830/7', 'price': 76.00, 'stock': 67},
-                {'id': 'FA001', 'name': 'Filtr powietrza K&N 33-2990 sportowy uniwersalny', 'category': 'filtry', 'machine': 'uniwersalny', 'brand': 'K&N', 'model': '33-2990', 'price': 285.00, 'stock': 35},
-                {'id': 'FA002', 'name': 'Filtr powietrza Mann C2774/1 BMW E90 E91 E92', 'category': 'filtry', 'machine': 'osobowy', 'brand': 'Mann', 'model': 'C2774/1', 'price': 67.00, 'stock': 89},
-                {'id': 'FA003', 'name': 'Filtr powietrza Mahle LX1006 Mercedes W204 C220 CDI', 'category': 'filtry', 'machine': 'osobowy', 'brand': 'Mahle', 'model': 'LX1006', 'price': 58.00, 'stock': 72},
-                {'id': 'FK001', 'name': 'Filtr kabinowy węglowy Mann CUK2939 Audi A4 A6', 'category': 'filtry', 'machine': 'osobowy', 'brand': 'Mann', 'model': 'CUK2939', 'price': 95.00, 'stock': 68},
-                {'id': 'FK002', 'name': 'Filtr kabinowy Bosch 1987432414 VW Golf VII Passat B8', 'category': 'filtry', 'machine': 'osobowy', 'brand': 'Bosch', 'model': '1987432414', 'price': 73.00, 'stock': 84},
-                
-                # AMORTYZATORY (rozszerzone)
-                {'id': 'AM001', 'name': 'Amortyzator przód Bilstein B4 VW Golf VII 1.4 TSI', 'category': 'zawieszenie', 'machine': 'osobowy', 'brand': 'Bilstein', 'model': '22-266767', 'price': 520.00, 'stock': 15},
-                {'id': 'AM002', 'name': 'Amortyzator tył KYB Excel-G Ford Focus MK3 1.6', 'category': 'zawieszenie', 'machine': 'osobowy', 'brand': 'KYB', 'model': '349034', 'price': 385.00, 'stock': 24},
-                {'id': 'AM003', 'name': 'Amortyzator przód Sachs Opel Astra J 1.7 CDTI', 'category': 'zawieszenie', 'machine': 'osobowy', 'brand': 'Sachs', 'model': '314896', 'price': 425.00, 'stock': 19},
-                {'id': 'AM004', 'name': 'Amortyzator sportowy Koni Yellow BMW E46 330i', 'category': 'zawieszenie', 'machine': 'osobowy', 'brand': 'Koni', 'model': '8741-1394SPORT', 'price': 1250.00, 'stock': 6},
-                {'id': 'AM005', 'name': 'Amortyzator Monroe G8069 Toyota Corolla E12 1.4 VVTi', 'category': 'zawieszenie', 'machine': 'osobowy', 'brand': 'Monroe', 'model': 'G8069', 'price': 298.00, 'stock': 33},
-                
-                # ŚWIECE (rozszerzone)
-                {'id': 'SZ001', 'name': 'Świeca zapłonowa NGK Laser Iridium ILZKR7B11', 'category': 'zapłon', 'machine': 'osobowy', 'brand': 'NGK', 'model': 'ILZKR7B11', 'price': 45.00, 'stock': 280},
-                {'id': 'SZ002', 'name': 'Świeca zapłonowa Bosch Platinum Plus FR7DPP33', 'category': 'zapłon', 'machine': 'osobowy', 'brand': 'Bosch', 'model': 'FR7DPP33', 'price': 38.00, 'stock': 320},
-                {'id': 'SZ003', 'name': 'Świeca żarowa Beru PSG006 Mercedes 2.2 CDI', 'category': 'zapłon', 'machine': 'osobowy', 'brand': 'Beru', 'model': 'PSG006', 'price': 78.00, 'stock': 145},
-                {'id': 'SZ004', 'name': 'Świeca zapłonowa Champion RC9YC uniwersalna', 'category': 'zapłon', 'machine': 'uniwersalny', 'brand': 'Champion', 'model': 'RC9YC', 'price': 22.00, 'stock': 450},
-                {'id': 'SZ005', 'name': 'Świeca zapłonowa Denso IK20TT Honda Civic 1.8 VTEC', 'category': 'zapłon', 'machine': 'osobowy', 'brand': 'Denso', 'model': 'IK20TT', 'price': 52.00, 'stock': 167},
-                
-                # AKUMULATORY (rozszerzone)
-                {'id': 'AK001', 'name': 'Akumulator Varta Blue Dynamic 74Ah 680A E12', 'category': 'elektryka', 'machine': 'osobowy', 'brand': 'Varta', 'model': 'E12', 'price': 420.00, 'stock': 38},
-                {'id': 'AK002', 'name': 'Akumulator Bosch S4 Silver 60Ah 540A S4005', 'category': 'elektryka', 'machine': 'osobowy', 'brand': 'Bosch', 'model': 'S4005', 'price': 350.00, 'stock': 45},
-                {'id': 'AK003', 'name': 'Akumulator Exide Premium 95Ah 800A EA955', 'category': 'elektryka', 'machine': 'osobowy', 'brand': 'Exide', 'model': 'EA955', 'price': 567.00, 'stock': 23},
-                {'id': 'AK004', 'name': 'Akumulator Yuasa YBX3000 45Ah 330A YBX3012', 'category': 'elektryka', 'machine': 'osobowy', 'brand': 'Yuasa', 'model': 'YBX3012', 'price': 289.00, 'stock': 41},
-                
-                # OLEJE (rozszerzone)
-                {'id': 'OL001', 'name': 'Olej silnikowy Castrol Edge 5W30 Titanium FST 5L', 'category': 'oleje', 'machine': 'osobowy', 'brand': 'Castrol', 'model': 'Edge 5W30', 'price': 165.00, 'stock': 92},
-                {'id': 'OL002', 'name': 'Olej silnikowy Mobil 1 ESP 0W40 syntetyczny 4L', 'category': 'oleje', 'machine': 'osobowy', 'brand': 'Mobil', 'model': 'ESP 0W40', 'price': 189.00, 'stock': 78},
-                {'id': 'OL003', 'name': 'Olej silnikowy Shell Helix Ultra 5W40 API SN 5L', 'category': 'oleje', 'machine': 'osobowy', 'brand': 'Shell', 'model': 'Helix Ultra', 'price': 145.00, 'stock': 110},
-                {'id': 'OL004', 'name': 'Olej silnikowy Total Quartz 9000 0W30 longlife 4L', 'category': 'oleje', 'machine': 'osobowy', 'brand': 'Total', 'model': 'Quartz 9000', 'price': 178.00, 'stock': 65},
-                {'id': 'OL005', 'name': 'Olej silnikowy Motul 8100 X-cess 5W40 5L', 'category': 'oleje', 'machine': 'osobowy', 'brand': 'Motul', 'model': '8100 X-cess', 'price': 234.00, 'stock': 47},
-                {'id': 'OL006', 'name': 'Olej przekładniowy Liqui Moly Top Tec ATF 1200 1L', 'category': 'oleje', 'machine': 'osobowy', 'brand': 'Liqui Moly', 'model': 'Top Tec ATF', 'price': 89.00, 'stock': 156},
-                
-                # OPONY (nowe)
-                {'id': 'OP001', 'name': 'Opona Continental ContiWinterContact TS850 205/55R16', 'category': 'opony', 'machine': 'osobowy', 'brand': 'Continental', 'model': 'TS850', 'price': 456.00, 'stock': 28},
-                {'id': 'OP002', 'name': 'Opona Michelin Pilot Sport 4 225/45R17 94Y', 'category': 'opony', 'machine': 'osobowy', 'brand': 'Michelin', 'model': 'Pilot Sport 4', 'price': 678.00, 'stock': 34},
-                {'id': 'OP003', 'name': 'Opona Bridgestone Turanza T005 195/65R15 91H', 'category': 'opony', 'machine': 'osobowy', 'brand': 'Bridgestone', 'model': 'Turanza T005', 'price': 345.00, 'stock': 67},
-                
-                # WAHACZE I PRZEGUBY (nowe)
-                {'id': 'WA001', 'name': 'Wahacz przedni lewy Febi BMW E90 E91 31126760269', 'category': 'zawieszenie', 'machine': 'osobowy', 'brand': 'Febi', 'model': '40760', 'price': 234.00, 'stock': 19},
-                {'id': 'PR001', 'name': 'Przegub napędowy zewnętrzny GSP VW Golf V 1.9 TDI', 'category': 'napęd', 'machine': 'osobowy', 'brand': 'GSP', 'model': '601023', 'price': 189.00, 'stock': 42},
-                
-                # === MOTOCYKLE (rozszerzone) ===
-                {'id': 'MKH001', 'name': 'Klocki hamulcowe EBC Yamaha R6 2003-2016 przód', 'category': 'hamulce', 'machine': 'motocykl', 'brand': 'EBC', 'model': 'FA252HH', 'price': 145.00, 'stock': 32},
-                {'id': 'MKH002', 'name': 'Klocki hamulcowe Brembo Honda CBR600RR 2005-2016', 'category': 'hamulce', 'machine': 'motocykl', 'brand': 'Brembo', 'model': '07BB26RC', 'price': 178.00, 'stock': 27},
-                {'id': 'MKH003', 'name': 'Klocki hamulcowe TRW Suzuki GSX-R1000 2009-2016', 'category': 'hamulce', 'machine': 'motocykl', 'brand': 'TRW', 'model': 'MCB748SRQ', 'price': 156.00, 'stock': 38},
-                {'id': 'MLN001', 'name': 'Łańcuch napędowy DID 520VX3 Yamaha R6 gold', 'category': 'napęd', 'machine': 'motocykl', 'brand': 'DID', 'model': '520VX3-114', 'price': 345.00, 'stock': 38},
-                {'id': 'MLN002', 'name': 'Łańcuch RK Racing 525XSO Honda CBR1000RR', 'category': 'napęd', 'machine': 'motocykl', 'brand': 'RK', 'model': '525XSO-120', 'price': 567.00, 'stock': 23},
-                {'id': 'MFO001', 'name': 'Filtr oleju HiFlo Honda CBR600RR 2003-2018', 'category': 'filtry', 'machine': 'motocykl', 'brand': 'HiFlo', 'model': 'HF303RC', 'price': 34.00, 'stock': 125},
-                {'id': 'MOP001', 'name': 'Opona motocyklowa Michelin Pilot Road 4 120/70ZR17', 'category': 'opony', 'machine': 'motocykl', 'brand': 'Michelin', 'model': 'Pilot Road 4', 'price': 234.00, 'stock': 45},
-                
-                # === SAMOCHODY DOSTAWCZE (rozszerzone) ===
-                {'id': 'DKH001', 'name': 'Klocki hamulcowe Textar Mercedes Sprinter 906 przód', 'category': 'hamulce', 'machine': 'dostawczy', 'brand': 'Textar', 'model': '2430801', 'price': 267.00, 'stock': 34},
-                {'id': 'DKH002', 'name': 'Klocki hamulcowe Ferodo VW Crafter 2006-2016 tył', 'category': 'hamulce', 'machine': 'dostawczy', 'brand': 'Ferodo', 'model': 'FDB4114', 'price': 298.00, 'stock': 26},
-                {'id': 'DFO001', 'name': 'Filtr oleju Mann W712/94 Sprinter Vito 2.2 CDI', 'category': 'filtry', 'machine': 'dostawczy', 'brand': 'Mann', 'model': 'W712/94', 'price': 78.00, 'stock': 89},
-                {'id': 'DFO002', 'name': 'Filtr oleju Mahle OX254D Iveco Daily 3.0 HTP', 'category': 'filtry', 'machine': 'dostawczy', 'brand': 'Mahle', 'model': 'OX254D', 'price': 67.00, 'stock': 75},
-                {'id': 'DAM001', 'name': 'Amortyzator przód Monroe Ford Transit MK7 2006-2014', 'category': 'zawieszenie', 'machine': 'dostawczy', 'brand': 'Monroe', 'model': '743049SP', 'price': 456.00, 'stock': 18},
-                
-                # === CZĘŚCI LUKSUSOWE (nowe - ZASÓB A zawiera też marki luksusowe) ===
-                {'id': 'LK001', 'name': 'Klocki hamulcowe Brembo Porsche 911 997 Turbo carbon ceramic', 'category': 'hamulce', 'machine': 'osobowy', 'brand': 'Brembo', 'model': 'P50086', 'price': 2340.00, 'stock': 4},
-                {'id': 'LK002', 'name': 'Klocki hamulcowe Pagid Lamborghini Gallardo LP560', 'category': 'hamulce', 'machine': 'osobowy', 'brand': 'Pagid', 'model': 'RSC1', 'price': 1890.00, 'stock': 3},
-                
-                # === UNIWERSALNE CZĘŚCI TUNINGOWE (nowe) ===
-                {'id': 'TU001', 'name': 'Filtr powietrza sportowy K&N RU-3530 uniwersalny stożek', 'category': 'filtry', 'machine': 'uniwersalny', 'brand': 'K&N', 'model': 'RU-3530', 'price': 189.00, 'stock': 67},
-                {'id': 'TU002', 'name': 'Intercooler Mishimoto uniwersalny 600x300x76mm', 'category': 'chłodzenie', 'machine': 'uniwersalny', 'brand': 'Mishimoto', 'model': 'MMINT-UNI-23', 'price': 1234.00, 'stock': 12}
-            ],
+            'products': products_data,
             'categories': {
                 'hamulce': 'Układ hamulcowy',
                 'filtry': 'Filtry',
@@ -520,6 +518,10 @@ class EcommerceBot:
                 'uniwersalny': 'Uniwersalne'
             }
         }
+        
+        # Przypisz produkty do self.products
+        self.products = self.product_database.get('products', [])
+        print(f"✅ MOTO BOT: {len(self.products)} produktów załadowanych do self.products")
         
         # Kompletna baza FAQ (bez zmian)
         self.faq_database = [
@@ -1446,9 +1448,75 @@ class EcommerceBot:
     
 
     def get_fuzzy_product_matches_internal(self, query: str, machine_filter: Optional[str] = None) -> List[Tuple]:
-        """NAPRAWIONA - Algorytm który WYKLUCZA metadane i poprawnie matchuje"""
+        """NAPRAWIONA + GUARDY - Algorytm z bramkami przed fuzzy matchingiem"""
         matches = []
         query_tokens = query.lower().split()
+        
+        # === EXTRACT NUMBERS FROM QUERY ===
+        query_numbers = set()
+        for token in query_tokens:
+            # Wyciągnij liczby z tokena (np. "5w30" -> ["5", "30"])
+            numbers = re.findall(r'\d+', token)
+            query_numbers.update(numbers)
+        
+        # === EXTRACT ATTRIBUTES FROM QUERY ===
+        attribute_opposites = {
+            'lewy': 'prawy',
+            'prawy': 'lewy',
+            'przód': 'tył',
+            'tył': 'przód',
+            'przedni': 'tylny',
+            'tylny': 'przedni',
+            'góra': 'dół',
+            'górny': 'dolny',
+            'dół': 'góra',
+            'dolny': 'górny'
+        }
+        query_attributes = [token for token in query_tokens if token in attribute_opposites]
+        
+        # === EXTRACT CATEGORY FROM QUERY ===
+        category_keywords = {
+            'klocki': 'hamulce',
+            'klocek': 'hamulce',
+            'tarcza': 'hamulce',
+            'tarcze': 'hamulce',
+            'tarczy': 'hamulce',
+            'hamulce': 'hamulce',
+            'hamulec': 'hamulce',
+            'amortyzator': 'zawieszenie',
+            'amortyzatory': 'zawieszenie',
+            'amory': 'zawieszenie',
+            'wahacz': 'zawieszenie',
+            'wahacze': 'zawieszenie',
+            'olej': 'oleje',
+            'oleje': 'oleje',
+            'oleju': 'oleje',
+            'filtr': 'filtry',
+            'filtry': 'filtry',
+            'filtra': 'filtry',
+            'akumulator': 'elektryka',
+            'akumulatory': 'elektryka',
+            'akumulatora': 'elektryka',
+            'aku': 'elektryka',
+            'akum': 'elektryka',
+            'bateria': 'elektryka',
+            'opona': 'opony',
+            'opony': 'opony',
+            'opon': 'opony',
+            'ogumienie': 'opony',
+            'zimówki': 'opony',
+            'świeca': 'zapłon',
+            'świece': 'zapłon',
+            'łańcuch': 'napęd',
+            'przegub': 'napęd',
+            'intercooler': 'chłodzenie'
+        }
+        
+        query_category = None
+        for token in query_tokens:
+            if token in category_keywords:
+                query_category = category_keywords[token]
+                break
         
         for product in self.product_database['products']:
             if machine_filter and product['machine'] != machine_filter and product['machine'] != 'uniwersalny':
@@ -1459,6 +1527,42 @@ class EcommerceBot:
             product_text = f"{product['name']} {product['brand']} {product['model']} {product['category']}"
             product_tokens = product_text.lower().split()
             
+            # === GUARD A: NUMBER GUARD (Dyktatura Cyfr) ===
+            product_numbers = set()
+            for token in product_tokens:
+                numbers = re.findall(r'\d+', token)
+                product_numbers.update(numbers)
+            
+            # Jeśli query ma liczbę, której NIE MA w produkcie -> REJECT
+            if query_numbers:
+                missing_numbers = query_numbers - product_numbers
+                if missing_numbers:
+                    # Sprawdź czy to są istotne liczby (nie pojedyncze cyfry)
+                    critical_missing = [n for n in missing_numbers if len(n) >= 2 or int(n) > 9]
+                    if critical_missing:
+                        continue  # REJECT - brak kluczowej liczby
+            
+            # === GUARD B: ATTRIBUTE GUARD (Strony/Pozycje) ===
+            product_text_full = product_text.lower()
+            reject_product = False
+            for attr in query_attributes:
+                opposite = attribute_opposites[attr]
+                # Jeśli query ma "lewy", a produkt ma "prawy" -> REJECT
+                if opposite in product_text_full and attr not in product_text_full:
+                    reject_product = True
+                    break
+            
+            if reject_product:
+                continue  # REJECT - konflikt atrybutów
+            
+            # === GUARD C: CATEGORY GUARD (Kategorie Produktów) ===
+            # Jeśli query zawiera keyword kategorii, produkt MUSI być z tej kategorii
+            if query_category:
+                product_category = product.get('category', '').lower()
+                if product_category != query_category:
+                    continue  # REJECT - zła kategoria (np. "klocki" vs "zawieszenie")
+            
+            # === TERAZ FUZZY MATCHING (jeśli przeszło guardy) ===
             # NOWY ALGORYTM - Precyzyjne dopasowanie per token
             token_scores = []
             
@@ -2154,12 +2258,7 @@ class EcommerceBot:
         return {
             'text_message': GLOBAL_WELCOME_MESSAGE,
             'buttons': [
-                {'text': '🔧 Znajdź część', 'action': 'search_product'},
-                {'text': '📦 Status zamówienia', 'action': 'order_status'},
-                {'text': '❓ Mam pytanie', 'action': 'faq_search'},
-                {'text': '🚚 Dostawa i koszty', 'action': 'faq_delivery'},
-                {'text': '↩️ Zwroty i gwarancja', 'action': 'faq_returns'},
-                {'text': '📞 Kontakt', 'action': 'contact'}
+                {'text': '🔧 Znajdź część', 'action': 'search_product'}
             ]
         }
     

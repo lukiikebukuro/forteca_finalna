@@ -1,0 +1,17 @@
+{
+  "welcome_message_lines": [
+    "📱 <strong>Centrum Analityczne Adept AI (Elektronika)</strong> ⚡",
+    "To nie jest zwykły chatbot. To radar, który namierza pieniądze uciekające z Twojego sklepu.",
+    "",
+    "📉 <strong>SCENARIUSZE TESTOWE: Wykrywanie Utraconego Popytu</strong>",
+    "<i>(Wpisz te frazy. System wie, że konkretna konfiguracja nie istnieje)</i>",
+    "1. <strong>iPhone 13 Różowy</strong> (Brak koloru - Mamy czarny)",
+    "2. <strong>Laptop 64GB RAM</strong> (Brak konfiguracji - Mamy 32GB)",
+    "3. <strong>TV 100 cali</strong> (Brak rozmiaru - Mamy max 85 cali)",
+    "4. <strong>OnePlus 11</strong> (Brak marki - Szukają konkurencji)",
+    "",
+    "5. <strong>Samsung S25</strong> (Popyt na nowość - Mamy S24)",
+    "6. <strong>Dell XPS 14</strong> (Brak matrycy - Mamy 13 i 15 cali)",
+    "7. <strong>kanapka z serem</strong> (Filtracja śmieci)"
+  ]
+}
