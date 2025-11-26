@@ -1929,20 +1929,24 @@ def get_weekly_pdf_report(client_id):
         if not client_info:
             return jsonify({'error': 'Klient nie znaleziony'}), 404
         
-        # DEMO DATA - w prawdziwej aplikacji pobierane z bazy
+        # DEMO DATA - Elektronika Premium (High Volume)
         demo_data = {
             'client': client_info,
             'report_date': '13.10.2025',
-            'total_lost_value': 12450,
+            'total_lost_value': 82450,
             'total_products': 47,
+            'total_volume_gross': 251150,
             'lost_products': [
-                {'name': 'Klocki Ferrari F40', 'category': 'klocki', 'value': 1250, 'frequency': 8},
-                {'name': 'Filtry Porsche 911', 'category': 'filtry', 'value': 890, 'frequency': 6},
-                {'name': 'Opony Michelin 19"', 'category': 'opony', 'value': 760, 'frequency': 5},
+                {'name': 'iPhone 15 Pro 256GB Natural', 'category': 'Smartfony', 'value': 97200, 'frequency': 18, 'unit_price': 5400},
+                {'name': 'Laptop Dell XPS 15 (64GB RAM)', 'category': 'Laptopy', 'value': 64400, 'frequency': 7, 'unit_price': 9200},
+                {'name': 'Dron DJI Mini 4 Pro', 'category': 'Drony', 'value': 38250, 'frequency': 9, 'unit_price': 4250},
+                {'name': 'Samsung S24 Ultra (Kremowy)', 'category': 'Smartfony', 'value': 30500, 'frequency': 5, 'unit_price': 6100},
+                {'name': 'Karta RTX 4080 Super', 'category': 'Komponenty PC', 'value': 20800, 'frequency': 4, 'unit_price': 5200},
             ],
             'recommendations': [
-                'Rozszerz ofertę klocków premium - potencjał 3,250 zł miesięcznie',
-                'Dodaj filtry sportowe - popyt na 12 różnych modeli',
+                'KRYTYCZNE: Natychmiastowe domówienie Apple - trend wzrostowy na iPhone 15 Pro (18 zapytań/tydzień)',
+                'Wprowadzenie konfiguracji B2B dla Dell XPS (64GB RAM) - segment biznesowy wysokomarżowy',
+                'Rozszerzenie oferty Dronów - sezonowy wzrost zainteresowania (Q4)',
             ]
         }
         
@@ -1986,9 +1990,10 @@ def generate_pdf_html(data):
         
         <div class="summary">
             <h3>Podsumowanie wykonawcze</h3>
-            <p><strong>Łączna wartość wykrytych okazji:</strong> <span class="value">{data['total_lost_value']:,} zł</span></p>
+            <p><strong>Szacowana utracona marża (tygodniowo):</strong> <span class="value">{data['total_lost_value']:,} zł</span></p>
+            <p><strong>Całkowity wolumen popytu brutto:</strong> {data.get('total_volume_gross', 0):,} zł</p>
             <p><strong>Liczba zidentyfikowanych produktów:</strong> {data['total_products']}</p>
-            <p><strong>Status:</strong> Zweryfikowany przez analityka Studio Adept AI</p>
+            <p><strong>Status:</strong> Zweryfikowany przez Lost Demand Intelligence</p>
         </div>
         
         <h3>Szczegółowa lista utraconych produktów</h3>
