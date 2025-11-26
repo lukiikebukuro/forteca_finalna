@@ -33,6 +33,114 @@ from flask_limiter.util import get_remote_address
 import hashlib
 import re
 
+# ========================================
+# DODAJ TO DO app.py TUŻ PRZED init_database()
+# ========================================
+
+def auto_update_demo_password():
+    """
+    Sprawdza czy można zalogować się jako demo/demo123
+    Jeśli nie - aktualizuje hasło automatycznie przy starcie
+    """
+    import sqlite3
+    from werkzeug.security import generate_password_hash, check_password_hash
+    
+    try:
+        conn = sqlite3.connect('dashboard.db')
+        cursor = conn.cursor()
+        
+        # Sprawdź czy user demo istnieje
+        cursor.execute("""
+            SELECT id, username, password_hash 
+            FROM users 
+            WHERE username = 'demo' AND is_active = TRUE
+        """)
+        
+        user = cursor.fetchone()
+        
+        if not user:
+            print("[AUTO-UPDATE] ⚠️ User 'demo' nie istnieje - pomijam update")
+            conn.close()
+            return
+        
+        user_id, username, current_hash = user
+        
+        # Sprawdź czy hasło to już 'demo123'
+        if check_password_hash(current_hash, 'demo123'):
+            print("[AUTO-UPDATE] ✅ Hasło już jest ustawione na 'demo123' - OK")
+            conn.close()
+            return
+        
+        # Hasło jest stare - zaktualizuj!
+        print("[AUTO-UPDATE] 🔄 Wykryto stare hasło - aktualizuję...")
+        
+        new_hash = generate_password_hash('demo123', method='pbkdf2:sha256')
+        
+        cursor.execute("""
+            UPDATE users 
+            SET password_hash = ?,
+                salt = ''
+            WHERE username = 'demo'
+        """, (new_hash,))
+        
+        conn.commit()
+        conn.close()
+        
+        print("[AUTO-UPDATE] ✅ Hasło zaktualizowane: demo / demo123")
+        
+    except Exception as e:
+        print(f"[AUTO-UPDATE] ❌ Błąd podczas update hasła: {e}")
+
+# ========================================
+# ZMODYFIKUJ init_database() - DODAJ NA KOŃCU
+# ========================================
+
+def init_database():
+    """Inicjalizuje bazę danych przy starcie"""
+    print("[STARTUP] Sprawdzam integralność bazy danych...")
+    
+    # 1. GWARANTOWANA NAPRAWA: Zawsze próbuj stworzyć tabelę admin_dashboard_state
+    try:
+        AdminDashboardStateManager.init_table()
+        print("[STARTUP] ✅ Wymuszono weryfikację tabeli admin_dashboard_state")
+    except Exception as e:
+        print(f"[STARTUP] ⚠️ Warning przy weryfikacji tabeli admin: {e}")
+
+    # 2. Standardowa procedura dla nowej bazy
+    conn = sqlite3.connect('dashboard.db')
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")
+    if not cursor.fetchone():
+        print("[STARTUP] Baza pusta (brak users) - Tworzę resztę tabel...")
+        conn.close()
+        
+        from auth_manager import ensure_tables_exist
+        ensure_tables_exist()
+        
+        DatabaseManager.init_events_table()
+        DatabaseManager.init_visitor_tables()
+        
+        print("[STARTUP] Ustawiam hasła...")
+        import subprocess
+        import sys
+        try:
+            subprocess.run([sys.executable, 'skrypthasla.py'], check=True)
+        except Exception as e:
+            print(f"[STARTUP] Błąd skryptu haseł: {e}")
+    else:
+        conn.close()
+        print("[STARTUP] Baza users już istnieje - pomijam tworzenie podstawowe.")
+    
+    # ========================================
+    # DODAJ TO NA KOŃCU init_database():
+    # ========================================
+    auto_update_demo_password()  # Automatyczna migracja hasła
+    # ========================================
+
+# ========== KONIEC INICJALIZACJI ==========
+
+
 # Sprawdź czy baza istnieje i czy ma tabele
 def init_database():
     """Inicjalizuje bazę danych przy starcie"""
