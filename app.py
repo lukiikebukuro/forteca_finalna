@@ -2336,7 +2336,7 @@ def handle_visitor_event_websocket(data):
             'id': event_id,
             'timestamp': datetime.now().strftime('%H:%M:%S'),
             'query': sanitized_query,  # SANITIZED!
-            'classification': decision,
+            'decision': decision,
             'estimatedValue': potential_value,
             'city': data.get('city', 'Unknown'),
             'country': data.get('country', 'Unknown'),
