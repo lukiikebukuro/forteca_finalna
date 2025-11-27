@@ -522,9 +522,19 @@ this.dashboardOverlay = null;
         if (!query || query.length < 2) return;
         
         const searchType = this.faqMode ? 'faq' : 'products';
+        const requestId = Math.random().toString(36).substring(2, 10);
         
         try {
-            console.log(`[FINAL ANALYSIS] Sending to TCD: "${query}"`);
+            console.log(`[FINAL ANALYSIS][REQ:${requestId}] Sending to TCD: "${query}"`);
+            
+            // Pobierz dane geolokalizacji z visitorTracker jeśli dostępne
+            const geoData = {};
+            if (window.visitorTracker && window.visitorTracker.visitorData) {
+                geoData.city = window.visitorTracker.visitorData.city || 'Unknown';
+                geoData.country = window.visitorTracker.visitorData.country || 'Unknown';
+                geoData.org = window.visitorTracker.visitorData.org || 'Unknown';
+                console.log(`[FINAL ANALYSIS][REQ:${requestId}] Geo: ${geoData.city}, ${geoData.country}`);
+            }
             
             const response = await fetch(this.API_PREFIX + '/api/analyze_query', {
                 method: 'POST',
@@ -534,7 +544,8 @@ this.dashboardOverlay = null;
                 credentials: 'include',
                 body: JSON.stringify({
                     query: query,
-                    type: searchType
+                    type: searchType,
+                    ...geoData
                 })
             });
             

@@ -221,11 +221,10 @@ class TacticalDashboard {
                     ? 'http://localhost:5000' 
                     : window.location.origin;
 
-                // Force websocket transport only (no long-polling fallback)
-                // This reduces initial transport negotiation delays (no polling handshake)
+                // Use both transports for better compatibility on localhost
                 this.socket = io(socketURL, {
-                    transports: ['websocket'], // <-- TURBO: force websocket transport only
-                    upgrade: false,            // do not negotiate polling -> websocket
+                    transports: ['polling', 'websocket'], // Allow both for localhost compatibility
+                    upgrade: true,                         // Allow upgrade from polling to websocket
                     reconnection: true,
                     forceNew: true,
                     reconnectionDelay: 1000,

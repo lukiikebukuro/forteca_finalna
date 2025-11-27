@@ -372,13 +372,13 @@ class AdminDashboard {
             company.queries.push({
                 text: data.query || 'N/A',
                 timestamp: new Date(),
-                decision: data.decision || 'UNKNOWN'
+                decision: data.classification || 'UNKNOWN'
             });
             
             // Update intent counters
-            if (data.decision === 'ZNALEZIONE PRODUKTY') {
+            if (data.classification === 'ZNALEZIONE PRODUKTY') {
                 company.highIntentQueries = (company.highIntentQueries || 0) + 1;
-            } else if (data.decision === 'UTRACONE OKAZJE') {
+            } else if (data.classification === 'UTRACONE OKAZJE') {
                 company.lostOpportunities = (company.lostOpportunities || 0) + 1;
             }
             
@@ -400,13 +400,13 @@ class AdminDashboard {
                 firstVisit: new Date(),
                 lastVisit: new Date(),
                 totalQueries: 1,
-                highIntentQueries: data.decision === 'ZNALEZIONE PRODUKTY' ? 1 : 0,
-                lostOpportunities: data.decision === 'UTRACONE OKAZJE' ? 1 : 0,
+                highIntentQueries: data.classification === 'ZNALEZIONE PRODUKTY' ? 1 : 0,
+                lostOpportunities: data.classification === 'UTRACONE OKAZJE' ? 1 : 0,
                 engagementScore: 10,
                 queries: [{
                     text: data.query || 'N/A',
                     timestamp: new Date(),
-                    decision: data.decision || 'UNKNOWN'
+                    decision: data.classification || 'UNKNOWN'
                 }]
             };
             
@@ -419,7 +419,7 @@ class AdminDashboard {
         
         // Sprawdź czy to HOT LEAD (obniżony próg dla testów)
         const company = this.companies.get(organization);
-        if (company.engagementScore >= 10 && data.decision === 'ZNALEZIONE PRODUKTY') {
+        if (company.engagementScore >= 10 && data.classification === 'ZNALEZIONE PRODUKTY') {
             this.addHotLead({
                 company: organization,
                 query: data.query || 'N/A',
@@ -431,7 +431,7 @@ class AdminDashboard {
         
         // Dodaj do Log History
         this.addLogEntry({
-            type: data.decision || 'UNKNOWN',
+            type: data.classification || 'UNKNOWN',
             company: organization,
             query: data.query || 'N/A',
             timestamp: new Date()

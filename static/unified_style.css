@@ -4406,3 +4406,95 @@ pricing-main {
         padding: 10px 15px !important;
     }
 }
+
+/* ============================================
+   LIVE FEED - FINALNE STYLE (inspiracja Gemini)
+   ============================================ */
+
+/* Query - biała czcionka, większy */
+.feed-query {
+    font-weight: 700;
+    font-size: 1.1em;
+    color: #ffffff;
+    margin-bottom: 0.3rem;
+}
+
+/* Visitor info - pomarańczowa, mniejsza */
+.feed-visitor-info {
+    color: #f97316;
+    font-size: 0.7rem;
+    margin: 0.25rem 0;
+    font-weight: 400;
+}
+
+/* Classification badges - z pulsowaniem */
+.feed-classification {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 0.4rem;
+    border: 2px solid;
+    animation: pulse-badge 2s ease-in-out infinite;
+}
+
+/* ZNALEZIONE PRODUKTY - zielony */
+.feed-classification.found-products {
+    color: #10b981;
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.15);
+}
+
+/* UTRACONE OKAZJE - czerwony z mocniejszym napisem */
+.feed-classification.lost-opportunities {
+    color: #dc2626;
+    border-color: #dc2626;
+    background: rgba(220, 38, 38, 0.12);
+    font-weight: 900;
+}
+
+/* ODFILTROWANE - szary */
+.feed-classification.filtered-out {
+    color: #94a3b8;
+    border-color: #94a3b8;
+    background: rgba(148, 163, 184, 0.15);
+}
+
+/* Animacja pulsowania */
+@keyframes pulse-badge {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+    }
+}
+
+/* Pulsowanie feed-item */
+.feed-item {
+    animation: pulse-item 3s ease-in-out infinite;
+}
+
+@keyframes pulse-item {
+    0%, 100% {
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    50% {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+}
+
+/* Wartość - cyjan/turkusowy (taki sam jak w metrykach) */
+.feed-value {
+    color: #00d4ff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-top: 5px;
+    padding-top: 5px;
+    border-top: 1px dashed rgba(0, 212, 255, 0.3);
+}

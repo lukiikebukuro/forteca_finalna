@@ -1037,19 +1037,27 @@ def elektro_search_suggestions():
     
 
 # === NOWY ENDPOINT - FINALNA ANALIZA DLA TCD ===
-#@app.route('/motobot-prototype/api/analyze_query', methods=['POST'])
+@app.route('/motobot-prototype/api/analyze_query', methods=['POST'])
 @limiter.limit("100/minute")
 def analyze_query():
     """
-    NOWY ENDPOINT - Doktryna Cierpliwego Nasłuchu
-    Wywołany tylko po 800ms pauzy - wysyła JEDEN event do TCD
+    MOTO VERSION - Doktryna Cierpliwego Nasłuchu
+    Wywołany po 800ms pauzy - wysyła event do TCD
     """
+    import uuid
+    request_id = str(uuid.uuid4())[:8]
+    
     try:
         data = request.get_json()
         query = data.get('query', '').strip()
         search_type = data.get('type', 'products')
         
-        print(f"[FINAL ANALYSIS] Query: '{query}' | Type: {search_type}")
+        # Odbierz dane geolokalizacji z frontendu (jeśli dostępne)
+        visitor_city = data.get('city', 'Unknown')
+        visitor_country = data.get('country', 'Unknown')
+        visitor_org = data.get('org', 'Unknown')
+        
+        print(f"[MOTO FINAL ANALYSIS][REQ:{request_id}] Query: '{query}' | Type: {search_type} | Geo: {visitor_city}, {visitor_country}")
         
         # === RODO: SANITYZUJ QUERY ===
         sanitized_query = scrub_pii(query)
@@ -1083,28 +1091,22 @@ def analyze_query():
                 confidence_level = 'HIGH'
                 category = 'unknown'
         
-        # Mapowanie confidence → decision
-        decision_mapping = {
-            'HIGH': 'ZNALEZIONE PRODUKTY',
-            'MEDIUM': 'ZNALEZIONE PRODUKTY',  # ✅ FIX: MEDIUM też jest Found dla elektroniki!
-            'NO_MATCH': 'UTRACONE OKAZJE',
-            'LOW': 'ODFILTROWANE'
-        }
-        
-        decision = decision_mapping.get(confidence_level, 'ZNALEZIONE PRODUKTY')
+        # Mapowanie confidence → decision (MOTO rules)
+        decision_mapping = MOTO_DECISION_MAPPING  # Użyj mappingu dla MOTO!
+        decision = decision_mapping.get(confidence_level, 'ODFILTROWANE')
         
         # Oblicz wartość tylko dla utraconych okazji
         potential_value = 0
         if decision == 'UTRACONE OKAZJE':
-            potential_value = calculate_lost_value_internal(sanitized_query)
+            potential_value = calculate_lost_value_internal(sanitized_query, source='moto')
         
         # ZAPISZ DO BAZY DANYCH
         event_id = DatabaseManager.add_event(
             sanitized_query,
             decision,
-            'Finalne zapytanie użytkownika',
+            'Finalne zapytanie użytkownika (MOTO)',
             category,
-            'standard',
+            'moto',
             potential_value,
             f'Analiza po 800ms pauzy - confidence: {confidence_level}'
         )
@@ -1116,19 +1118,38 @@ def analyze_query():
             'timestamp': datetime.now().strftime('%H:%M:%S'),
             'query_text': sanitized_query,
             'decision': decision,
-            'details': 'Finalne zapytanie użytkownika',
+            'details': 'Finalne zapytanie użytkownika (MOTO)',
             'category': category,
             'potential_value': potential_value,
             'explanation': f'Analiza po 800ms pauzy - confidence: {confidence_level}',
             'server_sent_at': server_ts_ms
         }
         
-        # WYŚLIJ DO DEMO TCD
-        app.logger.info(f"[WS EMIT] new_event id={event_id} sent_at={server_ts_ms}")
-        socketio.emit('new_event', event_data, room='client_demo')
-        socketio.emit('new_event', event_data, room='admin_dashboard')
+        # Dane geolokalizacji już odebrane z frontendu (visitor_city, visitor_country, visitor_org)
+        # Nie trzeba ponownie odpytywać ipinfo.io
         
-        print(f"[FINAL ANALYSIS] Saved to TCD: {sanitized_query} -> {decision} (value: {potential_value})")
+        # Sformatuj dane dla live_feed_update
+        feed_data = {
+            'timestamp': datetime.now().strftime('%H:%M:%S'),
+            'query': sanitized_query,
+            'classification': decision,
+            'estimatedValue': potential_value,
+            'city': visitor_city,
+            'country': visitor_country,
+            'organization': visitor_org,
+            'sessionId': None,
+            'anonymous': True,
+            'source': 'moto'
+        }
+        
+        # WYŚLIJ DO DASHBOARDU (broadcast do obu roomów)
+        print(f"[WS EMIT][MOTO][REQ:{request_id}] live_feed_update id={event_id} sent_at={server_ts_ms} city={visitor_city}")
+        app.logger.info(f"[WS EMIT][MOTO] live_feed_update id={event_id} sent_at={server_ts_ms}")
+        
+        socketio.emit('live_feed_update', feed_data, room='client_demo')
+        socketio.emit('live_feed_update', feed_data, room='admin_dashboard')
+        
+        print(f"[MOTO FINAL ANALYSIS][REQ:{request_id}] Saved to TCD: {sanitized_query} -> {decision} (value: {potential_value})")
         
         return jsonify({
             'status': 'success',
