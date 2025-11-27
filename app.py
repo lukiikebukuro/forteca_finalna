@@ -1,3 +1,5 @@
+import eventlet
+eventlet.monkey_patch()
 from flask_socketio import SocketIO, emit
 from flask_login import login_user, logout_user, login_required, current_user
 from auth_manager import init_login_manager, User, require_client_access, require_admin_access, require_debug_access, get_user_dashboard_route, setup_default_users, ensure_tables_exist
@@ -440,22 +442,49 @@ class DatabaseManager:
     
     @staticmethod
     def add_event(query_text, decision, details, category, brand_type, potential_value, explanation):
-        """Dodaje nowe zdarzenie do bazy - z RODO scrubbing"""
-        # RODO: Sanityzuj query przed zapisem
+        """Dodaje nowe zdarzenie do bazy - z RODO scrubbing i silniejszą deduplikacją"""
         sanitized_query = scrub_pii(query_text)
-        
         conn = sqlite3.connect(DATABASE_NAME)
         cursor = conn.cursor()
+        # WZMOCNIONA DEDUPE: sprawdź, czy podobne zdarzenie nie zostało dodane w ostatnich 5 sekundach,
+        # oraz czy nie istnieje event o tym samym query/decision/potential_value w ±2s (timestamp)
+        try:
+            cursor.execute('''
+                SELECT id, timestamp FROM events
+                WHERE query_text = ? AND decision = ? AND potential_value = ?
+                AND timestamp >= datetime('now', '-5 seconds')
+                ORDER BY timestamp DESC LIMIT 1
+            ''', (sanitized_query, decision, potential_value))
+            row = cursor.fetchone()
+            if row:
+                existing_id = row[0]
+                conn.close()
+                app.logger.info(f"[DEDUP] Skipping duplicate event (id={existing_id}) [5s window]")
+                return existing_id
+            
+            # Dodatkowa deduplikacja: ±2s względem aktualnego czasu
+            cursor.execute('''
+                SELECT id, timestamp FROM events
+                WHERE query_text = ? AND decision = ? AND potential_value = ?
+                AND ABS(strftime('%s', timestamp) - strftime('%s', 'now')) <= 2
+                ORDER BY timestamp DESC LIMIT 1
+            ''', (sanitized_query, decision, potential_value))
+            row2 = cursor.fetchone()
+            if row2:
+                existing_id = row2[0]
+                conn.close()
+                app.logger.info(f"[DEDUP] Skipping duplicate event (id={existing_id}) [±2s window]")
+                return existing_id
+        except Exception as e:
+            app.logger.warning(f"[DEDUP] Duplicate check failed: {e}")
         
         cursor.execute('''
             INSERT INTO events (query_text, decision, details, category, brand_type, potential_value, explanation)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         ''', (sanitized_query, decision, details, category, brand_type, potential_value, explanation))
-        
         event_id = cursor.lastrowid
         conn.commit()
         conn.close()
-        
         return event_id
     
     @staticmethod
@@ -1004,6 +1033,8 @@ def elektro_search_suggestions():
         import traceback
         traceback.print_exc()
         return jsonify({'suggestions': [], 'error': str(e)}), 200
+    
+    
 
 # === NOWY ENDPOINT - FINALNA ANALIZA DLA TCD ===
 #@app.route('/motobot-prototype/api/analyze_query', methods=['POST'])
@@ -1079,6 +1110,7 @@ def analyze_query():
         )
         
         # WYŚLIJ PRZEZ WEBSOCKET DO TCD
+        server_ts_ms = int(time.time() * 1000)
         event_data = {
             'id': event_id,
             'timestamp': datetime.now().strftime('%H:%M:%S'),
@@ -1087,25 +1119,14 @@ def analyze_query():
             'details': 'Finalne zapytanie użytkownika',
             'category': category,
             'potential_value': potential_value,
-            'explanation': f'Analiza po 800ms pauzy - confidence: {confidence_level}'
+            'explanation': f'Analiza po 800ms pauzy - confidence: {confidence_level}',
+            'server_sent_at': server_ts_ms
         }
         
         # WYŚLIJ DO DEMO TCD
+        app.logger.info(f"[WS EMIT] new_event id={event_id} sent_at={server_ts_ms}")
         socketio.emit('new_event', event_data, room='client_demo')
-        
-        # WYŚLIJ DO ADMIN DASHBOARD - live feed update
-        live_feed_data = {
-            'organization': 'Unknown',  # Można poprawić przez IP lookup
-            'city': 'Unknown',
-            'country': 'Unknown',
-            'query': sanitized_query,
-            'decision': decision,
-            'category': category,
-            'potential_value': potential_value,
-            'timestamp': datetime.now().isoformat()
-        }
-        socketio.emit('live_feed_update', live_feed_data, room='admin_dashboard')
-        print(f"[WEBSOCKET] Emitted live_feed_update to admin_dashboard: {sanitized_query} -> {decision}")
+        socketio.emit('new_event', event_data, room='admin_dashboard')
         
         print(f"[FINAL ANALYSIS] Saved to TCD: {sanitized_query} -> {decision} (value: {potential_value})")
         
@@ -1125,6 +1146,160 @@ def analyze_query():
             'status': 'error',
             'message': str(e)
         }), 500
+    
+
+"""
+============================================================
+🚨 KRYTYCZNY FIX - WKLEJ DO app.py 🚨
+============================================================
+
+PROBLEM: Konsola pokazuje błąd 404:
+    POST /elektrobot-prototype/api/analyze_query 404 (NOT FOUND)
+    
+ROZWIĄZANIE: Dodaj poniższy endpoint do app.py
+(najlepiej zaraz po istniejącym /motobot-prototype/api/analyze_query)
+
+============================================================
+"""
+
+# === NOWY ENDPOINT DLA ELEKTRO - BRAKUJĄCY ROUTE! ===
+@app.route('/elektrobot-prototype/api/analyze_query', methods=['POST'])
+@limiter.limit("100/minute")
+def elektro_analyze_query():
+    """
+    ELEKTRO VERSION - Doktryna Cierpliwego Nasłuchu
+    Wywołany po 800ms pauzy - wysyła event do TCD
+    """
+    import uuid
+    request_id = str(uuid.uuid4())[:8]
+    
+    try:
+        data = request.get_json()
+        query = data.get('query', '').strip()
+        search_type = data.get('type', 'products')
+        
+        # Odbierz dane geolokalizacji z frontendu (jeśli dostępne)
+        visitor_city = data.get('city', 'Unknown')
+        visitor_country = data.get('country', 'Unknown')
+        visitor_org = data.get('org', 'Unknown')
+        
+        print(f"[ELEKTRO FINAL ANALYSIS][REQ:{request_id}] Query: '{query}' | Type: {search_type} | Geo: {visitor_city}, {visitor_country}")
+        
+        # RODO: Sanityzuj query
+        sanitized_query = scrub_pii(query)
+        if sanitized_query != query:
+            print(f"[RODO][REQ:{request_id}] PII scrubbed in elektro_analyze_query")
+            app.logger.warning(f"PII scrubbed in elektro_analyze_query")
+        
+        if len(sanitized_query) < 2:
+            return jsonify({
+                'status': 'success',
+                'message': 'Query too short'
+            })
+        
+        # Analiza przez ELEKTRO bota
+        if ELEKTRO_BOT_AVAILABLE and elektro_bot:
+            result = elektro_bot.get_fuzzy_product_matches(
+                sanitized_query, None, limit=6, analyze_intent=True
+            )
+            
+            if isinstance(result, tuple) and len(result) == 4:
+                products, confidence_level, suggestion_type, analysis = result
+                category = 'elektronika'
+            else:
+                confidence_level = 'HIGH'
+                category = 'elektronika'
+        else:
+            # Fallback do moto
+            confidence_level = 'HIGH'
+            category = 'unknown'
+        
+        # Mapowanie confidence → decision (ELEKTRO rules)
+        decision_mapping = ELEKTRO_DECISION_MAPPING  # Użyj mappingu dla ELEKTRO!
+        decision = decision_mapping.get(confidence_level, 'ZNALEZIONE PRODUKTY')
+        
+        # Oblicz wartość dla utraconych okazji
+        potential_value = 0
+        if decision == 'UTRACONE OKAZJE':
+            potential_value = calculate_lost_value_internal(sanitized_query, source='elektro')
+        
+        # ZAPISZ DO BAZY
+        event_id = DatabaseManager.add_event(
+            sanitized_query,
+            decision,
+            'Finalne zapytanie użytkownika (ELEKTRO)',
+            category,
+            'elektro',
+            potential_value,
+            f'Analiza po 800ms pauzy - confidence: {confidence_level}'
+        )
+        
+        # WYŚLIJ PRZEZ WEBSOCKET DO TCD
+        event_data = {
+            'id': event_id,
+            'timestamp': datetime.now().strftime('%H:%M:%S'),
+            'query_text': sanitized_query,
+            'decision': decision,
+            'details': 'Finalne zapytanie użytkownika (ELEKTRO)',
+            'category': category,
+            'potential_value': potential_value,
+            'explanation': f'Analiza po 800ms pauzy - confidence: {confidence_level}'
+        }
+        
+        # Dane geolokalizacji już odebrane z frontendu (visitor_city, visitor_country, visitor_org)
+        # Nie trzeba ponownie odpytywać ipinfo.io
+        
+        # Sformatuj dane dla live_feed_update
+        feed_data = {
+            'timestamp': datetime.now().strftime('%H:%M:%S'),
+            'query': sanitized_query,
+            'classification': decision,
+            'estimatedValue': potential_value,
+            'city': visitor_city,
+            'country': visitor_country,
+            'organization': visitor_org,
+            'sessionId': None,
+            'anonymous': True,
+            'source': 'elektro'
+        }
+        
+        # WRESZCIE: WYŚLIJ DO DASHBOARDU (broadcast do obu roomów)
+        server_ts_ms = int(time.time() * 1000)
+        event_data['server_sent_at'] = server_ts_ms
+        print(f"[WS EMIT][ELEKTRO][REQ:{request_id}] live_feed_update id={event_id} sent_at={server_ts_ms} city={visitor_city}")
+        app.logger.info(f"[WS EMIT][ELEKTRO] live_feed_update id={event_id} sent_at={server_ts_ms}")
+        
+        socketio.emit('live_feed_update', feed_data, room='client_demo')
+        socketio.emit('live_feed_update', feed_data, room='admin_dashboard')
+        
+        print(f"[ELEKTRO FINAL ANALYSIS][REQ:{request_id}] Saved to TCD: {sanitized_query} -> {decision} (value: {potential_value})")
+        
+        return jsonify({
+            'status': 'success',
+            'decision': decision,
+            'confidence_level': confidence_level,
+            'event_id': event_id
+        })
+        
+    except Exception as e:
+        print(f"[ERROR] Elektro final analysis error: {e}")
+        app.logger.error(f"Elektro final analysis error: {e}", exc_info=True)
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+
+"""
+============================================================
+⚠️ WAŻNE: Upewnij się że funkcja calculate_lost_value_internal
+           przyjmuje parametr source='elektro' !
+           
+Jeśli nie, zamień jej definicję na wersję z app_patch.py
+============================================================
+"""    
 
 
 @app.route('/api/admin/save-state', methods=['POST'])
@@ -1529,6 +1704,9 @@ def receive_real_event():
         }
         
         # WYŚLIJ TYLKO DO DEMO TCD (nie do admin dashboard)
+        server_ts_ms = int(time.time() * 1000)
+        event_data['server_sent_at'] = server_ts_ms
+        app.logger.info(f"[WS EMIT][RECEIVE_EVENT] new_event id={event_id} sent_at={server_ts_ms}")
         socketio.emit('new_event', event_data, room='client_demo')
         
         return jsonify({'status': 'success'})
@@ -2081,37 +2259,153 @@ def extract_category_from_query(query):
             return category
     return 'inne'
 
-def calculate_lost_value_internal(query):
-    """Szacuje wartość utraconego popytu - NAPRAWIONA wersja z losowymi wartościami 500-1000"""
+def calculate_lost_value_internal(query, source='unknown'):
+    """
+    NAPRAWIONA v2.0: Szacuje REALISTYCZNĄ wartość utraconego popytu
+    Drabina cenowa oparta na rzeczywistych cenach rynkowych Polski 2024
+    
+    Zakresy cenowe:
+    MOTO: Ferrari/Porsche (2500-9000), Turbo/Skrzynia (1500-4000), Olej/Filtr (50-200)
+    ELEKTRO: RTX 4090/Macbook (8000-22000), iPhone/Flagowce (3500-7500), Kable (50-300)
+    """
     import random
-    
-    category = extract_category_from_query(query)
-    
-    # Nowe zakresy 500-1000 z bonusami dla kategorii
-    base_ranges = {
-        'klocki': (600, 1000),
-        'filtry': (500, 800),
-        'amortyzatory': (800, 1200),
-        'świece': (500, 700),
-        'akumulatory': (700, 1100),
-        'oleje': (600, 900),
-        'tarcze': (700, 1000),
-        'łańcuchy': (600, 900)
-    }
-    
-    # Pobierz zakres dla kategorii lub użyj domyślny
-    min_val, max_val = base_ranges.get(category, (500, 1000))
-    
-    # Sprawdź czy to marka luksusowa (bonus +200-400)
     query_lower = query.lower()
-    luxury_brands = ['ferrari', 'lamborghini', 'porsche', 'bentley', 'maserati', 'aston martin']
     
-    if any(brand in query_lower for brand in luxury_brands):
-        min_val += 300
-        max_val += 500
+    # ============================================
+    # MOTORYZACJA - DRABINA CENOWA
+    # ============================================
     
-    # Zwróć losową wartość z zakresu
-    return random.randint(min_val, max_val)
+    # PREMIUM (2500 - 9000 PLN) - Luksusowe marki i drogie części
+    moto_premium = [
+        'ferrari', 'lamborghini', 'porsche', 'bentley', 'maserati', 'aston martin',
+        'mclaren', 'bugatti', 'rolls-royce', 'maybach', 'koenigsegg',
+        'turbo', 'turbosprężarka', 'skrzynia biegów', 'automatyczna', 'dsg', 'tiptronic',
+        'silnik', 'głowica', 'blok silnika', 'wał korbowy', 'tłok'
+    ]
+    
+    # HIGH (1500 - 4000 PLN) - Większe części zamienne
+    moto_high = [
+        'amortyzator', 'amortyzatory', 'zawieszenie', 'sprężyna', 'sprężyny',
+        'sprzęgło', 'komplet sprzęgła', 'koło dwumasowe', 'docisk',
+        'rozrząd', 'zestaw rozrządu', 'łańcuch rozrządu', 'pasek rozrządu',
+        'alternator', 'rozrusznik', 'pompa wtryskowa', 'wtryskiwacz',
+        'chłodnica', 'intercooler', 'katalizator', 'dpf', 'fap'
+    ]
+    
+    # MEDIUM (300 - 1000 PLN) - Standardowe części
+    moto_medium = [
+        'klocki', 'tarcze', 'hamulcowe', 'tarcza hamulcowa', 'bęben',
+        'wahacz', 'drążek', 'stabilizator', 'łożysko', 'piasta', 'przegub',
+        'akumulator', 'akumulatory', 'świece', 'cewka zapłonowa', 'moduł zapłonu',
+        'pompa wody', 'termostat', 'czujnik', 'sonda lambda'
+    ]
+    
+    # LOW (50 - 200 PLN) - Drobne części i eksploatacja
+    moto_low = [
+        'filtr', 'filtry', 'oleju', 'powietrza', 'paliwa', 'kabinowy',
+        'olej', 'oleje', 'płyn', 'płyny', 'antyfriz', 'hamulcowy',
+        'uszczelka', 'oring', 'simering', 'żarówka', 'bezpiecznik', 'przekaźnik'
+    ]
+    
+    # ============================================
+    # ELEKTRONIKA - DRABINA CENOWA
+    # ============================================
+    
+    # PREMIUM (8000 - 22000 PLN) - Topowe produkty
+    elektro_premium = [
+        'rtx 4090', 'rtx 4080', 'rtx 5090', 'rtx 5080', 'rtx 4090 ti',
+        'macbook pro', 'macbook 16', 'm3 max', 'm3 pro', 'm4 pro', 'm4 max',
+        'iphone 15 pro max', 'iphone 16 pro max', 'iphone 16 ultra',
+        'oled 77', 'oled 83', 'oled 88', 'neo qled 85', '8k samsung', '8k lg',
+        'sony a1', 'sony a7r', 'sony a9', 'leica q3', 'hasselblad'
+    ]
+    
+    # HIGH (3500 - 7500 PLN) - Flagowce
+    elektro_high = [
+        'iphone 14', 'iphone 15', 'iphone 16', 'iphone pro',
+        'galaxy s24', 'galaxy s23', 'samsung ultra', 'galaxy z fold', 'galaxy z flip',
+        'pixel 8', 'pixel 9', 'pixel pro',
+        'macbook air', 'macbook m2', 'macbook m3', 'dell xps', 'thinkpad x1',
+        'rtx 4070', 'rtx 4060', 'rtx 3080', 'rtx 3090',
+        'ps5', 'playstation 5', 'xbox series x', 'ps5 pro',
+        'sony wh-1000', 'airpods max', 'bose 700', 'bose qc ultra'
+    ]
+    
+    # MEDIUM (500 - 2000 PLN) - Mid-range
+    elektro_medium = [
+        'laptop', 'notebook', 'komputer', 'desktop', 'all-in-one',
+        'telewizor', 'tv', 'smart tv', '55 cali', '65 cali', '50 cali',
+        'monitor', 'monitor gaming', '27 cali', '32 cali', '34 cali',
+        'tablet', 'ipad', 'ipad air', 'galaxy tab', 'tab s9',
+        'słuchawki', 'headphones', 'airpods', 'airpods pro', 'earbuds', 'buds',
+        'głośnik', 'soundbar', 'jbl', 'marshall', 'bose soundlink',
+        'konsola', 'nintendo switch', 'switch oled', 'xbox series s', 'ps4',
+        'aparat', 'canon', 'nikon', 'sony alpha', 'fujifilm'
+    ]
+    
+    # LOW (50 - 300 PLN) - Akcesoria
+    elektro_low = [
+        'kabel', 'ładowarka', 'charger', 'powerbank', 'adapter', 'zasilacz',
+        'etui', 'case', 'pokrowiec', 'folia', 'szkło', 'hartowane',
+        'myszka', 'mysz', 'klawiatura', 'keyboard', 'mata', 'podkładka',
+        'pendrive', 'karta pamięci', 'sd card', 'microsd',
+        'hub', 'przejściówka', 'usb', 'usb-c', 'hdmi', 'splitter'
+    ]
+    
+    # ============================================
+    # LOGIKA WYKRYWANIA BRANŻY
+    # ============================================
+    
+    # Słowa kluczowe wykrywające elektronikę
+    elektro_indicators = [
+        'iphone', 'samsung', 'galaxy', 'macbook', 'laptop', 'rtx', 'nvidia', 'geforce',
+        'słuchawki', 'telewizor', 'tv', 'monitor', 'tablet', 'ipad', 'konsola', 
+        'ps5', 'ps4', 'xbox', 'nintendo', 'switch', 'pixel', 'xiaomi', 'redmi',
+        'airpods', 'bluetooth', 'smartwatch', 'apple watch', 'garmin',
+        'klawiatura', 'myszka', 'głośnik', 'soundbar', 'projektor'
+    ]
+    
+    # Słowa kluczowe wykrywające motoryzację
+    moto_indicators = [
+        'klocki', 'filtr', 'olej', 'amortyzator', 'świece', 'rozrząd', 'sprzęgło',
+        'hamulce', 'tarcze', 'zawieszenie', 'wahacz', 'bmw', 'audi', 'mercedes',
+        'volkswagen', 'vw', 'toyota', 'ford', 'opel', 'skoda', 'seat', 'renault',
+        'ferrari', 'porsche', 'turbo', 'silnik', 'skrzynia', 'akumulator',
+        'czujnik', 'lambda', 'katalizator', 'dpf', 'egr'
+    ]
+    
+    is_elektro = any(kw in query_lower for kw in elektro_indicators)
+    is_moto = any(kw in query_lower for kw in moto_indicators)
+    
+    # ============================================
+    # OBLICZANIE WARTOŚCI
+    # ============================================
+    
+    # ELEKTRONIKA
+    if is_elektro or source == 'elektro':
+        if any(kw in query_lower for kw in elektro_premium):
+            return random.randint(8000, 22000)
+        if any(kw in query_lower for kw in elektro_high):
+            return random.randint(3500, 7500)
+        if any(kw in query_lower for kw in elektro_medium):
+            return random.randint(500, 2000)
+        if any(kw in query_lower for kw in elektro_low):
+            return random.randint(50, 300)
+        # Default dla elektroniki - mid-range
+        return random.randint(800, 2500)
+    
+    # MOTORYZACJA (lub nieznana branża)
+    if is_moto or source == 'moto' or True:  # True = fallback
+        if any(kw in query_lower for kw in moto_premium):
+            return random.randint(2500, 9000)
+        if any(kw in query_lower for kw in moto_high):
+            return random.randint(1500, 4000)
+        if any(kw in query_lower for kw in moto_medium):
+            return random.randint(300, 1000)
+        if any(kw in query_lower for kw in moto_low):
+            return random.randint(50, 200)
+        # Default dla motoryzacji - medium
+        return random.randint(300, 800)
 
 def log_lost_demand(query, analysis):
     """Helper function to log lost demand"""
@@ -2221,12 +2515,14 @@ def handle_connect():
     
     print('[WEBSOCKET] Client connected')
     
+    # === SPRAWDŹ REFERER - demo page zawsze do client_demo ===
+    referer = flask_request.headers.get('Referer', '')
+    is_demo_page = '/demo' in referer or '/motobot-prototype' in referer or '/elektrobot-prototype' in referer
+    
     # === RODO: ZABEZPIECZENIE WEBSOCKET ===
     if not current_user.is_authenticated:
         # Niezalogowany - sprawdź czy to demo page (dozwolone)
-        referer = flask_request.headers.get('Referer', '')
-        
-        if '/demo' in referer or '/motobot-prototype' in referer:
+        if is_demo_page:
             # OK - publiczne demo
             join_room('client_demo')
             print('[WEBSOCKET] Anonymous user joined client_demo (public demo)')
@@ -2238,8 +2534,12 @@ def handle_connect():
             disconnect()
             return
     else:
-        # Zalogowany - przydziel room wg roli
-        if current_user.role in ['admin', 'debug']:
+        # Zalogowany - DEMO PAGE zawsze idzie do client_demo, nawet dla admina
+        if is_demo_page:
+            join_room('client_demo')
+            print(f'[WEBSOCKET] User {current_user.username} (admin={current_user.role in ["admin","debug"]}) joined client_demo room (demo page)')
+            emit('connection_confirmed', {'message': 'Connected to Demo TCD', 'room': 'client'})
+        elif current_user.role in ['admin', 'debug']:
             join_room('admin_dashboard')
             print(f'[WEBSOCKET] Admin {current_user.username} joined admin_dashboard room')
             emit('connection_confirmed', {'message': 'Connected to Admin Dashboard', 'room': 'admin'})
@@ -2291,73 +2591,11 @@ def handle_stats_request():
 def handle_visitor_event_websocket(data):
     """
     Handler WebSocket dla visitor_event
-    Odbiera dane z visitor_tracking.js i retransmituje jako live_feed_update
+    WYŁĄCZONY - duplikuje eventy z /api/analyze_query
     """
-    try:
-        print(f"[WEBSOCKET] Received visitor_event: {data.get('query', 'N/A')[:50]}...")
-        
-        # Wyciągnij dane
-        query = data.get('query', '')
-        session_id = data.get('sessionId', 'unknown')
-        source = data.get('source', 'moto')  # 🔥 NEW: wykryj źródło
-        
-        # 🔥 WYBIERZ WŁAŚCIWEGO BOTA
-        if source == 'elektro' and ELEKTRO_BOT_AVAILABLE:
-            active_bot = elektro_bot
-            decision_mapping = ELEKTRO_DECISION_MAPPING
-            print(f"[WEBSOCKET] Using ELEKTRO bot for analysis")
-        else:
-            active_bot = moto_bot
-            decision_mapping = MOTO_DECISION_MAPPING
-            print(f"[WEBSOCKET] Using MOTO bot for analysis")
-        
-        # === RODO: SANITYZUJ QUERY NA BACKENDZIE ===
-        sanitized_query = scrub_pii(query)
-        
-        if sanitized_query != query:
-            print(f"[RODO] PII scrubbed in WebSocket query")
-            app.logger.warning(f"PII scrubbed in WebSocket visitor_event - session {session_id[:8]}")
-        
-        # Analizuj SANITIZED zapytanie przez właściwego bota
-        analysis = active_bot.analyze_query_intent(sanitized_query)
-        
-        # Użyj decision_mapping wybranego na podstawie źródła (zdefiniowanego wyżej)
-        decision = decision_mapping.get(analysis['confidence_level'], 'ODFILTROWANE')
-        potential_value = calculate_lost_value_internal(sanitized_query) if decision == 'UTRACONE OKAZJE' else 0
-        
-        # Dodaj do głównego systemu TCD
-        event_id = DatabaseManager.add_event(
-            sanitized_query,  # SANITIZED!
-            decision,
-            f'{data.get("organization", "Unknown")}',
-            extract_category_from_query(sanitized_query),
-            'visitor',
-            potential_value,
-            f"Live visitor query - {analysis['confidence_level']} confidence"
-        )
-        
-        # ==== KLUCZOWE: Retransmituj jako live_feed_update z pełnymi danymi ====
-        live_feed_data = {
-            'id': event_id,
-            'timestamp': datetime.now().strftime('%H:%M:%S'),
-            'query': sanitized_query,  # SANITIZED!
-            'decision': decision,
-            'estimatedValue': potential_value,
-            'city': data.get('city', 'Unknown'),
-            'country': data.get('country', 'Unknown'),
-            'organization': data.get('organization', 'Unknown'),
-            'sessionId': session_id
-        }
-        
-        print(f"[WEBSOCKET] Broadcasting live_feed_update ONLY to admin_dashboard")
-        emit('live_feed_update', live_feed_data, room='admin_dashboard')
-        
-        print(f"[WEBSOCKET] Event processed successfully: {decision}")
-        
-    except Exception as e:
-        print(f"[ERROR] Failed to handle visitor_event: {e}")
-        import traceback
-        traceback.print_exc()
+    # Cała funkcjonalność przeniesiona do /api/analyze_query
+    # Ten handler nie jest już używany aby uniknąć duplikacji eventów
+    pass
 
 # === VISITOR TRACKING SYSTEM ===
 

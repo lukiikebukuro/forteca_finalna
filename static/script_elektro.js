@@ -430,6 +430,11 @@ this.dashboardOverlay = null;
             
             // NATYCHMIASTOWA analiza dla TCD przy Enter
             if (this.searchMode || this.faqMode) {
+                // ANULUJ pending timeout aby uniknąć duplikatu
+                if (this.finalAnalysisTimeout) {
+                    clearTimeout(this.finalAnalysisTimeout);
+                    this.finalAnalysisTimeout = null;
+                }
                 await this.sendFinalAnalysis(message);
             }
             
@@ -517,9 +522,19 @@ this.dashboardOverlay = null;
         if (!query || query.length < 2) return;
         
         const searchType = this.faqMode ? 'faq' : 'products';
+        const requestId = Math.random().toString(36).substring(2, 10);
         
         try {
-            console.log(`[FINAL ANALYSIS] Sending to TCD: "${query}"`);
+            console.log(`[FINAL ANALYSIS][REQ:${requestId}] Sending to TCD: "${query}"`);
+            
+            // Pobierz dane geolokalizacji z visitorTracker jeśli dostępne
+            const geoData = {};
+            if (window.visitorTracker && window.visitorTracker.visitorData) {
+                geoData.city = window.visitorTracker.visitorData.city || 'Unknown';
+                geoData.country = window.visitorTracker.visitorData.country || 'Unknown';
+                geoData.org = window.visitorTracker.visitorData.org || 'Unknown';
+                console.log(`[FINAL ANALYSIS][REQ:${requestId}] Geo: ${geoData.city}, ${geoData.country}`);
+            }
             
             const response = await fetch(this.API_PREFIX + '/api/analyze_query', {
                 method: 'POST',
@@ -529,7 +544,8 @@ this.dashboardOverlay = null;
                 credentials: 'include',
                 body: JSON.stringify({
                     query: query,
-                    type: searchType
+                    type: searchType,
+                    ...geoData  // Dodaj dane geolokalizacji
                 })
             });
             
@@ -538,7 +554,9 @@ this.dashboardOverlay = null;
             }
             
             const data = await response.json();
-            console.log(`[FINAL ANALYSIS] TCD updated: ${data.decision} (confidence: ${data.confidence_level})`);
+            console.log(`[FINAL ANALYSIS][REQ:${requestId}] TCD updated: ${data.decision} (confidence: ${data.confidence_level})`);
+            // Precise timestamp for latency debugging (ms since epoch)
+            console.log('[FINAL_ANALYSIS_TIMESTAMP_MS]', Date.now(), { decision: data.decision, query: query });
             
         } catch (error) {
             console.error('[ERROR] Final analysis failed:', error);

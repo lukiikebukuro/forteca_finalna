@@ -619,9 +619,10 @@ class VisitorTracker {
             company_name: this.visitorData?.org || 'Unknown Organization'
         };
         
-        if (window.tacticalDashboard) {
-            window.tacticalDashboard.addEventToFeed(feedData);
-        }
+        // WYŁĄCZONE - backend już wysyła live_feed_update przez WebSocket
+        // if (window.tacticalDashboard) {
+        //     window.tacticalDashboard.addFeedItem(feedData, false);
+        // }
     }
     
     /**

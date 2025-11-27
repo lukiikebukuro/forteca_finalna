@@ -430,6 +430,11 @@ this.dashboardOverlay = null;
             
             // NATYCHMIASTOWA analiza dla TCD przy Enter
             if (this.searchMode || this.faqMode) {
+                // ANULUJ pending timeout aby uniknąć duplikatu
+                if (this.finalAnalysisTimeout) {
+                    clearTimeout(this.finalAnalysisTimeout);
+                    this.finalAnalysisTimeout = null;
+                }
                 await this.sendFinalAnalysis(message);
             }
             
