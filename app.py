@@ -97,6 +97,7 @@ def init_database():
     # 1. GWARANTOWANA NAPRAWA: Zawsze próbuj stworzyć tabelę admin_dashboard_state
     try:
         AdminDashboardStateManager.init_table()
+        init_persistent_storage_tables()
         print("[STARTUP] ✅ Wymuszono weryfikację tabeli admin_dashboard_state")
     except Exception as e:
         print(f"[STARTUP] ⚠️ Warning przy weryfikacji tabeli admin: {e}")
@@ -1111,6 +1112,22 @@ def analyze_query():
             f'Analiza po 800ms pauzy - confidence: {confidence_level}'
         )
         
+        # === PERSISTENT STORAGE (MOTO) ===
+        session_id = request.cookies.get('visitor_session_id')
+        organization = 'Unknown Visitor'
+        city = country = 'Unknown'
+        if session_id:
+            visitor_ctx = get_visitor_context(session_id)
+            if visitor_ctx and visitor_ctx != 'Unknown':
+                parts = visitor_ctx.split(', ')
+                organization = parts[0] if len(parts) >= 1 else organization
+                city = parts[1] if len(parts) >= 2 else city
+                country = parts[2] if len(parts) >= 3 else country
+        company_data = save_company_data(organization, city, country, sanitized_query, decision)
+        if company_data and company_data['engagement_score'] >= 30 and decision == 'ZNALEZIONE PRODUKTY':
+            save_hot_lead(organization, sanitized_query, company_data['engagement_score'])
+        save_log_entry(decision, organization, sanitized_query)
+        
         # WYŚLIJ PRZEZ WEBSOCKET DO TCD
         server_ts_ms = int(time.time() * 1000)
         event_data = {
@@ -1254,6 +1271,23 @@ def elektro_analyze_query():
             potential_value,
             f'Analiza po 800ms pauzy - confidence: {confidence_level}'
         )
+        
+        # === PERSISTENT STORAGE (ELEKTRO) ===
+        session_id = request.cookies.get('visitor_session_id')
+        organization = visitor_org if visitor_org != 'Unknown' else 'Unknown Visitor'
+        city = visitor_city if visitor_city != 'Unknown' else 'Unknown'
+        country = visitor_country if visitor_country != 'Unknown' else 'Unknown'
+        if session_id:
+            visitor_ctx = get_visitor_context(session_id)
+            if visitor_ctx and visitor_ctx != 'Unknown':
+                parts = visitor_ctx.split(', ')
+                organization = parts[0] if len(parts) >= 1 else organization
+                city = parts[1] if len(parts) >= 2 else city
+                country = parts[2] if len(parts) >= 3 else country
+        company_data = save_company_data(organization, city, country, sanitized_query, decision)
+        if company_data and company_data['engagement_score'] >= 30 and decision == 'ZNALEZIONE PRODUKTY':
+            save_hot_lead(organization, sanitized_query, company_data['engagement_score'])
+        save_log_entry(decision, organization, sanitized_query)
         
         # WYŚLIJ PRZEZ WEBSOCKET DO TCD
         event_data = {
@@ -2900,6 +2934,168 @@ def handle_bot_query(session_id, data):
         app.logger.error(f"Handle bot query failed: {e}", exc_info=True)
         return {'status': 'error', 'message': str(e)}
 
+
+# ============================================
+# PERSISTENT STORAGE - COMPANIES, HOT_LEADS, LOG_HISTORY
+# ============================================
+
+def init_persistent_storage_tables():
+    """Tworzy tabele dla persistent storage"""
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        cursor = conn.cursor()
+        
+        cursor.execute('''CREATE TABLE IF NOT EXISTS companies (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE NOT NULL,
+            city TEXT, country TEXT, first_visit TIMESTAMP NOT NULL, last_visit TIMESTAMP NOT NULL,
+            total_queries INTEGER DEFAULT 0, high_intent_queries INTEGER DEFAULT 0,
+            lost_opportunities INTEGER DEFAULT 0, engagement_score INTEGER DEFAULT 0,
+            queries_json TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)''')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_companies_name ON companies(name)')
+        
+        cursor.execute('''CREATE TABLE IF NOT EXISTS hot_leads (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, company TEXT NOT NULL, query TEXT NOT NULL,
+            score INTEGER NOT NULL, timestamp TIMESTAMP NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)''')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_hot_leads_timestamp ON hot_leads(timestamp)')
+        
+        cursor.execute('''CREATE TABLE IF NOT EXISTS log_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, log_type TEXT NOT NULL, company TEXT NOT NULL,
+            query TEXT NOT NULL, timestamp TIMESTAMP NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)''')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_log_history_timestamp ON log_history(timestamp)')
+        
+        conn.commit()
+        conn.close()
+        print("[DATABASE] ✅ Persistent storage tables OK")
+    except Exception as e:
+        print(f"[DATABASE] ⚠️ Persistent storage error: {e}")
+
+def save_company_data(organization, city, country, query, decision):
+    """Zapisuje/aktualizuje firmę"""
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM companies WHERE name = ?', (organization,))
+        existing = cursor.fetchone()
+        
+        if existing:
+            queries_json = existing[10] or '[]'
+            queries = json.loads(queries_json)
+            queries.append({'text': query, 'timestamp': datetime.now().isoformat(), 'decision': decision})
+            total_queries = existing[6] + 1
+            high_intent = existing[7] + (1 if decision == 'ZNALEZIONE PRODUKTY' else 0)
+            lost_opp = existing[8] + (1 if decision == 'UTRACONE OKAZJE' else 0)
+            engagement_score = min((total_queries * 10) + (high_intent * 20) + (lost_opp * 10), 100)
+            
+            cursor.execute('''UPDATE companies SET last_visit = ?, total_queries = ?, 
+                high_intent_queries = ?, lost_opportunities = ?, engagement_score = ?, 
+                queries_json = ?, updated_at = ? WHERE name = ?''',
+                (datetime.now(), total_queries, high_intent, lost_opp, engagement_score, 
+                json.dumps(queries), datetime.now(), organization))
+            conn.commit()
+            conn.close()
+            print(f"[COMPANIES] ✅ Updated: {organization} (score: {engagement_score})")
+            return {'name': organization, 'engagement_score': engagement_score, 'is_new': False}
+        else:
+            now = datetime.now()
+            queries = [{'text': query, 'timestamp': now.isoformat(), 'decision': decision}]
+            high_intent = 1 if decision == 'ZNALEZIONE PRODUKTY' else 0
+            lost_opp = 1 if decision == 'UTRACONE OKAZJE' else 0
+            engagement_score = 10
+            
+            cursor.execute('''INSERT INTO companies (name, city, country, first_visit, last_visit,
+                total_queries, high_intent_queries, lost_opportunities, engagement_score, queries_json)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                (organization, city, country, now, now, 1, high_intent, lost_opp, engagement_score, json.dumps(queries)))
+            conn.commit()
+            conn.close()
+            print(f"[COMPANIES] ✅ NEW: {organization}")
+            return {'name': organization, 'engagement_score': engagement_score, 'is_new': True}
+    except Exception as e:
+        print(f"[ERROR] save_company_data: {e}")
+        return None
+
+def save_hot_lead(company, query, score):
+    """Zapisuje hot lead"""
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        cursor = conn.cursor()
+        cursor.execute('INSERT INTO hot_leads (company, query, score, timestamp) VALUES (?, ?, ?, ?)',
+                      (company, query, score, datetime.now()))
+        conn.commit()
+        conn.close()
+        print(f"[HOT_LEADS] 🔥 {company} (score: {score})")
+        return True
+    except Exception as e:
+        print(f"[ERROR] save_hot_lead: {e}")
+        return False
+
+def save_log_entry(log_type, company, query):
+    """Zapisuje log"""
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        cursor = conn.cursor()
+        cursor.execute('INSERT INTO log_history (log_type, company, query, timestamp) VALUES (?, ?, ?, ?)',
+                      (log_type, company, query, datetime.now()))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"[ERROR] save_log_entry: {e}")
+        return False
+
+def get_all_companies():
+    """Pobiera firmy z bazy"""
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        cursor = conn.cursor()
+        cursor.execute('''SELECT name, city, country, first_visit, last_visit, total_queries,
+            high_intent_queries, lost_opportunities, engagement_score, queries_json
+            FROM companies ORDER BY last_visit DESC''')
+        rows = cursor.fetchall()
+        conn.close()
+        companies = []
+        for row in rows:
+            queries = json.loads(row[9]) if row[9] else []
+            companies.append({
+                'name': row[0], 'city': row[1], 'country': row[2],
+                'firstVisit': row[3], 'lastVisit': row[4], 'totalQueries': row[5],
+                'highIntentQueries': row[6], 'lostOpportunities': row[7],
+                'engagementScore': row[8], 'queries': queries
+            })
+        return companies
+    except Exception as e:
+        print(f"[ERROR] get_all_companies: {e}")
+        return []
+
+def get_hot_leads(limit=50):
+    """Pobiera hot leads"""
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        cursor = conn.cursor()
+        cursor.execute('SELECT company, query, score, timestamp FROM hot_leads ORDER BY timestamp DESC LIMIT ?', (limit,))
+        rows = cursor.fetchall()
+        conn.close()
+        return [{'company': r[0], 'query': r[1], 'score': r[2], 'timestamp': r[3]} for r in rows]
+    except Exception as e:
+        print(f"[ERROR] get_hot_leads: {e}")
+        return []
+
+def get_log_history(limit=100):
+    """Pobiera logi"""
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        cursor = conn.cursor()
+        cursor.execute('SELECT log_type, company, query, timestamp FROM log_history ORDER BY timestamp DESC LIMIT ?', (limit,))
+        rows = cursor.fetchall()
+        conn.close()
+        return [{'type': r[0], 'company': r[1], 'query': r[2], 'timestamp': r[3]} for r in rows]
+    except Exception as e:
+        print(f"[ERROR] get_log_history: {e}")
+        return []
+
 def get_visitor_context(session_id):
     """Pobiera kontekst odwiedzającego dla Live Feed"""
     try:
@@ -3064,6 +3260,37 @@ with app.app_context():
 # ================================================================
 # URUCHAMIANIE LOKALNE (Tylko przy python app.py)
 # ================================================================
+
+# === API ENDPOINTS - PERSISTENT STORAGE ===
+@app.route('/api/admin/companies', methods=['GET'])
+@require_admin_access
+def api_get_companies():
+    try:
+        companies = get_all_companies()
+        return jsonify({'status': 'success', 'companies': companies, 'count': len(companies)})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/api/admin/hot-leads', methods=['GET'])
+@require_admin_access
+def api_get_hot_leads():
+    try:
+        limit = request.args.get('limit', 50, type=int)
+        hot_leads = get_hot_leads(limit)
+        return jsonify({'status': 'success', 'hot_leads': hot_leads, 'count': len(hot_leads)})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/api/admin/log-history', methods=['GET'])
+@require_admin_access
+def api_get_log_history():
+    try:
+        limit = request.args.get('limit', 100, type=int)
+        logs = get_log_history(limit)
+        return jsonify({'status': 'success', 'logs': logs, 'count': len(logs)})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
 if __name__ == '__main__':
     print("=" * 70)
     print("🎯 STUDIO ADEPT AI - LOCAL DEV MODE")

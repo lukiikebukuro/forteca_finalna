@@ -41,24 +41,21 @@ class AdminDashboard {
      */
     async loadHotLeadsFromServer() {
         try {
-            const response = await fetch('/api/admin/load-state/hot_leads');
+            const response = await fetch('/api/admin/hot-leads?limit=50');
             const result = await response.json();
             
-            if (result.status === 'success' && result.data) {
-                this.hotLeads = result.data;
-                
-                // Konwertuj stringi z powrotem na Date
+            if (result.status === 'success' && result.hot_leads) {
+                this.hotLeads = result.hot_leads;
                 this.hotLeads.forEach(lead => {
                     lead.timestamp = new Date(lead.timestamp);
                 });
-                
-                console.log(`✅ Załadowano ${this.hotLeads.length} HOT LEADS z serwera`);
+                console.log(`✅ Załadowano ${this.hotLeads.length} HOT LEADS z bazy`);
             } else {
                 this.hotLeads = [];
-                console.log('ℹ️ Brak zapisanych HOT LEADS na serwerze');
+                console.log('ℹ️ Brak hot leads');
             }
         } catch (e) {
-            console.error('❌ Błąd ładowania HOT LEADS z serwera:', e);
+            console.error('❌ Błąd ładowania HOT LEADS:', e);
             this.hotLeads = [];
         }
     }
@@ -96,18 +93,16 @@ class AdminDashboard {
      */
     async loadCompaniesFromServer() {
         try {
-            const response = await fetch('/api/admin/load-state/companies');
+            const response = await fetch('/api/admin/companies');
             const result = await response.json();
             
-            if (result.status === 'success' && result.data && result.data.length > 0) {
-                const companiesArray = result.data;
+            if (result.status === 'success' && result.companies && result.companies.length > 0) {
+                this.companies.clear();
                 
-                companiesArray.forEach(company => {
-                    // Konwertuj stringi z powrotem na Date
+                result.companies.forEach(company => {
                     company.firstVisit = new Date(company.firstVisit);
                     company.lastVisit = new Date(company.lastVisit);
                     
-                    // Konwertuj timestamps w queries
                     if (company.queries && Array.isArray(company.queries)) {
                         company.queries = company.queries.map(q => ({
                             ...q,
@@ -120,15 +115,14 @@ class AdminDashboard {
                     this.companies.set(company.name, company);
                 });
                 
-                console.log(`✅ Załadowano ${this.companies.size} firm z serwera`);
-                
-                // Renderuj firmy po załadowaniu
+                console.log(`✅ Załadowano ${this.companies.size} firm z bazy`);
                 this.updateCompanyList(Array.from(this.companies.values()));
             } else {
-                console.log('ℹ️ Brak zapisanych firm na serwerze');
+                console.log('ℹ️ Brak firm w bazie');
+                this.companies.clear();
             }
         } catch (e) {
-            console.error('❌ Błąd ładowania firm z serwera:', e);
+            console.error('❌ Błąd ładowania firm:', e);
             this.companies = new Map();
         }
     }
@@ -168,26 +162,22 @@ class AdminDashboard {
      */
     async loadLogHistoryFromServer() {
         try {
-            const response = await fetch('/api/admin/load-state/log_history');
+            const response = await fetch('/api/admin/log-history?limit=100');
             const result = await response.json();
             
-            if (result.status === 'success' && result.data) {
-                this.logHistory = result.data;
-                
-                // Konwertuj stringi z powrotem na Date
+            if (result.status === 'success' && result.logs) {
+                this.logHistory = result.logs;
                 this.logHistory.forEach(log => {
                     log.timestamp = new Date(log.timestamp);
                 });
-                
-                console.log(`✅ Załadowano ${this.logHistory.length} logów z serwera`);
-                
-                // Renderuj logi po załadowaniu
+                console.log(`✅ Załadowano ${this.logHistory.length} logów z bazy`);
                 this.renderLogHistory();
             } else {
-                console.log('ℹ️ Brak zapisanych logów na serwerze');
+                this.logHistory = [];
+                console.log('ℹ️ Brak logów');
             }
         } catch (e) {
-            console.error('❌ Błąd ładowania logów z serwera:', e);
+            console.error('❌ Błąd ładowania logów:', e);
             this.logHistory = [];
         }
     }
@@ -335,7 +325,7 @@ class AdminDashboard {
                     });
                     
                     // Zapisz zmergowane firmy na serwerze
-                    await this.saveCompaniesToServer();
+                    await // this.saveCompaniesToServer(); // Backend zapisuje
                     
                     this.updateCompanyList(Array.from(this.companies.values()));
                 }
@@ -415,7 +405,7 @@ class AdminDashboard {
         }
         
         // Zapisz na serwerze
-        this.saveCompaniesToServer();
+        // this.saveCompaniesToServer(); // Backend zapisuje
         
         // Sprawdź czy to HOT LEAD (obniżony próg dla testów)
         const company = this.companies.get(organization);
@@ -465,7 +455,7 @@ class AdminDashboard {
                 this.hotLeads = this.hotLeads.slice(0, 50);
             }
             
-            this.saveHotLeadsToServer();
+            // this.saveHotLeadsToServer(); // Backend zapisuje
             this.renderHotLeads();
             
             console.log('🔥 Dodano HOT LEAD:', lead.company);
@@ -507,7 +497,7 @@ class AdminDashboard {
             this.logHistory = this.logHistory.slice(0, 100);
         }
         
-        this.saveLogHistoryToServer();
+        // this.saveLogHistoryToServer(); // Backend zapisuje
         this.renderLogHistory();
     }
     
