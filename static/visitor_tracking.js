@@ -173,6 +173,9 @@ class VisitorTracker {
                 rejectUnauthorized: false
             });
             
+            // 🔥 CRITICAL: Export socket to window for status updates
+            window.socket = this.socket;
+            
             this.socket.on('connect', () => {
                 console.log('🛰️ SATELITA: WebSocket connected');
             });
