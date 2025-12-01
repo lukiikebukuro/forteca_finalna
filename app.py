@@ -720,7 +720,7 @@ def elektrobot_index():
         return redirect(url_for('motobot_index'))
     return render_template('demo_page_elektro.html')
 
-@app.route('/demo/elektro')
+@app.route('/live-demo')
 def elektro_demo_page():
     """Elektro demo page with bot and dashboard split screen"""
     if not ELEKTRO_BOT_AVAILABLE:
