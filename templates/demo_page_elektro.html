@@ -47,6 +47,61 @@
             margin-bottom: 4px;
             font-weight: 700;
         }
+        
+        /* Fix dla advantage-grid - 3 kolumny w grid - NADPISANIE unified_style.css */
+        .sales-arguments .arguments-container .advantage-grid {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 24px !important;
+            margin-top: 32px !important;
+            width: 100% !important;
+        }
+        
+        /* Dla ekranów powyżej 1025px wymuszamy 3 kolumny */
+        @media (min-width: 1025px) {
+            .sales-arguments .arguments-container .advantage-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+        }
+        
+        .advantage-item {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 12px !important;
+            padding: 24px !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .advantage-item:hover {
+            background: rgba(255, 255, 255, 0.08) !important;
+            transform: translateY(-4px) !important;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+        }
+        
+        .advantage-icon {
+            font-size: 48px !important;
+            margin-bottom: 16px !important;
+        }
+        
+        .advantage-content h4 {
+            color: #ffffff !important;
+            font-size: 18px !important;
+            font-weight: 700 !important;
+            margin-bottom: 12px !important;
+        }
+        
+        .advantage-content p {
+            color: #e5e7eb !important;
+            font-size: 14px !important;
+            line-height: 1.6 !important;
+        }
+        
+        /* Responsive - na mniejszych ekranach 1 kolumna */
+        @media (max-width: 1024px) {
+            .advantage-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
     </style>
 
     
@@ -527,43 +582,43 @@
             <h2>To Więcej Niż Bot. To Partnerstwo Strategiczne.</h2>
         </div>
         
-        <div class="advantage-grid">
-    <div class="advantage-item">
+        <div class="advantage-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 32px;">
+    <div class="advantage-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 16px;">
         <div class="advantage-icon">🧠</div>
         <div class="advantage-content">
             <h4>System Analityczny, a nie Bot-Zabawka</h4>
-            <p>Każde "brak wyników" to klient, który właśnie wychodzi z Twojego sklepu z pieniędzmi w ręku. Nasz <span style="color: #FFD700;">silnik analityczny</span> w czasie rzeczywistym odróżnia przypadkową <strong>literówkę</strong> od zapytania o produkt <strong>warty tysiące złotych</strong>. Zmieniamy porażkę w twarde dane wywiadowcze.</p>
+            <p style="font-size: 16px; line-height: 1.65;">Każde "brak wyników" to klient, który właśnie wychodzi z Twojego sklepu z pieniędzmi w ręku. Nasz <span style="color: #FFD700;">silnik analityczny</span> w czasie rzeczywistym odróżnia przypadkową <strong>literówkę</strong> od zapytania o produkt <strong>warty tysiące złotych</strong>. Zmieniamy porażkę w twarde dane wywiadowcze.</p>
         </div>
     </div>
 
-    <div class="advantage-item">
+    <div class="advantage-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 16px;">
     <div class="advantage-icon">💰</div>
     <div class="advantage-content">
         <h4>Inteligencja, nie Surowe Dane</h4>
-        <p>Standardowe narzędzia zasypują Cię surowymi logami i mówią "analizuj sam". My działamy inaczej. Otrzymujesz <strong>zweryfikowany przez eksperta, cotygodniowy raport PDF</strong> z gotowymi wnioskami i rekomendacjami. Twoja rola to podejmować decyzje, a nie grzebać w danych.</p>
+        <p style="font-size: 16px; line-height: 1.65;">Standardowe narzędzia zasypują Cię surowymi logami i mówią "analizuj sam". My działamy inaczej. Otrzymujesz <strong>zweryfikowany przez eksperta, cotygodniowy raport PDF</strong> z gotowymi wnioskami i rekomendacjami. Twoja rola to podejmować decyzje, a nie grzebać w danych.</p>
     </div>
 </div>
 
-    <div class="advantage-item">
+    <div class="advantage-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 16px;">
         <div class="advantage-icon">🛠️</div>
         <div class="advantage-content">
             <h4>Nieskończone Możliwości, a nie Zamknięte Pudełko</h4>
-            <p><strong>Jesteśmy Twoim zespołem inżynierów. Wdrożymy predykcję popytu AI, alerty VIP o wejściu kluczowych firm (np. Orlen) i pełną integrację z magazynem. Nie kupujesz gotowej wtyczki – kodujemy Twoją przewagę technologiczną szytą na miarę.</p>
+            <p style="font-size: 16px; line-height: 1.65;"><strong>Jesteśmy Twoim zespołem inżynierów. Wdrożymy predykcję popytu AI, alerty VIP o wejściu kluczowych firm (np. Orlen) i pełną integrację z magazynem. Nie kupujesz gotowej wtyczki – kodujemy Twoją przewagę technologiczną szytą na miarę.</strong></p>
         </div>
     </div>
-    <div class="advantage-item">
+    <div class="advantage-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 16px;">
         <div class="advantage-icon">👨‍💻</div>
         <div class="advantage-content">
             <h4>Bezpośredni Kontakt z Architektem</h4>
-            <p>Nie rozmawiasz z działem wsparcia. Masz bezpośredni dostęp do mnie – architekta, który zna każdą linijkę kodu. Modyfikacje i nowe pomysły wdrażamy w godzinach, a nie tygodniach.</p>
+            <p style="font-size: 17px; line-height: 1.7;">Nie rozmawiasz z działem wsparcia. Masz bezpośredni dostęp do mnie – architekta, który zna każdą linijkę kodu. <strong>Modyfikacje i nowe pomysły wdrażamy w godzinach, a nie tygodniach.</strong></p>
         </div>
     </div>
 
-    <div class="advantage-item">
+    <div class="advantage-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 16px;">
         <div class="advantage-icon">💸</div>
         <div class="advantage-content">
             <h4>Zwrot z Inwestycji (ROI), a nie Koszt</h4>
-            <p>Nie pytaj "ile to kosztuje". Zapytaj "ile tracę bez tego?".
+            <p style="font-size: 16px; line-height: 1.65;">Nie pytaj "ile to kosztuje". Zapytaj "ile tracę bez tego?".
     Nasz system nie jest kosztem – jest <strong>dźwignią finansową</strong>.
     Identyfikujemy luki w sprzedaży, które są niewidoczne dla standardowych narzędzi.
     Dla średniego e-commerce to odzyskany przychód rzędu <strong>kilkunastu tysięcy tygodniowo</strong>.
@@ -571,11 +626,11 @@
         </div>
     </div>
 
-    <div class="advantage-item">
+    <div class="advantage-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 16px;">
         <div class="advantage-icon">🔮</div>
         <div class="advantage-content">
             <h4>Przyszłość: Machine Learning + Predykcja</h4>
-            <p>To dopiero początek technologiczny. Następny cel: ML do predykcji przyszłego popytu. Będziemy przewidywać trendy zanim zobaczy je rynek. Nasz produkt rozwija się każdego dnia.</p>
+            <p style="font-size: 17px; line-height: 1.7;">To dopiero początek technologiczny. <strong>Następny cel: ML do predykcji przyszłego popytu.</strong> Będziemy przewidywać trendy zanim zobaczy je rynek. Nasz produkt rozwija się każdego dnia.</p>
         </div>
     </div>
 </div>
