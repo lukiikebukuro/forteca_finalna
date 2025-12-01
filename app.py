@@ -1058,7 +1058,10 @@ def analyze_query():
         visitor_country = data.get('country', 'Unknown')
         visitor_org = data.get('org', 'Unknown')
         
-        print(f"[MOTO FINAL ANALYSIS][REQ:{request_id}] Query: '{query}' | Type: {search_type} | Geo: {visitor_city}, {visitor_country}")
+        # 🎯 PASSIVE RADAR: Odbierz session_id
+        session_id = data.get('session_id', None)
+        
+        print(f"[MOTO FINAL ANALYSIS][REQ:{request_id}] Query: '{query}' | Type: {search_type} | Geo: {visitor_city}, {visitor_country} | Session: {session_id}")
         
         # === RODO: SANITYZUJ QUERY ===
         sanitized_query = scrub_pii(query)
@@ -1154,13 +1157,34 @@ def analyze_query():
             'city': visitor_city,
             'country': visitor_country,
             'organization': visitor_org,
-            'sessionId': None,
+            'sessionId': session_id,  # 🎯 PASSIVE RADAR: Dodane!
             'anonymous': True,
             'source': 'moto'
         }
         
+        # 🎯 PASSIVE RADAR FIX 2: UPDATE STATUS W BAZIE
+        if session_id:
+            try:
+                conn = sqlite3.connect(DATABASE_NAME)
+                cursor = conn.cursor()
+                
+                cursor.execute('''
+                    UPDATE visitor_sessions 
+                    SET radar_status = 'Pisze',
+                        last_activity = CURRENT_TIMESTAMP
+                    WHERE session_id = ?
+                ''', (session_id,))
+                
+                conn.commit()
+                conn.close()
+                print(f"🎯 PASSIVE RADAR: Status updated to 'Pisze' for session {session_id}")
+                
+            except Exception as db_error:
+                print(f"🎯 PASSIVE RADAR: Błąd update statusu: {db_error}")
+        
         # WYŚLIJ DO DASHBOARDU (broadcast do obu roomów)
         print(f"[WS EMIT][MOTO][REQ:{request_id}] live_feed_update id={event_id} sent_at={server_ts_ms} city={visitor_city}")
+        print(f"🔍 SESSION DEBUG: Sending feed_data with sessionId = {session_id}")  # 🔧 DEBUG
         app.logger.info(f"[WS EMIT][MOTO] live_feed_update id={event_id} sent_at={server_ts_ms}")
         
         socketio.emit('live_feed_update', feed_data, room='client_demo')
@@ -1221,7 +1245,10 @@ def elektro_analyze_query():
         visitor_country = data.get('country', 'Unknown')
         visitor_org = data.get('org', 'Unknown')
         
-        print(f"[ELEKTRO FINAL ANALYSIS][REQ:{request_id}] Query: '{query}' | Type: {search_type} | Geo: {visitor_city}, {visitor_country}")
+        # 🎯 PASSIVE RADAR: Odbierz session_id
+        session_id = data.get('session_id', None)
+        
+        print(f"[ELEKTRO FINAL ANALYSIS][REQ:{request_id}] Query: '{query}' | Type: {search_type} | Geo: {visitor_city}, {visitor_country} | Session: {session_id}")
         
         # RODO: Sanityzuj query
         sanitized_query = scrub_pii(query)
@@ -1313,10 +1340,30 @@ def elektro_analyze_query():
             'city': visitor_city,
             'country': visitor_country,
             'organization': visitor_org,
-            'sessionId': None,
+            'sessionId': session_id,  # 🎯 PASSIVE RADAR: Dodane!
             'anonymous': True,
             'source': 'elektro'
         }
+        
+        # 🎯 PASSIVE RADAR FIX 2: UPDATE STATUS W BAZIE (ELEKTRO)
+        if session_id:
+            try:
+                conn = sqlite3.connect(DATABASE_NAME)
+                cursor = conn.cursor()
+                
+                cursor.execute('''
+                    UPDATE visitor_sessions 
+                    SET radar_status = 'Pisze',
+                        last_activity = CURRENT_TIMESTAMP
+                    WHERE session_id = ?
+                ''', (session_id,))
+                
+                conn.commit()
+                conn.close()
+                print(f"🎯 PASSIVE RADAR [ELEKTRO]: Status updated to 'Pisze' for session {session_id}")
+                
+            except Exception as db_error:
+                print(f"🎯 PASSIVE RADAR [ELEKTRO]: Błąd update statusu: {db_error}")
         
         # WRESZCIE: WYŚLIJ DO DASHBOARDU (broadcast do obu roomów)
         server_ts_ms = int(time.time() * 1000)
@@ -2598,6 +2645,54 @@ def handle_connect():
             join_room('admin_dashboard')
             print(f'[WEBSOCKET] Admin {current_user.username} joined admin_dashboard room')
             emit('connection_confirmed', {'message': 'Connected to Admin Dashboard', 'room': 'admin'})
+            
+            # 🎯 PASSIVE RADAR FIX 1C: Wyślij ostatnie wizyty z bazy
+            try:
+                conn = sqlite3.connect(DATABASE_NAME)
+                cursor = conn.cursor()
+                
+                cursor.execute('''
+                    SELECT session_id, radar_company, city, country, 
+                           radar_status, entry_time, referrer
+                    FROM visitor_sessions
+                    WHERE radar_company IS NOT NULL
+                    ORDER BY entry_time DESC
+                    LIMIT 5
+                ''')
+                
+                recent_visits = []
+                for row in cursor.fetchall():
+                    sess_id, company, city, country, status, entry_time, referrer = row
+                    
+                    # Format timestamp
+                    try:
+                        dt = datetime.strptime(entry_time, '%Y-%m-%d %H:%M:%S')
+                        time_str = dt.strftime('%H:%M')
+                    except:
+                        time_str = entry_time[:5] if entry_time else '00:00'
+                    
+                    recent_visits.append({
+                        'session_id': sess_id,
+                        'company': company,
+                        'city': city,
+                        'country': country,
+                        'status': status or 'Przegląda',
+                        'timestamp': time_str,
+                        'referrer': referrer or 'direct',
+                        'source': 'moto',
+                        'anonymous': False
+                    })
+                
+                conn.close()
+                
+                # Wyślij każdą wizytę jako separate event
+                for visit in reversed(recent_visits):  # Oldest first
+                    emit('new_visitor', visit)
+                
+                print(f"🎯 PASSIVE RADAR: Wysłano {len(recent_visits)} wizyt z bazy do {current_user.username}")
+                
+            except Exception as db_error:
+                print(f"🎯 PASSIVE RADAR: Błąd ładowania wizyt z bazy: {db_error}")
         else:
             join_room('client_demo')
             print(f'[WEBSOCKET] Client {current_user.username} joined client_demo room')
@@ -2607,6 +2702,105 @@ def handle_connect():
 def handle_disconnect():
     """Klient rozłączył się z WebSocket""" 
     print('[WEBSOCKET] Client disconnected')
+
+# 🟢 PASSIVE RADAR: Handler dla statusu "Pisze"
+@socketio.on('visitor_typing')
+def handle_visitor_typing(data):
+    """
+    🟢 PASSIVE RADAR: Update status na "Pisze" gdy klient wpisuje tekst
+    """
+    try:
+        session_id = data.get('session_id')
+        
+        if not session_id:
+            return
+        
+        # Update status w bazie
+        try:
+            conn = sqlite3.connect(DATABASE_NAME)
+            cursor = conn.cursor()
+            
+            cursor.execute('''
+                UPDATE visitor_sessions 
+                SET radar_status = 'Pisze'
+                WHERE session_id = ?
+            ''', (session_id,))
+            
+            conn.commit()
+            conn.close()
+            
+        except Exception as db_error:
+            print(f"🟢 PASSIVE RADAR DB ERROR: {db_error}")
+        
+        # Broadcast event do dashboardów
+        typing_data = {
+            'session_id': session_id,
+            'status': 'Pisze',
+            'timestamp': datetime.now().strftime('%H:%M')
+        }
+        
+        emit('visitor_status_changed', typing_data, broadcast=True)
+        
+    except Exception as e:
+        print(f"🟢 PASSIVE RADAR ERROR: {e}")
+
+# 🔴 PASSIVE RADAR FIX 2: Handler dla client_disconnected
+@socketio.on('client_disconnected')
+def handle_client_disconnected(data):
+    """
+    🔴 PASSIVE RADAR: Obsługa wyjścia klienta ze strony
+    Update status na "Opuścił stronę" w bazie i dashboardzie
+    """
+    try:
+        session_id = data.get('session_id')
+        timestamp = data.get('timestamp')
+        session_duration = data.get('session_duration', 0)
+        message_count = data.get('message_count', 0)
+        
+        if not session_id:
+            print("🔴 PASSIVE RADAR: No session_id in disconnect event")
+            return
+        
+        print(f"🔴 PASSIVE RADAR: Client disconnected - Session: {session_id}, Duration: {session_duration}ms")
+        
+        # Update status w bazie
+        try:
+            conn = sqlite3.connect(DATABASE_NAME)
+            cursor = conn.cursor()
+            
+            cursor.execute('''
+                UPDATE visitor_sessions 
+                SET radar_status = 'Opuścił',
+                    exit_time = CURRENT_TIMESTAMP,
+                    session_duration = ?,
+                    total_messages = ?,
+                    is_active = 0
+                WHERE session_id = ?
+            ''', (session_duration // 1000, message_count, session_id))  # Convert ms to seconds
+            
+            conn.commit()
+            conn.close()
+            print(f"🔴 PASSIVE RADAR: Status updated to 'Opuścił' for session {session_id}")
+            
+        except Exception as db_error:
+            print(f"🔴 PASSIVE RADAR DB ERROR: {db_error}")
+            import traceback
+            traceback.print_exc()
+        
+        # Broadcast event do dashboardów
+        disconnect_data = {
+            'session_id': session_id,
+            'status': 'Opuścił',
+            'timestamp': datetime.now().strftime('%H:%M')
+        }
+        
+        emit('visitor_disconnected', disconnect_data, broadcast=True)
+        print(f"🔴 PASSIVE RADAR: Broadcast 'visitor_disconnected' - {session_id}")
+        
+    except Exception as e:
+        print(f"🔴 PASSIVE RADAR ERROR: {e}")
+        import traceback
+        traceback.print_exc()
 
 @socketio.on('request_current_stats')
 def handle_stats_request():
@@ -2652,6 +2846,104 @@ def handle_visitor_event_websocket(data):
     # Ten handler nie jest już używany aby uniknąć duplikacji eventów
     pass
 
+# ==== 🎯 PASSIVE RADAR: HANDLER DLA CLIENT_CONNECTED ====
+@socketio.on('client_connected')
+def handle_client_connected(data):
+    """
+    🎯 PASSIVE RADAR: Obsługa wejścia klienta na stronę
+    Wykrywa firmę i wysyła event 'new_visitor' do dashboardu
+    """
+    try:
+        session_id = data.get('session_id')
+        timestamp = data.get('timestamp')
+        city = data.get('city', 'Unknown')
+        country = data.get('country', 'Unknown')
+        organization = data.get('organization', 'Unknown')
+        referrer = data.get('referrer', 'direct')
+        user_agent = data.get('user_agent', 'Unknown')
+        anonymous = data.get('anonymous', False)
+        source = data.get('source', 'moto')
+        
+        print(f"🎯 PASSIVE RADAR: Client connected - Session: {session_id}")
+        
+        # Mockowana detekcja firmy (w produkcji możesz użyć prawdziwego IP lookup)
+        company_pool = [
+            'PKN Orlen', 'Comarch', 'Budimex', 'PGE', 'Allegro', 
+            'CD Projekt', 'LPP', 'Dino Polska', 'Bank Pekao', 'mBank'
+        ]
+        
+        # Jeśli mamy organization z IP lookup, użyj go
+        # W przeciwnym wypadku losuj z puli (mockowanie)
+        if organization and organization != 'Unknown':
+            detected_company = organization
+        else:
+            import random
+            detected_company = random.choice(company_pool)
+        
+        # Timestamp w formacie HH:MM
+        from datetime import datetime
+        dt = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+        time_str = dt.strftime('%H:%M')
+        
+        # 🎯 PASSIVE RADAR FIX 1: ZAPISZ W BAZIE NAJPIERW!
+        try:
+            conn = sqlite3.connect(DATABASE_NAME)
+            cursor = conn.cursor()
+            
+            # Sprawdź czy sesja już istnieje
+            cursor.execute('SELECT id FROM visitor_sessions WHERE session_id = ?', (session_id,))
+            existing = cursor.fetchone()
+            
+            if existing:
+                # Aktualizuj istniejącą sesję
+                cursor.execute('''
+                    UPDATE visitor_sessions 
+                    SET radar_status = ?, 
+                        radar_company = ?,
+                        last_activity = CURRENT_TIMESTAMP
+                    WHERE session_id = ?
+                ''', ('Przegląda', detected_company, session_id))
+            else:
+                # Nowa sesja - INSERT
+                cursor.execute('''
+                    INSERT INTO visitor_sessions (
+                        session_id, organization, city, country, 
+                        referrer, user_agent, radar_status, radar_company,
+                        entry_time, last_activity, is_active
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1)
+                ''', (session_id, organization, city, country, referrer, user_agent, 
+                      'Przegląda', detected_company))
+            
+            conn.commit()
+            conn.close()
+            print(f"🎯 PASSIVE RADAR: Zapisano w bazie - Session: {session_id}, Company: {detected_company}")
+            
+        except Exception as db_error:
+            print(f"🎯 PASSIVE RADAR DB ERROR: {db_error}")
+            import traceback
+            traceback.print_exc()
+        
+        # Wyślij event 'new_visitor' do wszystkich dashboardów
+        visitor_data = {
+            'session_id': session_id,
+            'timestamp': time_str,
+            'company': detected_company,
+            'city': city,
+            'country': country,
+            'status': 'Przegląda',
+            'referrer': referrer,
+            'source': source,
+            'anonymous': anonymous
+        }
+        
+        emit('new_visitor', visitor_data, broadcast=True)
+        print(f"🎯 PASSIVE RADAR: Broadcast 'new_visitor' - {detected_company}")
+        
+    except Exception as e:
+        print(f"🎯 PASSIVE RADAR ERROR: {e}")
+        import traceback
+        traceback.print_exc()
+
 # === VISITOR TRACKING SYSTEM ===
 
 def ensure_visitor_tables_exist():
@@ -2677,7 +2969,9 @@ def ensure_visitor_tables_exist():
             'browser': 'TEXT',
             'viewport_category': 'TEXT',
             'anonymous_mode': 'BOOLEAN DEFAULT FALSE',
-            'asn': 'TEXT'
+            'asn': 'TEXT',
+            'radar_status': 'TEXT DEFAULT "Przegląda"',  # 🎯 PASSIVE RADAR
+            'radar_company': 'TEXT'  # 🎯 PASSIVE RADAR - mockowana lub prawdziwa firma
         }
         
         for col_name, col_type in new_columns.items():

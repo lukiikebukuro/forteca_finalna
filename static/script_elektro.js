@@ -139,6 +139,13 @@ this.dashboardOverlay = null;
                 const query = e.target.value.trim();
                 this.lastQuery = query;
                 
+                // 🟢 PASSIVE RADAR: Update status "Pisze"
+                if (query.length > 0) {
+                    this.updateVisitorStatus('Pisze');
+                } else {
+                    this.updateVisitorStatus('Przegląda');
+                }
+                
                 // Reset obu timerów
                 if (this.searchTimeout) {
                     clearTimeout(this.searchTimeout);
@@ -404,6 +411,9 @@ this.dashboardOverlay = null;
         this.displayUserMessage(message);
         this.userInput.value = '';
         
+        // 🟢 PASSIVE RADAR: Powrót do statusu "Przegląda" po wysłaniu
+        this.updateVisitorStatus('Przegląda');
+        
         // Reset timerów przy wysłaniu
         if (this.searchTimeout) clearTimeout(this.searchTimeout);
         if (this.finalAnalysisTimeout) clearTimeout(this.finalAnalysisTimeout);
@@ -536,6 +546,15 @@ this.dashboardOverlay = null;
                 console.log(`[FINAL ANALYSIS][REQ:${requestId}] Geo: ${geoData.city}, ${geoData.country}`);
             }
             
+            // 🎯 PASSIVE RADAR: Pobierz session_id z visitorTracker
+            let sessionId = null;
+            if (window.visitorTracker && window.visitorTracker.sessionId) {
+                sessionId = window.visitorTracker.sessionId;
+                console.log(`[FINAL ANALYSIS][REQ:${requestId}] Session: ${sessionId}`);
+            } else {
+                console.warn(`[FINAL ANALYSIS][REQ:${requestId}] ⚠️ No session_id available!`);
+            }
+            
             const response = await fetch(this.API_PREFIX + '/api/analyze_query', {
                 method: 'POST',
                 headers: {
@@ -545,6 +564,7 @@ this.dashboardOverlay = null;
                 body: JSON.stringify({
                     query: query,
                     type: searchType,
+                    session_id: sessionId,  // 🎯 PASSIVE RADAR: Dodane!
                     ...geoData  // Dodaj dane geolokalizacji
                 })
             });
@@ -988,6 +1008,17 @@ document.addEventListener('DOMContentLoaded', () => {
     
     console.log('✅ Doktryna Cierpliwego Nasłuchu aktywna');
     console.log('=====================================');
+    
+    // 🟢 PASSIVE RADAR: Helper function to update visitor status
+    window.botUI.updateVisitorStatus = function(status) {
+        if (window.visitorTracker && window.visitorTracker.socket) {
+            window.visitorTracker.socket.emit('visitor_typing', {
+                session_id: window.visitorTracker.sessionId,
+                status: status
+            });
+        }
+    };
+    
     // Mobile dashboard toggle handler
 document.addEventListener('click', (e) => {
     if (e.target.id === 'mobileDashboardToggle') {

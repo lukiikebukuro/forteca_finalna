@@ -232,6 +232,9 @@ class AdminDashboard {
             // Przelicz metryki po załadowaniu
             this.updateVisitorStats({});
             
+            // 🔧 FIX 3: Initial render dla Matrix
+            this.renderLogHistory();
+            
             // Odświeżaj co 30 sekund
             setInterval(() => this.refreshStats(), 30000);
             
@@ -268,6 +271,24 @@ class AdminDashboard {
             this.socket.on('live_feed_update', (data) => {
                 console.log('🔔 Nowy visitor!', data);
                 this.handleNewVisitor(data);
+            });
+            
+            // 🎯 PASSIVE RADAR: Obsługa eventu 'new_visitor'
+            this.socket.on('new_visitor', (data) => {
+                console.log('🎯 PASSIVE RADAR: Nowa wizyta!', data);
+                this.handlePassiveRadarVisit(data);
+            });
+            
+            // 🔴 PASSIVE RADAR FIX 2: Obsługa eventu 'visitor_disconnected'
+            this.socket.on('visitor_disconnected', (data) => {
+                console.log('🔴 PASSIVE RADAR: Klient opuścił stronę!', data);
+                this.handleVisitorDisconnect(data);
+            });
+            
+            // 🟢 PASSIVE RADAR: Obsługa eventu 'visitor_status_changed' (Pisze/Przegląda)
+            this.socket.on('visitor_status_changed', (data) => {
+                console.log('🟢 PASSIVE RADAR: Status zmieniony!', data);
+                this.updateVisitorStatus(data);
             });
             
             this.socket.on('disconnect', () => {
@@ -502,14 +523,18 @@ class AdminDashboard {
     }
     
     /**
-     * Renderuj Log History
+     * Renderuj Log History (Matrix)
      */
     renderLogHistory() {
-        const container = document.getElementById('logHistoryContainer');
+        const container = document.getElementById('logHistoryList');  // 🔧 FIX 3: poprawny ID!
         if (!container) return;
         
         if (this.logHistory.length === 0) {
-            container.innerHTML = '<div class="empty-state">Brak historii</div>';
+            container.innerHTML = `
+                <div style="text-align: center; color: #9ca3af; padding: 20px; font-size: 12px;">
+                    Czekam na pierwsze zdarzenia...
+                </div>
+            `;
             return;
         }
         
@@ -848,6 +873,150 @@ class AdminDashboard {
         if (el) {
             const current = parseInt(el.textContent) || 0;
             el.textContent = current + 1;
+        }
+    }
+    
+    /**
+     * 🎯 PASSIVE RADAR: Obsługa nowej wizyty
+     */
+    handlePassiveRadarVisit(data) {
+        console.log('🎯 PASSIVE RADAR: Dodaję wizytę do UI', data);
+        
+        const container = document.getElementById('passiveRadarList');
+        if (!container) return;
+        
+        // Usuń placeholder jeśli istnieje
+        const emptyState = container.querySelector('.passive-radar-empty');
+        if (emptyState) {
+            emptyState.remove();
+        }
+        
+        // Stwórz wpis
+        const item = document.createElement('div');
+        item.className = 'passive-radar-item new-entry';
+        item.dataset.sessionId = data.session_id;
+        
+        const location = [data.city, data.country].filter(x => x && x !== 'Unknown').join(', ') || 'Unknown';
+        
+        // Określ klasę statusu
+        let statusClass = '';
+        if (data.status === 'Przegląda') statusClass = 'status-przeglada';
+        else if (data.status === 'Pisze') statusClass = 'status-pisze';
+        else if (data.status === 'Opuścił') statusClass = 'status-opuscil';
+        
+        item.innerHTML = `
+            <div class="passive-radar-header">
+                <div class="passive-radar-time">${data.timestamp}</div>
+                <div class="passive-radar-status ${statusClass}">${data.status}</div>
+            </div>
+            <div class="passive-radar-company">${this.escapeHtml(data.company)}</div>
+            <div class="passive-radar-location">📍 ${this.escapeHtml(location)}</div>
+        `;
+        
+        // Dodaj na początek listy
+        container.insertBefore(item, container.firstChild);
+        
+        // Trzymaj tylko ostatnie 5 wizyt
+        const items = container.querySelectorAll('.passive-radar-item');
+        if (items.length > 5) {
+            items[items.length - 1].remove();
+        }
+        
+        // Animacja: usuń klasę 'new-entry' po 600ms
+        setTimeout(() => {
+            item.classList.remove('new-entry');
+        }, 600);
+        
+        // INTEGRACJA: Jak ten sam gość zacznie pisać, zaktualizuj status
+        // (będziemy to robić przez session_id)
+        this.trackPassiveRadarSession(data.session_id, data.company);
+    }
+    
+    /**
+     * 🎯 PASSIVE RADAR: Śledź sesję żeby móc zaktualizować status
+     */
+    trackPassiveRadarSession(sessionId, company) {
+        if (!this.passiveRadarSessions) {
+            this.passiveRadarSessions = new Map();
+        }
+        
+        this.passiveRadarSessions.set(sessionId, {
+            company: company,
+            status: 'Przegląda',
+            timestamp: new Date()
+        });
+    }
+    
+    /**
+     * 🟢 PASSIVE RADAR: Zaktualizuj status gdy użytkownik pisze/przegląda
+     */
+    updateVisitorStatus(data) {
+        const sessionId = data.session_id;
+        const newStatus = data.status;
+        
+        console.log(`🟢 RADAR: Updating session ${sessionId} to status "${newStatus}"`);
+        
+        const item = document.querySelector(`.passive-radar-item[data-session-id="${sessionId}"]`);
+        
+        if (item) {
+            console.log(`✅ RADAR: Found item for session ${sessionId}`);
+            const statusBadge = item.querySelector('.passive-radar-status');
+            
+            if (statusBadge) {
+                console.log(`✅ RADAR: Updating from "${statusBadge.textContent}" to "${newStatus}"`);
+                statusBadge.textContent = newStatus;
+                
+                // Usuń wszystkie klasy statusu
+                statusBadge.classList.remove('status-przeglada', 'status-pisze', 'status-opuscil');
+                
+                // Dodaj odpowiednią klasę
+                if (newStatus === 'Przegląda') {
+                    statusBadge.classList.add('status-przeglada');
+                } else if (newStatus === 'Pisze') {
+                    statusBadge.classList.add('status-pisze');
+                } else if (newStatus === 'Opuścił') {
+                    statusBadge.classList.add('status-opuscil');
+                }
+                
+                // Kolor animacji zależny od statusu
+                let bgColor = 'rgba(59, 130, 246, 0.25)';  // Niebieski dla "Pisze"
+                if (newStatus === 'Opuścił') {
+                    bgColor = 'rgba(239, 68, 68, 0.25)';  // Czerwony dla "Opuścił"
+                } else if (newStatus === 'Przegląda') {
+                    bgColor = 'rgba(34, 197, 94, 0.25)';  // Zielony dla "Przegląda"
+                }
+                
+                // Dodaj animację zmiany
+                item.style.background = bgColor;
+                setTimeout(() => {
+                    item.style.background = 'rgba(255, 255, 255, 0.15)';
+                }, 500);
+                
+                console.log(`🎉 RADAR: Status updated successfully!`);
+            } else {
+                console.error(`❌ RADAR: Status badge not found in item`);
+            }
+        } else {
+            console.error(`❌ RADAR: No item found for session ${sessionId}`);
+            console.log(`🔍 RADAR: Available sessions:`, 
+                Array.from(document.querySelectorAll('.passive-radar-item'))
+                    .map(el => el.dataset.sessionId)
+            );
+        }
+    }
+    
+    /**
+     * 🔴 PASSIVE RADAR FIX 2: Obsługa disconnectu klienta
+     */
+    handleVisitorDisconnect(data) {
+        console.log('🔴 PASSIVE RADAR: Handling disconnect', data);
+        
+        if (data.session_id) {
+            // Używamy tej samej funkcji co dla status changed
+            this.updateVisitorStatus({
+                session_id: data.session_id,
+                status: data.status || 'Opuścił'
+            });
         }
     }
     

@@ -101,6 +101,9 @@ class VisitorTracker {
             // Enable tracking
             this.isTracking = true;
             
+            // 🎯 PASSIVE RADAR: Wyślij 'client_connected' NATYCHMIAST
+            this.sendClientConnectedEvent();
+            
             // Send session start event
             await this.sendVisitorEvent('session_start', {
                 entry_time: this.entryTime.toISOString(),
@@ -113,6 +116,41 @@ class VisitorTracker {
         } catch (error) {
             console.error('🛰️ SATELITA: Failed to initialize tracking:', error);
         }
+    }
+    
+    /**
+     * 🎯 PASSIVE RADAR: Wyślij event 'client_connected' przez WebSocket
+     */
+    sendClientConnectedEvent() {
+        // Jeśli WebSocket jeszcze nie gotowy, czekaj max 3s
+        const maxWait = 3000;
+        const startTime = Date.now();
+        
+        const attemptSend = () => {
+            if (this.socket && this.socket.connected) {
+                const eventData = {
+                    session_id: this.sessionId,
+                    timestamp: new Date().toISOString(),
+                    city: this.visitorData?.city || 'Unknown',
+                    country: this.visitorData?.country || 'Unknown',
+                    organization: this.visitorData?.org || 'Unknown',
+                    referrer: this.visitorData?.referrer || 'direct',
+                    user_agent: this.visitorData?.user_agent || 'Unknown',
+                    anonymous: this.anonymousMode,
+                    source: window.BOT_SOURCE || 'moto'
+                };
+                
+                this.socket.emit('client_connected', eventData);
+                console.log('🎯 PASSIVE RADAR: client_connected sent', eventData);
+            } else if (Date.now() - startTime < maxWait) {
+                // Retry po 100ms
+                setTimeout(attemptSend, 100);
+            } else {
+                console.warn('🎯 PASSIVE RADAR: WebSocket nie połączony - pominięto client_connected');
+            }
+        };
+        
+        attemptSend();
     }
     
     /**
@@ -482,6 +520,31 @@ class VisitorTracker {
                     input_type: event.target.type || 'contenteditable',
                     input_id: event.target.id
                 });
+                
+                // 🎯 PASSIVE RADAR: Status update "Pisze"
+                if (window.socket && window.socket.connected && this.sessionId) {
+                    window.socket.emit('visitor_status_update', {
+                        session_id: this.sessionId,
+                        status: 'Pisze',
+                        timestamp: new Date().toISOString()
+                    });
+                    console.log('🎯 STATUS UPDATE: Pisze (session:', this.sessionId + ')');
+                }
+            }
+        });
+        
+        // Track input blur - powrót do "Przegląda"
+        document.addEventListener('focusout', (event) => {
+            if (event.target.matches('input[type="text"], textarea, [contenteditable]')) {
+                // 🎯 PASSIVE RADAR: Status update "Przegląda"
+                if (window.socket && window.socket.connected && this.sessionId) {
+                    window.socket.emit('visitor_status_update', {
+                        session_id: this.sessionId,
+                        status: 'Przegląda',
+                        timestamp: new Date().toISOString()
+                    });
+                    console.log('🎯 STATUS UPDATE: Przegląda (session:', this.sessionId + ')');
+                }
             }
         });
         
@@ -492,6 +555,18 @@ class VisitorTracker {
         window.addEventListener('beforeunload', () => {
             const sessionDuration = Date.now() - this.entryTime.getTime();
             
+            // 🔴 PASSIVE RADAR FIX 2: Wyślij event 'client_disconnected' przez WebSocket
+            if (this.socket && this.socket.connected) {
+                this.socket.emit('client_disconnected', {
+                    session_id: this.sessionId,
+                    timestamp: new Date().toISOString(),
+                    session_duration: sessionDuration,
+                    message_count: this.messageCount
+                });
+                console.log('🔴 PASSIVE RADAR: client_disconnected sent');
+            }
+            
+            // Fallback: sendBeacon (jeśli WebSocket nie zdąży)
             navigator.sendBeacon('/api/visitor-tracking', JSON.stringify({
                 session_id: this.sessionId,
                 event_type: 'session_end',
@@ -509,6 +584,9 @@ class VisitorTracker {
      */
     trackBotInteractions() {
         if (window.botUI) {
+            // 🎯 PASSIVE RADAR: Wstrzyknij session_id do botUI
+            window.botUI.visitorSessionId = this.sessionId;
+            
             const originalSendFinalAnalysis = window.botUI.sendFinalAnalysis;
             
             window.botUI.sendFinalAnalysis = async (query) => {
