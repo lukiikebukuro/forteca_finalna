@@ -489,7 +489,7 @@
                     <div class="company">{{ client.company_name if client else 'Demo Company Ltd' }}</div>
                     <div class="user">{{ user.username }} ({{ user.role }})</div>
                 </div>
-                <a href="{{ url_for('logout') }}" class="logout-btn">Wyloguj</a>
+                <a href="{{ url_for('pages.logout') }}" class="logout-btn">Wyloguj</a>
             </div>
         </div>
     </div>

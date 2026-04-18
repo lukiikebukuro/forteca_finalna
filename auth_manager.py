@@ -25,7 +25,7 @@ def init_login_manager(app):
     """Inicjalizuje Flask-Login dla aplikacji"""
     login_manager = LoginManager()
     login_manager.init_app(app)
-    login_manager.login_view = 'login'  # Redirect gdy brak autoryzacji
+    login_manager.login_view = 'pages.login'  # Redirect gdy brak autoryzacji
     login_manager.login_message = 'Zaloguj się aby uzyskać dostęp'
     login_manager.login_message_category = 'info'
     
@@ -162,14 +162,8 @@ class User(UserMixin):
             conn.close()
             
             if not row:
-                print(f"[DEBUG] User '{username}' NOT FOUND in database")
+                print(f"[AUTH] User '{username}' not found")
                 return None
-            
-            print(f"[DEBUG] Password check: '{password}' vs stored hash")
-            print(f"[DEBUG] Hash result: {check_password_hash(row[3], password)}")
-            print(f"[DEBUG] ✅ Found user: {row[1]} (role: {row[4]})")
-            print(f"[DEBUG] Testing password '{password}'...")
-            print(f"[DEBUG] Hash check result: {check_password_hash(row[3], password)}")
             
             if check_password_hash(row[3], password):
                 # Aktualizuj last_login
@@ -280,11 +274,11 @@ def require_client_access(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user.is_authenticated:
-            return redirect(url_for('login'))
+            return redirect(url_for('pages.login'))
         
         if not current_user.is_client():
             flash('Brak uprawnień - wymagany dostęp klienta', 'error')
-            return redirect(url_for('unauthorized'))
+            return redirect(url_for('pages.unauthorized'))
         
         return f(*args, **kwargs)
     return decorated_function
@@ -297,11 +291,11 @@ def require_admin_access(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user.is_authenticated:
-            return redirect(url_for('login'))
+            return redirect(url_for('pages.login'))
         
         if not current_user.is_admin():
             flash('Brak uprawnień - wymagany dostęp administratora', 'error')
-            return redirect(url_for('unauthorized'))
+            return redirect(url_for('pages.unauthorized'))
         
         return f(*args, **kwargs)
     return decorated_function
@@ -314,11 +308,11 @@ def require_debug_access(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user.is_authenticated:
-            return redirect(url_for('login'))
+            return redirect(url_for('pages.login'))
         
         if not current_user.is_debug():
             flash('Brak uprawnień - wymagany dostęp debug', 'error')
-            return redirect(url_for('unauthorized'))
+            return redirect(url_for('pages.unauthorized'))
         
         return f(*args, **kwargs)
     return decorated_function
@@ -331,11 +325,11 @@ def require_any_admin_access(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user.is_authenticated:
-            return redirect(url_for('login'))
+            return redirect(url_for('pages.login'))
         
         if not (current_user.is_admin() or current_user.is_debug()):
             flash('Brak uprawnień - wymagany dostęp administratora', 'error')
-            return redirect(url_for('unauthorized'))
+            return redirect(url_for('pages.unauthorized'))
         
         return f(*args, **kwargs)
     return decorated_function
@@ -393,16 +387,16 @@ def get_user_dashboard_route():
         String z nazwą route
     """
     if not current_user.is_authenticated:
-        return 'login'
-    
+        return 'pages.login'
+
     if current_user.is_client():
-        return 'client_dashboard'
+        return 'pages.client_dashboard'
     elif current_user.is_admin():
-        return 'admin_dashboard'  
+        return 'pages.admin_dashboard'
     elif current_user.is_debug():
-        return 'debug_dashboard'
+        return 'pages.debug_dashboard'
     else:
-        return 'unauthorized'
+        return 'pages.unauthorized'
 
 # ================================================================
 # FUNKCJE UTILITIES DLA ROZWOJU

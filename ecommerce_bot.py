@@ -419,7 +419,7 @@ class EcommerceBot:
         ZASÓB B (50%): Słownik wiedzy dla looks_like_product_query
         """
         
-        print("📦 MOTO BOT INITIALIZE_DATA() STARTED!")
+        print("[BOX] MOTO BOT INITIALIZE_DATA() STARTED!")
         
         # ZASÓB A (50%) - FAKTYCZNE PRODUKTY W SYSTEMIE (HARDCODED - 68 sztuk)
         # Produkty motoryzacyjne z products.json - wbudowane bezpośrednio w kod
@@ -494,9 +494,9 @@ class EcommerceBot:
             {'id': 'TU002', 'name': 'Intercooler Mishimoto uniwersalny 600x300x76mm', 'category': 'chłodzenie', 'brand': 'Mishimoto', 'model': 'MMINT-UNI-23', 'price': 1234.0, 'stock': 12},
         ]
         
-        print(f"🔥🔥🔥 MOTO BOT PRODUCTS LOADED: {len(products_data)} 🔥🔥🔥")
+        print(f"[FIRE][FIRE][FIRE] MOTO BOT PRODUCTS LOADED: {len(products_data)} [FIRE][FIRE][FIRE]")
         if len(products_data) > 0:
-            print(f"🔥 First product: {products_data[0]['name']}")
+            print(f"[FIRE] First product: {products_data[0]['name']}")
         
         self.product_database = {
             'products': products_data,
@@ -521,7 +521,7 @@ class EcommerceBot:
         
         # Przypisz produkty do self.products
         self.products = self.product_database.get('products', [])
-        print(f"✅ MOTO BOT: {len(self.products)} produktów załadowanych do self.products")
+        print(f"[OK] MOTO BOT: {len(self.products)} produktów załadowanych do self.products")
         
         # Kompletna baza FAQ (bez zmian)
         self.faq_database = [
@@ -2226,14 +2226,14 @@ class EcommerceBot:
             response = requests.post(url, params=params, json=payload, timeout=5)
             
             if response.status_code == 204:
-                print(f"[GA4] ✅ Event sent: {event_data['event']} for query: '{event_data['params']['query']}'")
+                print(f"[GA4] [OK] Event sent: {event_data['event']} for query: '{event_data['params']['query']}'")
                 return True
             else:
-                print(f"[GA4] ❌ Failed to send event. Status: {response.status_code}")
+                print(f"[GA4] [X] Failed to send event. Status: {response.status_code}")
                 return False
                 
         except Exception as e:
-            print(f"[GA4] 💥 Error sending event: {e}")
+            print(f"[GA4] [BANG] Error sending event: {e}")
             return False
         
     def search_products(self, query: str, machine_filter: Optional[str] = None) -> List:
@@ -2258,7 +2258,7 @@ class EcommerceBot:
         return {
             'text_message': GLOBAL_WELCOME_MESSAGE,
             'buttons': [
-                {'text': '🔧 Znajdź część', 'action': 'search_product'}
+                {'text': '[TOOL] Znajdź część', 'action': 'search_product'}
             ]
         }
     
@@ -2268,7 +2268,7 @@ class EcommerceBot:
         
         if action == 'search_product':
             return {
-                'text_message': """🔧 **Wyszukiwarka części**
+                'text_message': """[TOOL] **Wyszukiwarka części**
 
 Wybierz typ pojazdu:""",
                 'buttons': [
@@ -2284,7 +2284,7 @@ Wybierz typ pojazdu:""",
             session['machine_filter'] = machine_type
             
             return {
-                'text_message': f"""✅ **Wybrany typ: {machine_type}**
+                'text_message': f"""[OK] **Wybrany typ: {machine_type}**
 
 Wpisz czego szukasz. System inteligentnie rozpozna Twoje zapytanie!""",
                 'enable_input': True,
@@ -2383,10 +2383,10 @@ Zapisaliśmy Twoje zapytanie. Powiadomimy Cię gdy produkt będzie dostępny!"""
             # NAPRAWIONE ODPOWIEDZI NA PODSTAWIE CONFIDENCE LEVEL
             if confidence_level == 'HIGH':
                 if products:
-                    products_text = "✅ **Znaleźliśmy produkty:**\n\n"
+                    products_text = "[OK] **Znaleźliśmy produkty:**\n\n"
                     for product, score in products:
                         products_text += f"**{product['name']}**\n"
-                        products_text += f"📊 Dopasowanie: {score}% | 💰 {product['price']:.2f} zł\n\n"
+                        products_text += f"[GRAPH] Dopasowanie: {score}% | [MONEY] {product['price']:.2f} zł\n\n"
                     
                     return {
                         'text_message': products_text,
@@ -2399,8 +2399,8 @@ Zapisaliśmy Twoje zapytanie. Powiadomimy Cię gdy produkt będzie dostępny!"""
                     products_text = "🤔 **Czy chodziło Ci o:**\n\n"
                     for product, score in products[:3]:
                         products_text += f"**{product['name']}**\n"
-                        products_text += f"📊 Dopasowanie: {score}% | 💰 {product['price']:.2f} zł\n\n"
-                    products_text += "\n💡 *System automatycznie poprawił literówki*"
+                        products_text += f"[GRAPH] Dopasowanie: {score}% | [MONEY] {product['price']:.2f} zł\n\n"
+                    products_text += "\n[IDEA] *System automatycznie poprawił literówki*"
                     
                     return {
                         'text_message': products_text,
@@ -2424,10 +2424,10 @@ Wpisana fraza: "{message}" """,
             else:  # NO_MATCH - PRAWDZIWY UTRACONY POPYT!
                 # NOWA obsługa dla różnych typów brakujących produktów
                 if analysis.get('suggestion_type') == 'structural_missing':
-                    message_text = f"""🔍 **Produkt spoza naszej oferty**
+                    message_text = f"""[SEARCH] **Produkt spoza naszej oferty**
 
 Szukana fraza: "{message}"
-📊 System wykrył: kategoria + nieznana marka
+[GRAPH] System wykrył: kategoria + nieznana marka
 
 ✨ **Zapisaliśmy Twoje zapytanie!** 
 Jeśli więcej osób będzie szukać tej marki, rozważymy dodanie do oferty."""
@@ -2437,7 +2437,7 @@ Jeśli więcej osób będzie szukać tej marki, rozważymy dodanie do oferty."""
                     if analysis.get('has_luxury_brand'):
                         luxury_message = "\n🏎️ **Wykryto markę premium** - zwiększony priorytet!"
                     
-                    message_text = f"""🔍 **Nie mamy tego produktu w ofercie**
+                    message_text = f"""[SEARCH] **Nie mamy tego produktu w ofercie**
 
 Szukana fraza: "{message}"{luxury_message}
 
@@ -2474,7 +2474,7 @@ Jeśli wiele osób szuka tego produktu, dodamy go do naszej oferty."""
         return {
             'text_message': 'Wybierz opcję:',
             'buttons': [
-                {'text': '🔧 Szukaj części', 'action': 'search_product'},
+                {'text': '[TOOL] Szukaj części', 'action': 'search_product'},
                 {'text': '↩️ Menu główne', 'action': 'main_menu'}
             ]
         }
@@ -2487,7 +2487,7 @@ Jeśli wiele osób szuka tego produktu, dodamy go do naszej oferty."""
                 product, score = item
                 # Usuń score, kieruj bezpośrednio do pełnej karty
                 buttons.append({
-                    'text': f"🛒 {product['name'][:45]}...",
+                    'text': f"[CART] {product['name'][:45]}...",
                     'action': f"show_full_card_{product['id']}"
                 })
         
@@ -2513,13 +2513,13 @@ Jeśli wiele osób szuka tego produktu, dodamy go do naszej oferty."""
             }
         
         return {
-            'text_message': f"""🔧 **{product['name']}**
+            'text_message': f"""[TOOL] **{product['name']}**
 
-💰 **Cena:** {product['price']:.2f} zł netto
-📦 **Stan:** {product['stock']} szt.""",
+[MONEY] **Cena:** {product['price']:.2f} zł netto
+[BOX] **Stan:** {product['stock']} szt.""",
             'buttons': [
-                {'text': f"🛒 Dodaj do koszyka", 'action': f"add_to_cart_{product['id']}"},
-                {'text': '🔍 Szukaj dalej', 'action': 'search_product'},
+                {'text': f"[CART] Dodaj do koszyka", 'action': f"add_to_cart_{product['id']}"},
+                {'text': '[SEARCH] Szukaj dalej', 'action': 'search_product'},
                 {'text': '🏠 Menu główne', 'action': 'main_menu'}
             ]
         }
@@ -2539,13 +2539,13 @@ Jeśli wiele osób szuka tego produktu, dodamy go do naszej oferty."""
             }
         
         return {
-            'text_message': f"""🔧 {product['name']}
+            'text_message': f"""[TOOL] {product['name']}
 
-💰 Cena: {product['price']:.2f} zł netto
-📦 Stan: {product['stock']} szt.""",
+[MONEY] Cena: {product['price']:.2f} zł netto
+[BOX] Stan: {product['stock']} szt.""",
             'buttons': [
-                {'text': '🛒 Dodaj do koszyka', 'action': f"add_to_cart_{product['id']}"},
-                {'text': '🔍 Szukaj dalej', 'action': 'search_product'},
+                {'text': '[CART] Dodaj do koszyka', 'action': f"add_to_cart_{product['id']}"},
+                {'text': '[SEARCH] Szukaj dalej', 'action': 'search_product'},
                 {'text': '🏠 Menu główne', 'action': 'main_menu'}
             ]
         }
@@ -2559,10 +2559,10 @@ Jeśli wiele osób szuka tego produktu, dodamy go do naszej oferty."""
         session.modified = True
         
         return {
-            'text_message': f"""✅ **Dodano do koszyka!**""",
+            'text_message': f"""[OK] **Dodano do koszyka!**""",
             'cart_updated': True,
             'buttons': [
-                {'text': '🔍 Kontynuuj zakupy', 'action': 'search_product'},
+                {'text': '[SEARCH] Kontynuuj zakupy', 'action': 'search_product'},
                 {'text': '↩️ Menu główne', 'action': 'main_menu'}
             ]
         }

@@ -2,9 +2,9 @@
 Uniwersalny Żołnierz - Silnik bota e-commerce v7.0 ELECTRONICS EDITION
 System Inteligentnego Śledzenia Utraconego Popytu - CZYSTA WERSJA
 ELECTRONICS - Branża RTV/AGD/IT
-Adaptacja: Kompletna transplantacja z automotive → electronics
+Adaptacja: Kompletna transplantacja z automotive -> electronics
 """
-print("🔥🔥🔥 ELEKTRO_BOT.PY LOADING... 🔥🔥🔥")
+print("[BOOT] ELEKTRO_BOT.PY LOADING...")
 import json
 import os
 import re
@@ -37,12 +37,12 @@ def load_welcome_message_from_config():
 
 # --- ZAŁADOWANIE KONFIGURACJI PRZY STARCIE ---
 GLOBAL_WELCOME_MESSAGE = load_welcome_message_from_config()
-print(f"📩 GLOBAL_WELCOME_MESSAGE loaded: {GLOBAL_WELCOME_MESSAGE[:100] if GLOBAL_WELCOME_MESSAGE else 'EMPTY'}...")
+print(f"[MAIL] GLOBAL_WELCOME_MESSAGE loaded: {GLOBAL_WELCOME_MESSAGE[:100] if GLOBAL_WELCOME_MESSAGE else 'EMPTY'}...")
 
 
 class EcommerceBot:
     def __init__(self):
-        print("🤖 ELEKTRO BOT __init__() STARTED!")
+        print("[BOT] ELEKTRO BOT __init__() STARTED!")
         self.product_database = {'products': []}  # Będzie wypełnione w initialize_data()
         self.products = []  # Alias dla kompatybilności
         self.faq_database = {}
@@ -414,25 +414,25 @@ class EcommerceBot:
             'common_terms': self.UNIVERSAL_ELECTRONICS_KNOWLEDGE['technical_terms'][:50]
         }
         
-        print("✅ All dictionaries loaded! Calling initialize_data()...")
+        print("[OK] All dictionaries loaded! Calling initialize_data()...")
         # Inicjalizacja bazy danych produktów
         try:
             self.load_products_v2()
-            print("✅ __init__() COMPLETED!")
+            print("[OK] __init__() COMPLETED!")
         except Exception as e:
-            print(f"❌❌❌ INITIALIZE_DATA FAILED: {e}")
+            print(f"[X][X][X] INITIALIZE_DATA FAILED: {e}")
             import traceback
             traceback.print_exc()
             raise
 
 
     def load_products_v2(self):
-        print("🔥🔥🔥 INITIALIZE_DATA() METHOD CALLED! 🔥🔥🔥")
+        print("[FIRE][FIRE][FIRE] INITIALIZE_DATA() METHOD CALLED! [FIRE][FIRE][FIRE]")
         """
         STRATEGIA HARDCODED - Inicjalizuje rozbudowaną bazę danych dla branży elektronicznej
         Produkty zakodowane bezpośrednio w kodzie (jak w ecommerce_bot.py dla motoryzacji)
         """
-        print("📦 INITIALIZE_DATA() STARTED!")
+        print("[BOX] INITIALIZE_DATA() STARTED!")
         
         # PRODUKTY ELEKTRONICZNE - HARDCODED (z products.json)
         self.product_database = {
@@ -528,11 +528,11 @@ class EcommerceBot:
         # Zachowaj kompatybilność - stwórz alias
         self.products = self.product_database.get('products', [])
         
-        print(f"🔥🔥🔥 ELEKTRO BOT PRODUCTS LOADED: {len(self.products)} 🔥🔥🔥")
+        print(f"[FIRE][FIRE][FIRE] ELEKTRO BOT PRODUCTS LOADED: {len(self.products)} [FIRE][FIRE][FIRE]")
         if len(self.products) > 0:
-            print(f"🔥 First product: {self.products[0]['name']}")
+            print(f"[FIRE] First product: {self.products[0]['name']}")
         else:
-            print("❌ WARNING: NO PRODUCTS LOADED!")
+            print("[X] WARNING: NO PRODUCTS LOADED!")
         
         # === FAQ DATABASE (opcjonalnie) ===
         self.faq_database = {}
@@ -546,10 +546,10 @@ class EcommerceBot:
         KLUCZOWE DLA WYKRYWANIA UTRACONEGO POPYTU!
         
         PRZYKŁADY:
-        - iPhone 13 128GB → True (mamy)
-        - iPhone 13 1TB → False (nie istnieje)
-        - iPhone 14 64GB → False (nie mamy tej konfiguracji)
-        - Samsung S23 512GB → sprawdź w bazie
+        - iPhone 13 128GB -> True (mamy)
+        - iPhone 13 1TB -> False (nie istnieje)
+        - iPhone 14 64GB -> False (nie mamy tej konfiguracji)
+        - Samsung S23 512GB -> sprawdź w bazie
         """
         if not self.products:
             return False
@@ -590,12 +590,12 @@ class EcommerceBot:
                 if not storage_match:
                     continue  # Marka + model OK, ale pamięć NIE
             
-            # Jeśli wszystko się zgadza → istnieje!
-            print(f"[CONFIG_CHECK] ✅ Znaleziono: {product_name}")
+            # Jeśli wszystko się zgadza -> istnieje!
+            print(f"[CONFIG_CHECK] [OK] Znaleziono: {product_name}")
             return True
         
         # Nie znaleziono żadnego produktu z taką konfiguracją
-        print(f"[CONFIG_CHECK] ❌ Nie znaleziono: {brand_lower} {model_lower} {storage_lower}")
+        print(f"[CONFIG_CHECK] [X] Nie znaleziono: {brand_lower} {model_lower} {storage_lower}")
         return False
     
     def correct_query_typos(self, query: str) -> str:
@@ -682,32 +682,32 @@ class EcommerceBot:
         # 1. Czy zawiera markę?
         for token in normalized_tokens:
             if token in self.UNIVERSAL_ELECTRONICS_KNOWLEDGE['brands']:
-                print(f"[CONTEXT] ✅ Znaleziono markę: {token}")
+                print(f"[CONTEXT] [OK] Znaleziono markę: {token}")
                 return True
             
             # Fuzzy match dla marek (75%+ zamiast 85%)
             for brand in self.UNIVERSAL_ELECTRONICS_KNOWLEDGE['brands']:
                 if fuzz.ratio(token, brand) >= 75:
-                    print(f"[CONTEXT] ✅ Fuzzy marka: {token} → {brand}")
+                    print(f"[CONTEXT] [OK] Fuzzy marka: {token} -> {brand}")
                     return True
         
         # 2. Czy zawiera kategorię produktu?
         for token in normalized_tokens:
             if token in self.UNIVERSAL_ELECTRONICS_KNOWLEDGE['categories']:
-                print(f"[CONTEXT] ✅ Znaleziono kategorię: {token}")
+                print(f"[CONTEXT] [OK] Znaleziono kategorię: {token}")
                 return True
             
             # Fuzzy match dla kategorii (75%+ zamiast 85%)
             for category in self.UNIVERSAL_ELECTRONICS_KNOWLEDGE['categories']:
                 if fuzz.ratio(token, category) >= 75:
-                    print(f"[CONTEXT] ✅ Fuzzy kategoria: {token} → {category}")
+                    print(f"[CONTEXT] [OK] Fuzzy kategoria: {token} -> {category}")
                     return True
         
         # 3. Czy zawiera model produktu?
         query_joined = ' '.join(normalized_tokens)
         for model in self.UNIVERSAL_ELECTRONICS_KNOWLEDGE['models']:
             if model in query_joined:
-                print(f"[CONTEXT] ✅ Znaleziono model: {model}")
+                print(f"[CONTEXT] [OK] Znaleziono model: {model}")
                 return True
         
         # 4. Czy zawiera specyfikację techniczną?
@@ -716,28 +716,28 @@ class EcommerceBot:
             
             # Pamięć: 128gb, 256gb, 512gb
             if re.match(r'^\d+(gb|g|tb|t)$', token_lower):
-                print(f"[CONTEXT] ✅ Specyfikacja pamięci: {token}")
+                print(f"[CONTEXT] [OK] Specyfikacja pamięci: {token}")
                 return True
             
             # RAM: 16gb ram, 32gb
             if 'ram' in token_lower or re.match(r'^\d+gb$', token_lower):
-                print(f"[CONTEXT] ✅ Specyfikacja RAM: {token}")
+                print(f"[CONTEXT] [OK] Specyfikacja RAM: {token}")
                 return True
             
             # Ekran: oled, qled, 4k
             if token_lower in ['oled', 'qled', 'led', 'lcd', 'amoled', '4k', '8k']:
-                print(f"[CONTEXT] ✅ Technologia ekranu: {token}")
+                print(f"[CONTEXT] [OK] Technologia ekranu: {token}")
                 return True
             
             # Audio: anc, bluetooth
             if token_lower in ['anc', 'bluetooth', 'bt', 'tws', 'wireless']:
-                print(f"[CONTEXT] ✅ Feature audio: {token}")
+                print(f"[CONTEXT] [OK] Feature audio: {token}")
                 return True
             
             # Rozmiar ekranu: 55 cali, 65 cali
             if re.match(r'^\d{2,3}$', token) and int(token) >= 13:
                 if 'cali' in query_joined or 'cale' in query_joined or '"' in query_joined:
-                    print(f"[CONTEXT] ✅ Rozmiar ekranu: {token}")
+                    print(f"[CONTEXT] [OK] Rozmiar ekranu: {token}")
                     return True
         
         # 5. Czy zawiera kod produktu?
@@ -745,7 +745,7 @@ class EcommerceBot:
             token_upper = token.upper()
             for pattern in self.UNIVERSAL_ELECTRONICS_KNOWLEDGE['product_code_patterns']:
                 if re.match(pattern, token_upper):
-                    print(f"[CONTEXT] ✅ Kod produktu: {token}")
+                    print(f"[CONTEXT] [OK] Kod produktu: {token}")
                     return True
         
         # 6. Sprawdź czy istnieje w bazie produktów
@@ -759,10 +759,10 @@ class EcommerceBot:
                     if (token in product_name_lower or 
                         token in product_brand_lower or
                         token in str(product_model).lower()):
-                        print(f"[CONTEXT] ✅ Znaleziono w bazie: {token}")
+                        print(f"[CONTEXT] [OK] Znaleziono w bazie: {token}")
                         return True
         
-        print(f"[CONTEXT] ❌ Brak kontekstu elektronicznego dla: {tokens}")
+        print(f"[CONTEXT] [X] Brak kontekstu elektronicznego dla: {tokens}")
         return False
 
 
@@ -781,24 +781,24 @@ class EcommerceBot:
         for token in tokens:
             token_lower = token.lower()
             if re.match(r'^\d+(gb|g|tb|t)$', token_lower):
-                print(f"[NONSENSE] ⚠️  Wykluczam - specyfikacja pamięci: {token}")
+                print(f"[NONSENSE] [WARN]  Wykluczam - specyfikacja pamięci: {token}")
                 return False
             
             # RAM
             if 'ram' in token_lower or re.match(r'^\d+gb$', token_lower):
-                print(f"[NONSENSE] ⚠️  Wykluczam - specyfikacja RAM: {token}")
+                print(f"[NONSENSE] [WARN]  Wykluczam - specyfikacja RAM: {token}")
                 return False
             
             # Rozmiar ekranu
             if re.match(r'^\d{2,3}$', token) and 13 <= int(token) <= 100:
-                print(f"[NONSENSE] ⚠️  Wykluczam - rozmiar ekranu: {token}")
+                print(f"[NONSENSE] [WARN]  Wykluczam - rozmiar ekranu: {token}")
                 return False
         
         # === SPRAWDŹ KONTEKST ELEKTRONICZNY ===
         has_context = self.has_electronics_context(tokens)
         
         if has_context:
-            print(f"[NONSENSE] ⚠️  Ma kontekst elektroniczny - łagodniejsze filtry")
+            print(f"[NONSENSE] [WARN]  Ma kontekst elektroniczny - łagodniejsze filtry")
             # Jeśli jest kontekst, nie filtruj agresywnie
             return False
         
@@ -810,39 +810,39 @@ class EcommerceBot:
             'jak', 'dla', 'od', 'przy', 'bez', 'przez', 'pod', 'nad'
         }
         if all(token.lower() in polish_stop_words for token in tokens):
-            print(f"[NONSENSE] ❌ Same stop words")
+            print(f"[NONSENSE] [X] Same stop words")
             return True
         
         # 2. Keyboard patterns
         if any(pattern in query_lower for pattern in self.NONSENSE_DICTIONARY['keyboard_patterns']):
-            print(f"[NONSENSE] ❌ Keyboard pattern")
+            print(f"[NONSENSE] [X] Keyboard pattern")
             return True
         
         # 3. Food words (ale tylko jeśli NIE ma kontekstu elektronicznego)
         if any(food in query_lower for food in self.NONSENSE_DICTIONARY['food']):
             if not has_context:
-                print(f"[NONSENSE] ❌ Food word bez kontekstu")
+                print(f"[NONSENSE] [X] Food word bez kontekstu")
                 return True
         
         # 4. Gibberish
         for gibberish in self.NONSENSE_DICTIONARY['gibberish']:
             if gibberish in query_lower:
-                print(f"[NONSENSE] ❌ Gibberish: {gibberish}")
+                print(f"[NONSENSE] [X] Gibberish: {gibberish}")
                 return True
         
         # 5. Powtórzenia liter (aaaa, xxxx)
         for token in tokens:
             if len(token) >= 4 and len(set(token)) == 1:
-                print(f"[NONSENSE] ❌ Powtórzenie litery: {token}")
+                print(f"[NONSENSE] [X] Powtórzenie litery: {token}")
                 return True
         
         # 6. Conversational phrases bez kontekstu
         for phrase in self.NONSENSE_DICTIONARY['conversational']:
             if phrase in query_lower and not has_context:
-                print(f"[NONSENSE] ❌ Conversational bez kontekstu: {phrase}")
+                print(f"[NONSENSE] [X] Conversational bez kontekstu: {phrase}")
                 return True
         
-        print(f"[NONSENSE] ✅ Nie jest nonsensem")
+        print(f"[NONSENSE] [OK] Nie jest nonsensem")
         return False
 
 
@@ -850,10 +850,10 @@ class EcommerceBot:
         """
         Wykrywa zapytania strukturalne typu "iPhone 13 1TB" (produkt którego nie mamy).
         LOGIKA ELEKTRONIKI:
-        - "iPhone 13 128GB" = mamy → NIE structural
-        - "iPhone 13 1TB" = nie mamy → TAK structural (UTRACONY POPYT)
-        - "OnePlus 12" = nie prowadzimy marki → TAK structural
-        - "Beats Studio Pro" = nie mamy tego modelu → TAK structural
+        - "iPhone 13 128GB" = mamy -> NIE structural
+        - "iPhone 13 1TB" = nie mamy -> TAK structural (UTRACONY POPYT)
+        - "OnePlus 12" = nie prowadzimy marki -> TAK structural
+        - "Beats Studio Pro" = nie mamy tego modelu -> TAK structural
         """
         if not tokens or len(tokens) == 0:
             return False
@@ -872,12 +872,12 @@ class EcommerceBot:
         
         has_context_words = any(word in query_lower for word in natural_context_words)
         
-        # Jeśli są context words BEZ produktów → blokuj (konwersacja)
+        # Jeśli są context words BEZ produktów -> blokuj (konwersacja)
         if has_context_words and not self.products:
-            print(f"[STRUCTURAL] ❌ Context words bez produktów - konwersacja")
+            print(f"[STRUCTURAL] [X] Context words bez produktów - konwersacja")
             return False
         
-        # Jeśli są context words + produkty → kontynuuj (może być structural)
+        # Jeśli są context words + produkty -> kontynuuj (może być structural)
         
         # === KOREKTA LITERÓWEK ===
         comprehensive_typos = {
@@ -913,7 +913,7 @@ class EcommerceBot:
             token_lower = token.lower()
             if token_lower in comprehensive_typos:
                 corrected_token = comprehensive_typos[token_lower]
-                print(f"[STRUCTURAL] Korekta: {token} → {corrected_token}")
+                print(f"[STRUCTURAL] Korekta: {token} -> {corrected_token}")
                 corrected_tokens.append(corrected_token)
             else:
                 corrected_tokens.append(token_lower)
@@ -926,14 +926,14 @@ class EcommerceBot:
             # Dokładne dopasowanie
             if token in self.UNIVERSAL_ELECTRONICS_KNOWLEDGE['categories']:
                 found_category = token
-                print(f"[STRUCTURAL] ✅ Znaleziono kategorię: {token}")
+                print(f"[STRUCTURAL] [OK] Znaleziono kategorię: {token}")
                 break
             
             # Fuzzy match
             for category in self.UNIVERSAL_ELECTRONICS_KNOWLEDGE['categories']:
                 if fuzz.ratio(token, category) >= 85:
                     found_category = category
-                    print(f"[STRUCTURAL] ✅ Fuzzy kategoria: {token} → {category}")
+                    print(f"[STRUCTURAL] [OK] Fuzzy kategoria: {token} -> {category}")
                     break
             if found_category:
                 break
@@ -987,7 +987,7 @@ class EcommerceBot:
                     detected_tv_size = int(token)
                     break
         
-        # Jeśli wykryto rozmiar TV → sprawdź czy mamy!
+        # Jeśli wykryto rozmiar TV -> sprawdź czy mamy!
         if detected_tv_size and detected_brand and self.products:
             has_tv_size = False
             for product in self.products:
@@ -1003,20 +1003,20 @@ class EcommerceBot:
                         break
             
             if not has_tv_size:
-                print(f"[STRUCTURAL] 🔥 Nie mamy TV {detected_brand} {detected_tv_size} cali")
+                print(f"[STRUCTURAL] [FIRE] Nie mamy TV {detected_brand} {detected_tv_size} cali")
                 return True
         
-        # === FIX #11: Jeśli mamy markę + pamięć (nawet bez kategorii) → sprawdź! ===
+        # === FIX #11: Jeśli mamy markę + pamięć (nawet bez kategorii) -> sprawdź! ===
         # Dla zapytań typu "samsung s23 512gb" - nie ma słowa "telefon", ale to jasny intent!
         if detected_brand and detected_storage and self.products:
-            # Jeśli mamy też model → precyzyjne sprawdzenie
+            # Jeśli mamy też model -> precyzyjne sprawdzenie
             if detected_model:
                 exists = self.product_config_exists_in_database(
                     detected_brand, 
                     detected_model, 
                     detected_storage
                 )
-            # Jeśli tylko marka + pamięć → sprawdź czy istnieje jakikolwiek produkt
+            # Jeśli tylko marka + pamięć -> sprawdź czy istnieje jakikolwiek produkt
             else:
                 exists = self.product_config_exists_in_database(
                     detected_brand,
@@ -1025,10 +1025,10 @@ class EcommerceBot:
                 )
             
             if not exists:
-                print(f"[STRUCTURAL] 🔥 Nieistniejąca konfiguracja: {detected_brand} {detected_model} {detected_storage}")
+                print(f"[STRUCTURAL] [FIRE] Nieistniejąca konfiguracja: {detected_brand} {detected_model} {detected_storage}")
                 return True
         
-        # === FIX #16: Jeśli mamy markę + model (NAWET BEZ kategorii) → sprawdź! ===
+        # === FIX #16: Jeśli mamy markę + model (NAWET BEZ kategorii) -> sprawdź! ===
         # Dla zapytań typu "samsung s25" lub "sony xm6" - wyraźny intent na produkt!
         if detected_brand and detected_model and self.products:
             # Sprawdź czy ten model istnieje dla tej marki
@@ -1039,12 +1039,12 @@ class EcommerceBot:
             )
             
             if not exists:
-                print(f"[STRUCTURAL] 🔥 Nieistniejący model: {detected_brand} {detected_model}")
+                print(f"[STRUCTURAL] [FIRE] Nieistniejący model: {detected_brand} {detected_model}")
                 return True
         
-        # === Jeśli brak kategorii I nie wykryto konfiguracji → nie structural ===
+        # === Jeśli brak kategorii I nie wykryto konfiguracji -> nie structural ===
         if not found_category:
-            print(f"[STRUCTURAL] ❌ Brak kategorii i brak konfiguracji do sprawdzenia")
+            print(f"[STRUCTURAL] [X] Brak kategorii i brak konfiguracji do sprawdzenia")
             return False
         
         # Skip znane słowa
@@ -1080,7 +1080,7 @@ class EcommerceBot:
                     if not brand_in_products:
                         # Znamy markę, ale NIE PROWADZIMY!
                         unknown_brand = token
-                        print(f"[STRUCTURAL] 🔥 Marka której nie prowadzimy: {token}")
+                        print(f"[STRUCTURAL] [FIRE] Marka której nie prowadzimy: {token}")
                         break
                     else:
                         # Prowadzimy tę markę - skip
@@ -1127,9 +1127,9 @@ class EcommerceBot:
                     if similarity > best_brand_match:
                         best_brand_match = similarity
                 
-                # Jeśli fuzzy match ≥ 80% → to literówka, nie unknown!
+                # Jeśli fuzzy match ≥ 80% -> to literówka, nie unknown!
                 if best_brand_match >= 80:
-                    print(f"[STRUCTURAL] Literówka: {token} → {best_brand_match}% match")
+                    print(f"[STRUCTURAL] Literówka: {token} -> {best_brand_match}% match")
                     continue
                 
                 # Fuzzy match z kategoriami (80%+)
@@ -1140,7 +1140,7 @@ class EcommerceBot:
                         best_cat_match = similarity
                 
                 if best_cat_match >= 80:
-                    print(f"[STRUCTURAL] Literówka kategorii: {token} → {best_cat_match}% match")
+                    print(f"[STRUCTURAL] Literówka kategorii: {token} -> {best_cat_match}% match")
                     continue
                 
                 # Sprawdź czy to marka której nie znamy
@@ -1151,21 +1151,21 @@ class EcommerceBot:
                 
                 if is_likely_brand:
                     unknown_brand = token
-                    print(f"[STRUCTURAL] 🔥 Nieznana marka: {token}")
+                    print(f"[STRUCTURAL] [FIRE] Nieznana marka: {token}")
                     break
                 
                 # Lub nieznana konfiguracja (np. "1tb" dla iPhone 13)
                 if re.match(r'^\d+(gb|tb|g|t)$', token):
                     unknown_config = token
-                    print(f"[STRUCTURAL] 🔥 Nieznana konfiguracja: {token}")
+                    print(f"[STRUCTURAL] [FIRE] Nieznana konfiguracja: {token}")
                     break
         
         # === WYNIK ===
         if unknown_brand or unknown_config:
-            print(f"[STRUCTURAL] ✅ TAK - kategoria: {found_category}, unknown: {unknown_brand or unknown_config}")
+            print(f"[STRUCTURAL] [OK] TAK - kategoria: {found_category}, unknown: {unknown_brand or unknown_config}")
             return True
         
-        print(f"[STRUCTURAL] ❌ NIE - wszystkie elementy znane")
+        print(f"[STRUCTURAL] [X] NIE - wszystkie elementy znane")
         return False
 
 
@@ -1212,52 +1212,52 @@ class EcommerceBot:
             token_lower = token.lower()
             score = 0
             
-            # === KOREKTA LITERÓWEK → 85-95 pkt ===
+            # === KOREKTA LITERÓWEK -> 85-95 pkt ===
             if token_lower in typo_corrections:
                 corrected = typo_corrections[token_lower]
                 score = 90
-                print(f"[VALIDITY] {token} → {corrected}: {score} pkt (literówka)")
+                print(f"[VALIDITY] {token} -> {corrected}: {score} pkt (literówka)")
                 token_scores.append(score)
                 continue
             
             # === DOKŁADNE DOPASOWANIA ===
             
-            # Marki → 98-100 pkt
+            # Marki -> 98-100 pkt
             if token_lower in self.UNIVERSAL_ELECTRONICS_KNOWLEDGE['brands']:
                 score = 100
                 print(f"[VALIDITY] {token}: {score} pkt (marka)")
                 token_scores.append(score)
                 continue
             
-            # Kategorie → 96 pkt
+            # Kategorie -> 96 pkt
             if token_lower in self.UNIVERSAL_ELECTRONICS_KNOWLEDGE['categories']:
                 score = 96
                 print(f"[VALIDITY] {token}: {score} pkt (kategoria)")
                 token_scores.append(score)
                 continue
             
-            # Premium brands → 98 pkt
+            # Premium brands -> 98 pkt
             if token_lower in self.UNIVERSAL_ELECTRONICS_KNOWLEDGE['premium_brands']:
                 score = 98
                 print(f"[VALIDITY] {token}: {score} pkt (premium)")
                 token_scores.append(score)
                 continue
             
-            # Specyfikacje techniczne → 85-90 pkt
+            # Specyfikacje techniczne -> 85-90 pkt
             if token_lower in self.UNIVERSAL_ELECTRONICS_KNOWLEDGE['technical_terms']:
                 score = 88
                 print(f"[VALIDITY] {token}: {score} pkt (spec)")
                 token_scores.append(score)
                 continue
             
-            # Pamięć (128gb, 256gb) → 90 pkt
+            # Pamięć (128gb, 256gb) -> 90 pkt
             if re.match(r'^\d+(gb|g|tb|t)$', token_lower):
                 score = 90
                 print(f"[VALIDITY] {token}: {score} pkt (pamięć)")
                 token_scores.append(score)
                 continue
             
-            # RAM (16gb ram) → 88 pkt
+            # RAM (16gb ram) -> 88 pkt
             if 'ram' in token_lower:
                 score = 88
                 print(f"[VALIDITY] {token}: {score} pkt (RAM)")
@@ -1315,7 +1315,7 @@ class EcommerceBot:
                 token_scores.append(score)
                 continue
             
-            # Jeśli nic nie pasuje → 20 pkt (neutralne)
+            # Jeśli nic nie pasuje -> 20 pkt (neutralne)
             score = 20
             print(f"[VALIDITY] {token}: {score} pkt (nieznane)")
             token_scores.append(score)
@@ -1330,24 +1330,24 @@ class EcommerceBot:
         """
         Silnik wyszukiwania produktów ELEKTRONICZNYCH z fuzzy matching.
         LOGIKA ELEKTRONIKI:
-        - iPhone 13 128GB → dopasowanie marki + modelu + pamięci
-        - Samsung słuchawki → dopasowanie marki + kategorii
-        - WH-1000XM5 → dopasowanie kodu produktu
+        - iPhone 13 128GB -> dopasowanie marki + modelu + pamięci
+        - Samsung słuchawki -> dopasowanie marki + kategorii
+        - WH-1000XM5 -> dopasowanie kodu produktu
         """
-        print(f"🔍 FUZZY SEARCH: query='{query}', products count={len(self.products) if self.products else 0}")
+        print(f"[SEARCH] FUZZY SEARCH: query='{query}', products count={len(self.products) if self.products else 0}")
         
         if not self.products:
-            print("[FUZZY] ⚠️  Brak produktów w bazie")
+            print("[FUZZY] [WARN]  Brak produktów w bazie")
             return []
         
         query_lower = query.lower().strip()
         query_tokens = query_lower.split()
         
-        # 🔥 NUMBER GUARD: Wyciągnij wszystkie liczby z query
+        # [FIRE] NUMBER GUARD: Wyciągnij wszystkie liczby z query
         # Jeśli query ma liczby (modele, rozmiary, pamięć), produkt MUSI mieć te same liczby!
         query_numbers = set(re.findall(r'\d+', query_lower))
         
-        # 🔥 KEYWORD GUARD: Wyciągnij kluczowe słowa techniczne
+        # [FIRE] KEYWORD GUARD: Wyciągnij kluczowe słowa techniczne
         # OLED ≠ LED, QLED ≠ LED, ANC ≠ brak ANC
         # WAŻNE: Działa tylko dla PEŁNYCH specyfikacji (z liczbami/modelem)!
         critical_keywords = {
@@ -1359,7 +1359,7 @@ class EcommerceBot:
         }
         query_critical = {kw for kw in critical_keywords if kw in query_lower}
         
-        # 🔥 COLOR GUARD: Wyciągnij kolory z query
+        # [FIRE] COLOR GUARD: Wyciągnij kolory z query
         # "iPhone różowy" ≠ "iPhone midnight"
         color_keywords = {
             # Polski
@@ -1382,8 +1382,8 @@ class EcommerceBot:
             print(f"[NUMBER GUARD] Query zawiera liczby: {query_numbers}")
         if query_critical:
             # KEYWORD GUARD działa TYLKO jeśli query ma liczby LUB konkretny model!
-            # "oled lg" (bez liczby) = szukamy listy → NIE BLOKUJ
-            # "lg 55 oled" (z liczbą) = konkretny produkt → BLOKUJ jeśli nie ma
+            # "oled lg" (bez liczby) = szukamy listy -> NIE BLOKUJ
+            # "lg 55 oled" (z liczbą) = konkretny produkt -> BLOKUJ jeśli nie ma
             has_specific_intent = bool(query_numbers) or len(query_tokens) >= 3
             if has_specific_intent:
                 print(f"[KEYWORD GUARD] Query zawiera krytyczne słowa: {query_critical}")
@@ -1403,17 +1403,17 @@ class EcommerceBot:
             product_model = str(product.get('model', '')).lower()
             product_id = product.get('id', '').lower()
             
-            # 🔥 NUMBER GUARD: Sprawdź liczby NAJPIERW!
+            # [FIRE] NUMBER GUARD: Sprawdź liczby NAJPIERW!
             if query_numbers:
                 product_numbers = set(re.findall(r'\d+', product_name))
                 
                 # Jeśli query ma liczby, produkt MUSI mieć WSZYSTKIE te liczby!
                 if not query_numbers.issubset(product_numbers):
                     # REJECT! Liczby się nie zgadzają
-                    # print(f"[NUMBER GUARD] ❌ REJECT {product_name}: query={query_numbers}, product={product_numbers}")
+                    # print(f"[NUMBER GUARD] [X] REJECT {product_name}: query={query_numbers}, product={product_numbers}")
                     continue
             
-            # 🔥 KEYWORD GUARD: Sprawdź krytyczne słowa kluczowe!
+            # [FIRE] KEYWORD GUARD: Sprawdź krytyczne słowa kluczowe!
             if query_critical:
                 # Jeśli query ma krytyczne słowo (np. "led"), produkt MUSI je mieć!
                 # WAŻNE: Użyj word boundaries - "led" ≠ "oled"!
@@ -1426,10 +1426,10 @@ class EcommerceBot:
                 # Sprawdź czy query_critical jest podzbiorem product_critical
                 if not query_critical.issubset(product_critical):
                     # REJECT! Technologia się nie zgadza (LED ≠ OLED)
-                    # print(f"[KEYWORD GUARD] ❌ REJECT {product_name}: query={query_critical}, product={product_critical}")
+                    # print(f"[KEYWORD GUARD] [X] REJECT {product_name}: query={query_critical}, product={product_critical}")
                     continue
             
-            # 🔥 COLOR GUARD: Sprawdź kolory!
+            # [FIRE] COLOR GUARD: Sprawdź kolory!
             if query_colors:
                 # Jeśli query ma kolor (np. "różowy"), produkt MUSI mieć ten kolor!
                 product_colors = set()
@@ -1440,7 +1440,7 @@ class EcommerceBot:
                 # Sprawdź czy query ma kolor którego NIE MA w produkcie
                 if not query_colors.issubset(product_colors):
                     # REJECT! Kolor się nie zgadza (różowy ≠ midnight)
-                    # print(f"[COLOR GUARD] ❌ REJECT {product_name}: query={query_colors}, product={product_colors}")
+                    # print(f"[COLOR GUARD] [X] REJECT {product_name}: query={query_colors}, product={product_colors}")
                     continue
             
             # WAŻNE: Nie bierz pod uwagę stock, price (metadane)
@@ -1461,22 +1461,22 @@ class EcommerceBot:
                 if token.isdigit() and len(token) <= 2:
                     continue
                 
-                # 1. Dokładne dopasowanie → 100 pkt
+                # 1. Dokładne dopasowanie -> 100 pkt
                 if token in searchable_text:
                     token_score = 100
                     print(f"[FUZZY]   {token}: 100 pkt (exact match)")
                 
-                # 2. Prefix match (gal → galaxy) → 95 pkt
+                # 2. Prefix match (gal -> galaxy) -> 95 pkt
                 elif any(word.startswith(token) for word in searchable_text.split()):
                     token_score = 95
                     print(f"[FUZZY]   {token}: 95 pkt (prefix)")
                 
-                # 3. Suffix match → 90 pkt
+                # 3. Suffix match -> 90 pkt
                 elif any(word.endswith(token) for word in searchable_text.split()):
                     token_score = 90
                     print(f"[FUZZY]   {token}: 90 pkt (suffix)")
                 
-                # 4. Fuzzy match (>85%) → ~90 pkt
+                # 4. Fuzzy match (>85%) -> ~90 pkt
                 else:
                     best_fuzzy = 0
                     for word in searchable_text.split():
@@ -1524,7 +1524,7 @@ class EcommerceBot:
             # Próg: 35 pkt (zwiększony dla elektroniki)
             if normalized_score >= 35:
                 product_scores.append((product, normalized_score))
-                print(f"[FUZZY] ✅ {product_name[:50]}: {normalized_score:.1f} pkt")
+                print(f"[FUZZY] [OK] {product_name[:50]}: {normalized_score:.1f} pkt")
         
         # Sortuj malejąco
         product_scores.sort(key=lambda x: x[1], reverse=True)
@@ -1539,18 +1539,18 @@ class EcommerceBot:
         Główny algorytm klasyfikacji zapytań dla branży RTV/AGD/IT.
         
         LOGIKA ELEKTRONIKI:
-        - iPhone 13 128GB → HIGH (mamy)
-        - iPhone 13 1TB → NO_MATCH (utracony popyt - nie istnieje)
-        - ajfon 13 → MEDIUM (literówka)
-        - OnePlus 12 → NO_MATCH (utracony popyt - nie prowadzimy marki)
+        - iPhone 13 128GB -> HIGH (mamy)
+        - iPhone 13 1TB -> NO_MATCH (utracony popyt - nie istnieje)
+        - ajfon 13 -> MEDIUM (literówka)
+        - OnePlus 12 -> NO_MATCH (utracony popyt - nie prowadzimy marki)
         """
         query_lower = query.lower().strip()
         
-        # === FIX #16: Split słów bez spacji (iphone13 → iphone 13) ===
+        # === FIX #16: Split słów bez spacji (iphone13 -> iphone 13) ===
         import re
         query_lower = re.sub(r'([a-z])(\d)', r'\1 \2', query_lower)
         if query != query_lower:
-            print(f"[ANALYZE] Split words: '{query}' → '{query_lower}'")
+            print(f"[ANALYZE] Split words: '{query}' -> '{query_lower}'")
         
         # === PREPROCESSING - KROK 1: Tłumacz wielojęzyczne i slang ===
         preprocessed_tokens = []
@@ -1560,12 +1560,12 @@ class EcommerceBot:
             # Wielojęzyczne
             if token in self.MULTILINGUAL_TERMS:
                 token = self.MULTILINGUAL_TERMS[token]
-                print(f"[ANALYZE] Translated: {original_token} → {token}")
+                print(f"[ANALYZE] Translated: {original_token} -> {token}")
             
             # Slang
             if token in self.SLANG_DICTIONARY:
                 token = self.SLANG_DICTIONARY[token]
-                print(f"[ANALYZE] Slang fixed: {original_token} → {token}")
+                print(f"[ANALYZE] Slang fixed: {original_token} -> {token}")
             
             preprocessed_tokens.append(token)
         
@@ -1575,12 +1575,12 @@ class EcommerceBot:
         query_before_double = query_lower
         query_lower = self.fix_double_letters(query_lower)
         if query_before_double != query_lower:
-            print(f"[ANALYZE] Double letters fixed: '{query_before_double}' → '{query_lower}'")
+            print(f"[ANALYZE] Double letters fixed: '{query_before_double}' -> '{query_lower}'")
         
         # === PREPROCESSING - KROK 3: Korekty literówek ===
         corrected_query = self.correct_query_typos(query_lower)
         if corrected_query != query_lower:
-            print(f"[ANALYZE] Typos corrected: '{query_lower}' → '{corrected_query}'")
+            print(f"[ANALYZE] Typos corrected: '{query_lower}' -> '{corrected_query}'")
             query_lower = corrected_query
         
         query_tokens = query_lower.split()
@@ -1620,7 +1620,7 @@ class EcommerceBot:
         best_match_score = matches[0][1] if matches else 0
         
         if best_match_score >= 60:
-            print(f"[ANALYZE] ✅ Early match: score={best_match_score}")
+            print(f"[ANALYZE] [OK] Early match: score={best_match_score}")
         
         # === KROK 3: Sprawdź token validity i structural ===
         token_validity = self.calculate_token_validity(query_tokens)
@@ -1710,7 +1710,7 @@ class EcommerceBot:
             if len(token) >= 1 and len(token) <= 3 and token.isalnum():
                 short_codes.append(token)
         
-        # Jeśli same nonsense codes → odrzuć
+        # Jeśli same nonsense codes -> odrzuć
         if nonsense_codes and not potential_product_codes and token_validity < 30:
             return {
                 'query': query,
@@ -1743,7 +1743,7 @@ class EcommerceBot:
                 
                 if not code_exists and len(code) >= 3:
                     has_nonexistent_code = True
-                    print(f"[ANALYZE] 🔥 Nieistniejący kod: {code}")
+                    print(f"[ANALYZE] [FIRE] Nieistniejący kod: {code}")
                     break
         
         # === KROK 6: Wykryj legalne zapytania kontekstowe ===
@@ -1772,16 +1772,16 @@ class EcommerceBot:
         # Nawet jeśli best_match_score=0 (bo NUMBER GUARD/COLOR GUARD odrzuciły)
         # "iphone dla syna" = użytkownik chce LISTĘ iPhone'ów, nie Lost Demand!
         if has_context_words and (has_known_brand or has_category):
-            print(f"[ANALYZE] ✅ Contextual query detected")
+            print(f"[ANALYZE] [OK] Contextual query detected")
             
-            # Jeśli są dopasowania → HIGH/MEDIUM
-            # Jeśli brak dopasowań (score=0) → MEDIUM (pokaż listę produktów marki/kategorii)
+            # Jeśli są dopasowania -> HIGH/MEDIUM
+            # Jeśli brak dopasowań (score=0) -> MEDIUM (pokaż listę produktów marki/kategorii)
             if best_match_score >= 70:
                 confidence_level = 'HIGH'
             elif best_match_score >= 35:
                 confidence_level = 'MEDIUM'
             else:
-                # score < 35 (lub 0) → MEDIUM, ale pokaż produkty z tej marki/kategorii
+                # score < 35 (lub 0) -> MEDIUM, ale pokaż produkty z tej marki/kategorii
                 confidence_level = 'MEDIUM'
             
             return {
@@ -1807,9 +1807,9 @@ class EcommerceBot:
             pass
         
         # === FIX: ODRZUĆ TYLKO JEŚLI BRAK KONTEKSTU I BRAK DOPASOWANIA ===
-        # Jeśli brak kontekstu elektronicznego I słabe dopasowanie → odrzuć
+        # Jeśli brak kontekstu elektronicznego I słabe dopasowanie -> odrzuć
         if not has_electronics_ctx and best_match_score < 30:
-            print(f"[ANALYZE] ❌ Brak kontekstu i dopasowania - ODRZUCAM")
+            print(f"[ANALYZE] [X] Brak kontekstu i dopasowania - ODRZUCAM")
             return {
                 'query': query,
                 'tokens': query_tokens,
@@ -1831,7 +1831,7 @@ class EcommerceBot:
         suggestion_type = 'unknown'
         ga4_event = None
         
-        # 🔥 PRIORYTET #0: NUMBER GUARD wykrył nieistniejący produkt!
+        # [FIRE] PRIORYTET #0: NUMBER GUARD wykrył nieistniejący produkt!
         # Jeśli query ma kontekst elektroniczny (marka/kategoria) ALE score=0,
         # to znaczy że NUMBER GUARD odrzucił wszystkie produkty (liczby się nie zgadzają)
         # = UTRACONY POPYT!
@@ -1839,9 +1839,9 @@ class EcommerceBot:
             confidence_level = 'NO_MATCH'
             suggestion_type = 'lost_demand'
             ga4_event = 'search_lost_demand'
-            print(f"[ANALYZE] 🔥 UTRACONY POPYT: NUMBER GUARD rejected all (score=0, ma kontekst)")
+            print(f"[ANALYZE] [FIRE] UTRACONY POPYT: NUMBER GUARD rejected all (score=0, ma kontekst)")
         
-        # 🔥 PRIORYTET #1: STRUCTURAL QUERY - ale sprawdź czy produkt istnieje!
+        # [FIRE] PRIORYTET #1: STRUCTURAL QUERY - ale sprawdź czy produkt istnieje!
         # Jeśli is_structural=True, to znaczy że query WYGLĄDA jak zapytanie o produkt
         # ALE trzeba sprawdzić czy ten produkt faktycznie istnieje w bazie!
         elif is_structural:
@@ -1850,42 +1850,42 @@ class EcommerceBot:
                 confidence_level = 'HIGH'
                 suggestion_type = 'exact_match'
                 ga4_event = None
-                print(f"[ANALYZE] ✅ STRUCTURAL + HIGH MATCH: score={best_match_score}")
+                print(f"[ANALYZE] [OK] STRUCTURAL + HIGH MATCH: score={best_match_score}")
             
             # Jeśli średnie dopasowanie (50-69) + tech spec = prawdopodobnie istnieje
             elif best_match_score >= 50 and has_technical_spec:
                 confidence_level = 'MEDIUM'
                 suggestion_type = 'technical_spec'
                 ga4_event = None
-                print(f"[ANALYZE] ✅ STRUCTURAL + MEDIUM: score={best_match_score}, spec=True")
+                print(f"[ANALYZE] [OK] STRUCTURAL + MEDIUM: score={best_match_score}, spec=True")
             
             # Jeśli słabe dopasowanie (<50) = produkt NIE ISTNIEJE = LOST DEMAND!
             else:
                 confidence_level = 'NO_MATCH'
                 suggestion_type = 'lost_demand'
                 ga4_event = 'search_lost_demand'
-                print(f"[ANALYZE] 🔥 UTRACONY POPYT: structural=True, score={best_match_score}")
+                print(f"[ANALYZE] [FIRE] UTRACONY POPYT: structural=True, score={best_match_score}")
         
         # PRIORYTET #2: NO_MATCH (nieistniejący kod)
         elif has_nonexistent_code:
             confidence_level = 'NO_MATCH'
             suggestion_type = 'nonexistent_code'
             ga4_event = 'search_lost_demand'
-            print(f"[ANALYZE] 🔥 UTRACONY POPYT: nieistniejący kod")
+            print(f"[ANALYZE] [FIRE] UTRACONY POPYT: nieistniejący kod")
         
         # PRIORYTET #3: HIGH CONFIDENCE (≥60) - Dokładne dopasowanie
         elif best_match_score >= 60:
             confidence_level = 'HIGH'
             suggestion_type = 'exact_match'
             ga4_event = None
-            print(f"[ANALYZE] ✅ HIGH CONFIDENCE: score={best_match_score}")
+            print(f"[ANALYZE] [OK] HIGH CONFIDENCE: score={best_match_score}")
         
         # PRIORYTET #4: HIGH CONFIDENCE (≥50 + spec tech) - Specyfikacja techniczna
         elif best_match_score >= 50 and has_technical_spec:
             confidence_level = 'HIGH'
             suggestion_type = 'technical_spec'
             ga4_event = None
-            print(f"[ANALYZE] ✅ HIGH (spec): score={best_match_score}, spec={has_technical_spec}")
+            print(f"[ANALYZE] [OK] HIGH (spec): score={best_match_score}, spec={has_technical_spec}")
         
         # PRIORYTET #4.5: MEDIUM CONFIDENCE (≥40 + known brand) - Dopasowanie marki
         # FIX: iPhone 13 powinien być tu (score=50, has_known_brand=True)
@@ -1893,21 +1893,21 @@ class EcommerceBot:
             confidence_level = 'MEDIUM'
             suggestion_type = 'brand_match'
             ga4_event = None
-            print(f"[ANALYZE] ✅ MEDIUM (brand): score={best_match_score}, has_known_brand={has_known_brand}")
+            print(f"[ANALYZE] [OK] MEDIUM (brand): score={best_match_score}, has_known_brand={has_known_brand}")
         
         # PRIORYTET #5: MEDIUM CONFIDENCE (≥40 + validity≥50) - Literówki poprawione
         elif best_match_score >= 40 and token_validity >= 50:
             confidence_level = 'MEDIUM'
             suggestion_type = 'fuzzy_match'
             ga4_event = 'search_typo_corrected' if query_has_typos else None
-            print(f"[ANALYZE] ✅ MEDIUM: score={best_match_score}, validity={token_validity}")
+            print(f"[ANALYZE] [OK] MEDIUM: score={best_match_score}, validity={token_validity}")
         
         # PRIORYTET #6: LOW - wszystko inne
         else:
             confidence_level = 'LOW'
             suggestion_type = 'weak_match'
             ga4_event = 'search_low_confidence'
-            print(f"[ANALYZE] ⚠️  LOW: score={best_match_score}, validity={token_validity}")
+            print(f"[ANALYZE] [WARN]  LOW: score={best_match_score}, validity={token_validity}")
         
         # === RETURN RESULT ===
         return {
@@ -1932,7 +1932,7 @@ class EcommerceBot:
         return {
             'text_message': GLOBAL_WELCOME_MESSAGE,
             'buttons': [
-                {'text': '📱 Znajdź produkt', 'action': 'search_product'}
+                {'text': '[PHONE] Znajdź produkt', 'action': 'search_product'}
             ]
         }
     
@@ -2077,7 +2077,7 @@ class EcommerceBot:
             return {
                 'text_message': 'Menu główne',
                 'buttons': [
-                    {'text': '📱 Znajdź produkt', 'action': 'search_product'}
+                    {'text': '[PHONE] Znajdź produkt', 'action': 'search_product'}
                 ]
             }
         elif action == 'search_product':
@@ -2151,10 +2151,10 @@ class EcommerceBot:
             # ODPOWIEDZI NA PODSTAWIE CONFIDENCE
             if confidence_level == 'HIGH':
                 if products:
-                    products_text = "✅ **Znaleźliśmy produkty:**\n\n"
+                    products_text = "[OK] **Znaleźliśmy produkty:**\n\n"
                     for product, score in products:
                         products_text += f"**{product['name']}**\n"
-                        products_text += f"📊 Dopasowanie: {score:.0f}% | 💰 {product['price']:.2f} zł\n\n"
+                        products_text += f"[GRAPH] Dopasowanie: {score:.0f}% | [MONEY] {product['price']:.2f} zł\n\n"
                     
                     return {
                         'text_message': products_text,
@@ -2167,8 +2167,8 @@ class EcommerceBot:
                     products_text = "🤔 **Czy chodziło Ci o:**\n\n"
                     for product, score in products[:3]:
                         products_text += f"**{product['name']}**\n"
-                        products_text += f"📊 Dopasowanie: {score:.0f}% | 💰 {product['price']:.2f} zł\n\n"
-                    products_text += "\n💡 *System automatycznie poprawił literówki*"
+                        products_text += f"[GRAPH] Dopasowanie: {score:.0f}% | [MONEY] {product['price']:.2f} zł\n\n"
+                    products_text += "\n[IDEA] *System automatycznie poprawił literówki*"
                     
                     return {
                         'text_message': products_text,
@@ -2192,9 +2192,9 @@ Wpisana fraza: "{message}" """,
             else:  # NO_MATCH - UTRACONY POPYT!
                 luxury_message = ""
                 if analysis.get('has_luxury_brand'):
-                    luxury_message = "\n🏆 **Wykryto markę premium** - zwiększony priorytet!"
+                    luxury_message = "\n[TROPHY] **Wykryto markę premium** - zwiększony priorytet!"
                 
-                message_text = f"""🔍 **Nie mamy tego produktu w ofercie**
+                message_text = f"""[SEARCH] **Nie mamy tego produktu w ofercie**
 
 Szukana fraza: "{message}"{luxury_message}
 
@@ -2231,7 +2231,7 @@ Jeśli wiele osób szuka tego produktu, dodamy go do naszej oferty."""
         return {
             'text_message': 'Wybierz opcję:',
             'buttons': [
-                {'text': '📱 Szukaj produktu', 'action': 'search_product'},
+                {'text': '[PHONE] Szukaj produktu', 'action': 'search_product'},
                 {'text': '↩️ Menu główne', 'action': 'main_menu'}
             ]
         }
@@ -2243,7 +2243,7 @@ Jeśli wiele osób szuka tego produktu, dodamy go do naszej oferty."""
             if isinstance(item, tuple):
                 product, score = item
                 buttons.append({
-                    'text': f"🛒 {product['name'][:45]}...",
+                    'text': f"[CART] {product['name'][:45]}...",
                     'action': f"show_full_card_{product['id']}"
                 })
         
@@ -2269,19 +2269,19 @@ Jeśli wiele osób szuka tego produktu, dodamy go do naszej oferty."""
         if 'specs' in product:
             specs = product['specs']
             for key, value in specs.items():
-                specs_text += f"• {key}: {value}\n"
+                specs_text += f"* {key}: {value}\n"
         
         return {
-            'text_message': f"""📱 **{product['name']}**
+            'text_message': f"""[PHONE] **{product['name']}**
 
-💰 **Cena:** {product['price']:.2f} zł
-📦 **Stan:** {product['stock']} szt.
+[MONEY] **Cena:** {product['price']:.2f} zł
+[BOX] **Stan:** {product['stock']} szt.
 
 **Specyfikacja:**
 {specs_text if specs_text else 'Brak szczegółów'}""",
             'buttons': [
-                {'text': f"🛒 Dodaj do koszyka", 'action': f"add_to_cart_{product['id']}"},
-                {'text': '🔍 Szukaj dalej', 'action': 'search_product'},
+                {'text': f"[CART] Dodaj do koszyka", 'action': f"add_to_cart_{product['id']}"},
+                {'text': '[SEARCH] Szukaj dalej', 'action': 'search_product'},
                 {'text': '🏠 Menu główne', 'action': 'main_menu'}
             ]
         }
@@ -2294,21 +2294,44 @@ Jeśli wiele osób szuka tego produktu, dodamy go do naszej oferty."""
         """Dodanie do koszyka."""
         if 'cart' not in session:
             session['cart'] = []
-        
+
         session['cart'].append(product_id)
         session.modified = True
-        
+
+        # Gold signal: jeśli poprzednie zapytanie było NO_MATCH → clicked_alternative=True
+        last_no_match_session = session.get('last_no_match_qi_session')
+        if last_no_match_session:
+            try:
+                import sqlite3
+                conn = sqlite3.connect('dashboard.db')
+                cur = conn.cursor()
+                cur.execute('''
+                    UPDATE query_intents SET clicked_alternative = 1
+                    WHERE id = (
+                        SELECT id FROM query_intents
+                        WHERE session_id = ? AND confidence_level = 'NO_MATCH'
+                        ORDER BY id DESC LIMIT 1
+                    )
+                ''', (last_no_match_session,))
+                conn.commit()
+                conn.close()
+                print(f"[P3][GOLD] clicked_alternative=True for session {last_no_match_session}")
+                session.pop('last_no_match_qi_session', None)
+                session.modified = True
+            except Exception as e:
+                print(f"[P3][GOLD] Failed to update clicked_alternative: {e}")
+
         product = self.get_product_by_id(product_id)
         product_name = product['name'] if product else 'Produkt'
-        
+
         return {
-            'text_message': f"""✅ **Dodano do koszyka!**
+            'text_message': f"""[OK] **Dodano do koszyka!**
 
 {product_name}""",
             'cart_updated': True,
             'buttons': [
-                {'text': '🔍 Kontynuuj zakupy', 'action': 'search_product'},
-                {'text': '🛒 Zobacz koszyk', 'action': 'view_cart'},
+                {'text': '[SEARCH] Kontynuuj zakupy', 'action': 'search_product'},
+                {'text': '[CART] Zobacz koszyk', 'action': 'view_cart'},
                 {'text': '↩️ Menu główne', 'action': 'main_menu'}
             ]
         }

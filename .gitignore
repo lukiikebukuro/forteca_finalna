@@ -36,3 +36,12 @@ lost_demand_log.csv
 # System
 .DS_Store
 Thumbs.db
+
+# Pytest
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Backup files
+*_backup.py
+*.bakNUL

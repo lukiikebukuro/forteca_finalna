@@ -16,3 +16,4 @@ Flask-WTF
 Flask-Talisman
 python-dateutil
 python-socketio
+pytest>=7.0.0

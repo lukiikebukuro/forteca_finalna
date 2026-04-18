@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LDI — Technical Architecture · Adept AI</title>
+    <meta name="description" content="LDI: Lost Demand Intelligence. Real-time classification engine for e-commerce search queries.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg:      #f7f7f5;
+            --bg2:     #efefec;
+            --border:  rgba(0,0,0,0.08);
+            --text:    #1c1c1c;
+            --muted:   #6b7280;
+            --accent:  #059669;
+            --code-bg: #1c1c1c;
+            --code-fg: #d1fae5;
+            --gold:    #d97706;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        /* ── NAV ── */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 48px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg);
+        }
+
+        .nav-logo {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .nav-logo span { color: var(--accent); }
+
+        nav a.back-link {
+            font-size: 14px;
+            color: var(--muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s;
+        }
+
+        nav a.back-link:hover { color: var(--text); }
+
+        /* ── LAYOUT ── */
+        .page-wrap {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 72px 32px 120px;
+        }
+
+        /* ── HEADER ── */
+        .doc-header {
+            margin-bottom: 56px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .doc-tag {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+
+        .doc-title {
+            font-size: clamp(32px, 5vw, 48px);
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+        }
+
+        .doc-subtitle {
+            font-size: 18px;
+            color: var(--muted);
+            max-width: 560px;
+            line-height: 1.6;
+        }
+
+        .doc-meta {
+            margin-top: 28px;
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .doc-meta span {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        /* ── STATS BAR ── */
+        .stats-bar {
+            display: flex;
+            gap: 48px;
+            padding: 28px 0;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .stat-value.gold { color: var(--gold); }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        /* ── CONTENT ── */
+        .doc-section {
+            margin-bottom: 64px;
+        }
+
+        .section-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--accent);
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.015em;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+
+        h3 {
+            font-size: 17px;
+            font-weight: 600;
+            margin-top: 36px;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        p {
+            font-size: 16px;
+            color: #374151;
+            margin-bottom: 16px;
+        }
+
+        strong { color: var(--text); font-weight: 600; }
+
+        ul {
+            margin: 12px 0 16px 0;
+            padding-left: 20px;
+        }
+
+        li {
+            font-size: 16px;
+            color: #374151;
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        /* ── CODE ── */
+        pre {
+            background: var(--code-bg);
+            color: var(--code-fg);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 24px 28px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 20px 0 28px;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            background: var(--bg2);
+            color: #065f46;
+            padding: 2px 7px;
+            border-radius: 4px;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: inherit;
+        }
+
+        /* ── TABLE ── */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0 28px;
+            font-size: 14px;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 10px 14px;
+            background: var(--bg2);
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            color: #374151;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            vertical-align: top;
+        }
+
+        .data-table tr:last-child td { border-bottom: none; }
+
+        .gold-row td { background: #fffbeb; }
+
+        /* ── CALLOUT ── */
+        .callout {
+            border-left: 3px solid var(--accent);
+            padding: 16px 20px;
+            background: #ecfdf5;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0 28px;
+        }
+
+        .callout.gold {
+            border-left-color: var(--gold);
+            background: #fffbeb;
+        }
+
+        .callout p {
+            color: #065f46;
+            margin: 0;
+            font-size: 15px;
+        }
+
+        .callout.gold p { color: #92400e; }
+
+        /* ── DIVIDER ── */
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 48px 0;
+        }
+
+        /* ── FOOTER ── */
+        .doc-footer {
+            margin-top: 80px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .doc-footer p {
+            font-size: 13px;
+            color: var(--muted);
+            margin: 0;
+        }
+
+        .contact-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--text);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .contact-cta:hover { background: #333; }
+
+        @media (max-width: 600px) {
+            nav { padding: 16px 20px; }
+            .page-wrap { padding: 48px 20px 80px; }
+            .stats-bar { flex-wrap: wrap; gap: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="nav-logo">Adept AI <span>·</span> Łukasz Piskorski</a>
+    <a href="/" class="back-link">← Back to portfolio</a>
+</nav>
+
+<div class="page-wrap">
+
+    <header class="doc-header">
+        <p class="doc-tag">Technical Architecture · LDI v5.1</p>
+        <h1 class="doc-title">Lost Demand Intelligence:<br>Seeing what analytics miss</h1>
+        <p class="doc-subtitle">
+            LDI is a real-time classification engine that identifies purchase intent in e-commerce
+            search queries — before the user presses Enter. This document explains the architecture
+            that achieved 92.3% accuracy on a new product domain without retraining.
+        </p>
+        <div class="doc-meta">
+            <span>Author: Łukasz Piskorski / Adept AI</span>
+            <span>Version: 5.1 (Surgery Fixed)</span>
+            <span>Status: Production · Live Demo</span>
+        </div>
+    </header>
+
+    <!-- STATS BAR -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-value">92.3%</div>
+            <div class="stat-label">Classification accuracy<br>169/183 test scenarios</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">&lt;60ms</div>
+            <div class="stat-label">Intent classification<br>latency (p95)</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value gold">+15</div>
+            <div class="stat-label">Gold Signal reward<br>clicked_despite_no_match</div>
+        </div>
+    </div>
+
+    <!-- INTRO CALLOUT -->
+    <div class="callout">
+        <p>
+            Standard e-commerce analytics track what users bought. They cannot track what users
+            <strong>wanted to buy but couldn't find</strong>. LDI captures this signal in real-time
+            — and identifies the highest-value training data automatically.
+        </p>
+    </div>
+
+    <!-- SECTION I -->
+    <section class="doc-section">
+        <p class="section-num">I.</p>
+        <h2>The Gold Signal: Reward what matters, penalize what doesn't</h2>
+
+        <h3>The core insight</h3>
+        <p>
+            Most search analytics reward clicks. Problem: a click after a perfect match (query = product)
+            is low-value — the user already knew what they wanted. The system learned nothing.
+        </p>
+        <p>
+            The highest-value signal is the inverse: <strong>clicked_despite_no_match</strong>.
+            User searched for "iPhone 14 Pro case leather", we didn't have it, but they clicked
+            on "iPhone 14 silicone case" anyway. This tells us:
+        </p>
+        <ul>
+            <li>They have genuine purchase intent (not browsing)</li>
+            <li>They're flexible on specification (leather → silicone)</li>
+            <li>We just learned a new product association</li>
+        </ul>
+
+        <div class="callout gold">
+            <p><strong>Gold Signal:</strong> clicked_despite_no_match = +15 reward points (highest weight in the system).</p>
+        </div>
+
+        <h3>The reward formula</h3>
+        <p>LDI uses a multi-signal reward calculator with anti-bait penalties:</p>
+
+<pre><code>class LDIRewardCalculator:
+    weights = {
+        'high_confidence_match': 10.0,
+        'clicked_despite_no_match': 15.0,  # 🏆 GOLD SIGNAL
+        'clicked_alternative': 20.0,
+        'quick_click_bonus': 10.0,         # &lt;10s to click
+        'cart_add': 35.0,
+        'purchase': 50.0,
+    }
+    
+    penalties = {
+        'bounce': -100.0,                  # Instant normalization to -1.0
+        'multiple_refinements': -15.0,     # >=3 query changes = frustration
+        'long_session_no_action': -10.0,   # >3min without click
+    }</code></pre>
+
+        <p>
+            <strong>Key design:</strong> bounce detection is instant penalty. A user who leaves in &lt;5s
+            without any action is normalized to -1.0 regardless of other signals. This prevents
+            clickbait patterns from polluting the training data.
+        </p>
+    </section>
+
+    <hr>
+
+    <!-- SECTION II -->
+    <section class="doc-section">
+        <p class="section-num">II.</p>
+        <h2>Semantic Validation: Filtering noise before it reaches the model</h2>
+
+        <h3>The problem with raw query logs</h3>
+        <p>
+            E-commerce search logs are 60-70% noise: keyboard mashing (<code>asdfgh</code>),
+            incomplete prefixes (<code>ip</code>), food queries on an auto parts store (<code>pizza</code>),
+            and hallucinated products (<code>iPhone 30</code>).
+        </p>
+        <p>
+            If you train on this data, you train on garbage. LDI implements a <code>SemanticValidator</code>
+            that rejects low-quality queries <em>before</em> they enter the reward pipeline.
+        </p>
+
+        <h3>Validation layers</h3>
+
+<pre><code>class SemanticValidator:
+    def validate(self, query: str) -> Tuple[bool, str]:
+        # 1. Keyboard patterns
+        if re.match(r'^[asdfghjkl]+$', query):
+            return False, "KEYBOARD_PATTERN"
+        
+        # 2. Unrealistic models (iPhone 30, Galaxy S99)
+        for prefix, (min_num, max_num) in unrealistic_model_patterns.items():
+            if model_num > max_num:
+                return False, f"UNREALISTIC_MODEL:{prefix}_{model_num}"
+        
+        # 3. Food/wrong domain
+        if has_food_words and not has_domain_context:
+            return False, "FOOD_DOMAIN"
+        
+        # 4. NO_MATCH without domain context = noise
+        if confidence_level == 'NO_MATCH' and not has_domain_context:
+            return False, "NO_MATCH_NO_CONTEXT"
+        
+        return True, "OK"</code></pre>
+
+        <p>
+            The <code>unrealistic_model_patterns</code> dictionary knows that iPhone goes 1-16,
+            Galaxy S goes 1-25, BMW series go 1-8. <strong>"iPhone 30" is rejected as hallucination</strong>,
+            not counted as lost demand.
+        </p>
+
+        <h3>Why NO_MATCH with domain context is valid</h3>
+        <p>
+            If a user searches "BMW E46 klocki Brembo" and we get NO_MATCH, that's not noise — that's
+            <strong>genuine lost demand</strong>. The query has domain context (car brand + part brand).
+            These queries are flagged <code>VALID_LOST_DEMAND</code> and routed to the Gold Signal pipeline.
+        </p>
+    </section>
+
+    <hr>
+
+    <!-- SECTION III -->
+    <section class="doc-section">
+        <p class="section-num">III.</p>
+        <h2>Universal Automotive Knowledge: 300+ brands, zero hallucinations</h2>
+
+        <h3>The domain knowledge layer</h3>
+        <p>
+            LDI was built for automotive e-commerce. The <code>UNIVERSAL_AUTOMOTIVE_KNOWLEDGE</code>
+            dictionary contains:
+        </p>
+        <ul>
+            <li><strong>300+ car brands</strong> — from BMW to BYD, including Chinese EV brands</li>
+            <li><strong>150+ motorcycle brands</strong> — Yamaha, Ducati, Royal Enfield</li>
+            <li><strong>500+ car models</strong> — E46, W124, A4 B8, etc.</li>
+            <li><strong>200+ part categories</strong> — klocki, amortyzator, filtr oleju</li>
+            <li><strong>OEM suppliers</strong> — Bosch, Brembo, Mann, NGK</li>
+        </ul>
+
+        <h3>Why this matters</h3>
+        <p>
+            When a user types "Brembo klocki E46", the system knows:
+        </p>
+        <ul>
+            <li><code>Brembo</code> = known OEM supplier (brake specialist)</li>
+            <li><code>klocki</code> = brake pads (part category)</li>
+            <li><code>E46</code> = BMW 3-series 1998-2006 (car model)</li>
+        </ul>
+        <p>
+            This context enables fuzzy matching: even if we don't have "Brembo brake pads for E46"
+            in the product database, we can suggest "ATE brake pads for E46" — and if the user clicks,
+            that's a Gold Signal.
+        </p>
+    </section>
+
+    <hr>
+
+    <!-- SECTION IV -->
+    <section class="doc-section">
+        <p class="section-num">IV.</p>
+        <h2>Real-time classification pipeline</h2>
+
+        <h3>Architecture flow</h3>
+
+<pre><code>User query ("BMW E46 klocki")
+    ↓
+SemanticValidator → reject noise
+    ↓
+UNIVERSAL_AUTOMOTIVE_KNOWLEDGE → entity extraction
+    ↓
+FuzzyWuzzy matcher (products.json) → confidence_level
+    ↓
+             ┌─────────────┐
+             │ HIGH/MEDIUM │ → standard results
+             └─────────────┘
+                    │
+             ┌─────────────┐
+             │  NO_MATCH   │ → Lost Demand flag
+             └─────────────┘
+                    │
+                    ↓
+       Alternative suggestions (fuzzy)
+                    │
+                    ↓
+         ┌───────────────────────┐
+         │ clicked_alternative?  │
+         └───────────────────────┘
+                    │
+         YES        │          NO
+          ↓         │           ↓
+      GOLD SIGNAL   │      LOST DEMAND LOG
+      (+15 reward)  │      (for inventory team)</code></pre>
+
+        <h3>Latency budget</h3>
+        <p>
+            Classification happens <strong>while the user types</strong>. The &lt;60ms p95 latency
+            comes from:
+        </p>
+        <ul>
+            <li>Pre-loaded product database (in-memory)</li>
+            <li>Pre-compiled regex patterns for validation</li>
+            <li>FuzzyWuzzy process.extractBests() with score_cutoff</li>
+            <li>No external API calls in the hot path</li>
+        </ul>
+    </section>
+
+    <hr>
+
+    <!-- SECTION V -->
+    <section class="doc-section">
+        <p class="section-num">V.</p>
+        <h2>Training data export: JSONL for fine-tuning</h2>
+
+        <h3>AI-ready data pipeline</h3>
+        <p>
+            Every validated session is logged to JSONL with a normalized reward score [-1.0, +1.0].
+            This format is directly consumable by reinforcement learning pipelines.
+        </p>
+
+<pre><code>{
+  "session_id": "abc123",
+  "original_query": "BMW E46 klocki Brembo",
+  "confidence_level": "NO_MATCH",
+  "clicked_alternative": true,
+  "alternative_clicked": "ATE klocki hamulcowe E46 przód",
+  "reward_score": 0.35,
+  "ai_ready": true,
+  "timestamp": "2026-04-18T10:30:00Z"
+}</code></pre>
+
+        <h3>Data quality guarantees</h3>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Flag</th>
+                    <th>Meaning</th>
+                    <th>Export</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>ai_ready: true</td>
+                    <td>Passed SemanticValidator, has domain context</td>
+                    <td>Include in training</td>
+                </tr>
+                <tr>
+                    <td>ai_ready: false</td>
+                    <td>Keyboard pattern, food domain, unrealistic model</td>
+                    <td>Exclude from training</td>
+                </tr>
+                <tr class="gold-row">
+                    <td>is_gold_signal: true</td>
+                    <td>clicked_despite_no_match = genuine discovery</td>
+                    <td>Prioritize in training</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <hr>
+
+    <!-- SECTION VI: TEST RESULTS -->
+    <section class="doc-section">
+        <p class="section-num">VI.</p>
+        <h2>Test results: 183 scenarios, 92.3% accuracy</h2>
+
+        <h3>Test methodology</h3>
+        <p>
+            The test suite covers edge cases that break naive matchers:
+        </p>
+        <ul>
+            <li>Typos in brand names (<code>merecedes</code> → Mercedes)</li>
+            <li>Polish diacritics (<code>klocki hamulcowe</code> vs <code>klocki hamulcowe</code>)</li>
+            <li>Mixed language queries (<code>BMW oil filter 5W30</code>)</li>
+            <li>Hallucinated products (<code>iPhone 30</code>, <code>Galaxy S99</code>)</li>
+            <li>Food domain leakage (<code>pizza</code> on auto parts store)</li>
+            <li>OEM code formats (<code>1J0 615 301</code> = VW brake disc)</li>
+        </ul>
+
+        <h3>Results breakdown</h3>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Scenarios</th>
+                    <th>Passed</th>
+                    <th>Accuracy</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Exact match</td>
+                    <td>45</td>
+                    <td>45</td>
+                    <td>100%</td>
+                </tr>
+                <tr>
+                    <td>Fuzzy match (typos)</td>
+                    <td>38</td>
+                    <td>36</td>
+                    <td>94.7%</td>
+                </tr>
+                <tr>
+                    <td>Lost demand detection</td>
+                    <td>52</td>
+                    <td>47</td>
+                    <td>90.4%</td>
+                </tr>
+                <tr>
+                    <td>Noise rejection</td>
+                    <td>48</td>
+                    <td>41</td>
+                    <td>85.4%</td>
+                </tr>
+                <tr style="font-weight: 600;">
+                    <td>TOTAL</td>
+                    <td>183</td>
+                    <td>169</td>
+                    <td>92.3%</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="callout">
+            <p>
+                The 14 failures are documented. Most are edge cases in Polish morphology
+                (declension variants) and OEM code formats. They're on the roadmap — not blockers.
+            </p>
+        </div>
+    </section>
+
+    <hr>
+
+    <!-- SECTION VII: INDUSTRY PERSPECTIVE -->
+    <section class="doc-section">
+        <p class="section-num">VII.</p>
+        <h2>The gap in standard analytics</h2>
+
+        <p>
+            To understand why LDI matters, consider what standard tools see:
+        </p>
+
+        <div style="background: #1e293b; border-radius: 8px; padding: 24px 28px; margin: 24px 0; border-left: 3px solid var(--gold);">
+            <p style="color: #94a3b8; font-size: 13px; margin-bottom: 12px; font-style: italic;">
+                From an internal analysis comparing LDI methodology to enterprise analytics:
+            </p>
+            <p style="color: #e2e8f0; font-size: 15px; line-height: 1.7; margin: 0;">
+                "Google Analytics 4 and internal logs only see <strong style="color: #fbbf24;">Events</strong> (clicks, page views).<br>
+                LDI sees <strong style="color: #fbbf24;">Intents that never became events</strong>.<br><br>
+                When a user enters a query and gets 0 results, standard systems treat this as a 'Bounce'.
+                LDI does something different: in under 200ms, it runs a 5-stage analysis to determine
+                whether this is noise — or genuine demand for a product the catalog doesn't carry."
+            </p>
+        </div>
+
+        <p>
+            The difference is brutal. A bounce is a dead metric. A classified intent is actionable data:
+            inventory gaps, pricing signals, product associations, training labels.
+        </p>
+    </section>
+
+    <hr>
+
+    <!-- EPILOG -->
+    <section class="doc-section">
+        <h2>Epilogue: Why this matters for e-commerce</h2>
+        <p>
+            Every e-commerce store has a "lost demand" problem. Users search for products that don't exist
+            in the catalog. The search returns "no results" or irrelevant suggestions. The user leaves.
+        </p>
+        <p>
+            Standard analytics cannot capture this. They see a bounce. They don't see the intent.
+        </p>
+        <p>
+            LDI captures the intent. It logs what users wanted, not just what they bought.
+            It identifies which "no results" queries are genuine demand signals (Gold Signal)
+            vs. noise (keyboard mashing, wrong domain).
+        </p>
+        <p>
+            <strong>This data is the highest-value signal for inventory decisions and AI training.</strong>
+            It tells you what to stock. It tells you what associations to learn.
+            It's the signal that standard analytics miss.
+        </p>
+
+        <div class="callout gold" style="margin-top: 32px;">
+            <p><strong>We don't track what users bought. We track what they wanted.</strong></p>
+        </div>
+    </section>
+
+    <footer class="doc-footer">
+        <p>Adept AI · Łukasz Piskorski · Gorzów Wielkopolski, 2026</p>
+        <a href="/live-demo" class="contact-cta">Try the live demo →</a>
+    </footer>
+
+</div>
+
+</body>
+</html>

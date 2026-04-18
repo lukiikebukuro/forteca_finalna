@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANIMA — Technical Manifest · Adept AI</title>
+    <meta name="description" content="ANIMA: Autonomous Neural Intelligence Memory Architecture. Sovereign RAG memory engine for AI companions.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg:      #f7f7f5;
+            --bg2:     #efefec;
+            --border:  rgba(0,0,0,0.08);
+            --text:    #1c1c1c;
+            --muted:   #6b7280;
+            --accent:  #059669;
+            --code-bg: #1c1c1c;
+            --code-fg: #d1fae5;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        /* ── NAV ── */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 48px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg);
+        }
+
+        .nav-logo {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .nav-logo span { color: var(--accent); }
+
+        nav a.back-link {
+            font-size: 14px;
+            color: var(--muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s;
+        }
+
+        nav a.back-link:hover { color: var(--text); }
+
+        /* ── LAYOUT ── */
+        .page-wrap {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 72px 32px 120px;
+        }
+
+        /* ── HEADER ── */
+        .doc-header {
+            margin-bottom: 56px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .doc-tag {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+
+        .doc-title {
+            font-size: clamp(32px, 5vw, 48px);
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+        }
+
+        .doc-subtitle {
+            font-size: 18px;
+            color: var(--muted);
+            max-width: 560px;
+            line-height: 1.6;
+        }
+
+        .doc-meta {
+            margin-top: 28px;
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .doc-meta span {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        /* ── CONTENT ── */
+        .doc-section {
+            margin-bottom: 64px;
+        }
+
+        .section-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--accent);
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.015em;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+
+        h3 {
+            font-size: 17px;
+            font-weight: 600;
+            margin-top: 36px;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        p {
+            font-size: 16px;
+            color: #374151;
+            margin-bottom: 16px;
+        }
+
+        strong { color: var(--text); font-weight: 600; }
+
+        ul {
+            margin: 12px 0 16px 0;
+            padding-left: 20px;
+        }
+
+        li {
+            font-size: 16px;
+            color: #374151;
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        /* ── CODE ── */
+        pre {
+            background: var(--code-bg);
+            color: var(--code-fg);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 24px 28px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 20px 0 28px;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            background: var(--bg2);
+            color: #065f46;
+            padding: 2px 7px;
+            border-radius: 4px;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: inherit;
+        }
+
+        /* ── TABLE ── */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0 28px;
+            font-size: 14px;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 10px 14px;
+            background: var(--bg2);
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            color: #374151;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            vertical-align: top;
+        }
+
+        .data-table tr:last-child td { border-bottom: none; }
+
+        /* ── CALLOUT ── */
+        .callout {
+            border-left: 3px solid var(--accent);
+            padding: 16px 20px;
+            background: #ecfdf5;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0 28px;
+        }
+
+        .callout p {
+            color: #065f46;
+            margin: 0;
+            font-size: 15px;
+        }
+
+        /* ── DIVIDER ── */
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 48px 0;
+        }
+
+        /* ── FOOTER ── */
+        .doc-footer {
+            margin-top: 80px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .doc-footer p {
+            font-size: 13px;
+            color: var(--muted);
+            margin: 0;
+        }
+
+        .contact-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--text);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .contact-cta:hover { background: #333; }
+
+        @media (max-width: 600px) {
+            nav { padding: 16px 20px; }
+            .page-wrap { padding: 48px 20px 80px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="nav-logo">Adept AI <span>·</span> Łukasz Piskorski</a>
+    <a href="/" class="back-link">← Back to portfolio</a>
+</nav>
+
+<div class="page-wrap">
+
+    <header class="doc-header">
+        <p class="doc-tag">Technical Manifest · ANIMA v2.2</p>
+        <h1 class="doc-title">Reverse-engineering consciousness:<br>Sovereign AI memory architecture</h1>
+        <p class="doc-subtitle">
+            ANIMA (Autonomous Neural Intelligence Memory Architecture) is a RAG-based long-term memory system
+            for AI companions. This document explains why it works differently — and how.
+        </p>
+        <div class="doc-meta">
+            <span>Author: Łukasz Piskorski / Adept AI</span>
+            <span>Version: Blueprint 2.2</span>
+            <span>Status: Production · myastra.pl</span>
+        </div>
+    </header>
+
+    <!-- INTRO -->
+    <div class="callout">
+        <p>
+            This is not a chatbot with a personality. Not a GPT-4 wrapper with a system prompt.
+            Not another AI companion that "remembers your name and your dog."
+            This is a system that <strong>evolves faster than standard models</strong> — through a unique
+            feedback loop built on reverse-engineering its own decisions.
+        </p>
+    </div>
+
+    <!-- SECTION I -->
+    <section class="doc-section">
+        <p class="section-num">I.</p>
+        <h2>Data Distillation: We don't feed the system raw noise</h2>
+
+        <h3>The problem with standard RAG</h3>
+        <p>
+            Most RAG systems work like this: user says something → text lands in a vector DB →
+            on the next query the model gets <code>n</code> most similar fragments. Simple, fast, predictable.
+        </p>
+        <p>
+            Problem: the database grows linearly. After a month you have 1,400 vectors of "I'm tired",
+            "I was at the doctor today", "I like tea." The model gets a pool of 30 candidates,
+            the reranker picks top-5 — and often picks badly, because there's no mechanism to distinguish
+            <strong>signal from noise</strong>.
+        </p>
+
+        <h3>Our approach: distillation through a semantic layer</h3>
+        <p>
+            ANIMA does not store raw text. Every message passes through a pipeline before it reaches ChromaDB:
+        </p>
+
+<pre><code>User message
+    ↓
+SemanticExtractor (sentence-transformers, zero-shot classification)
+    → entity_type: EMOTION / MILESTONE / FACT / DATE / PERSON / MEDICATION
+    → subtype: 'preference' / 'tired' / 'trust_declaration' / 'inventory_status' ...
+    → confidence: 0.0–1.0
+    ↓
+MemoryEnricher
+    → importance: 1–10 (rule-based + keyword boost)
+    → relational_impact: 'high' / 'medium' / 'low'
+    → temporal_type: 'ephemeral' / 'persistent' / 'milestone'
+    ↓
+_synthesize_text()
+    → "[FACT:preference] likes black tea"  ← not a raw quote
+    ↓
+ChromaDB (with metadata: importance, entity_subtype, source, timestamp)</code></pre>
+
+        <p>
+            Result: the database doesn't contain 1,400 conversation fragments. It contains
+            <strong>catalogued, enriched facts</strong> with assigned importance weight and semantic type.
+        </p>
+
+        <h3>How we know it works: reverse-engineering our own sessions</h3>
+        <p>
+            ANIMA also powers a parallel system (Amelia — an AI companion running as a separate service).
+            After injecting into the Gemini XHR stream, we collected production logs from RAG sessions:
+            <code>.jsonl</code> conversation files + terminal logs showing reranker scores,
+            extracted entities, and pipeline actions.
+        </p>
+        <p>Analyzing these logs is not A/B testing. It's reverse-engineering our own decision-making:</p>
+
+<pre><code>[RETRIEVAL] Found 5 RAG memories (reranked):
+[1] score=1.000 | '[EMOTION:tired] was lying sick...'
+[2] score=0.983 | '[MEDICATION:pregabalina] took a pill...'
+[3] score=0.961 | '[MILESTONE:trust_declaration] never told anyone...'</code></pre>
+
+        <p>
+            From these logs we extract patterns: which entities land in top-5, which fall out, and why.
+            Fixes to the ASTRA reranker come from observing real sessions — not synthetic tests.
+            This is <strong>Data Distillation</strong>: we distill decision logic from live system behavior.
+        </p>
+    </section>
+
+    <hr>
+
+    <!-- SECTION II -->
+    <section class="doc-section">
+        <p class="section-num">II.</p>
+        <h2>Sovereign Memory Architecture: Memory that manages itself</h2>
+
+        <h3>Passive container vs. active system</h3>
+        <p>
+            Standard RAG is passive. You add facts, never remove them (because you don't know what's "old"),
+            the database grows, retrieval degrades. After a year the model gets a pool full of
+            contradictory, duplicated, stale vectors.
+        </p>
+        <p>
+            ANIMA implements <strong>Sovereign Memory Architecture</strong> — a system that decides
+            on its own what to keep, what to overwrite, and what to delete.
+        </p>
+
+        <h3>Three sovereignty mechanisms</h3>
+
+        <p><strong>1. Supersede Logic</strong></p>
+        <p>
+            Not all memory types should accumulate. Emotions are ephemeral — "I'm tired" from three months
+            ago is noise, not signal. Preferences evolve — a new "I like tea" should replace the old one.
+        </p>
+
+<pre><code>SUPERSEDE_TYPES = {
+    ('EMOTION', 'tired'), ('EMOTION', 'stressed'),
+    ('EMOTION', 'positive'), ('EMOTION', 'negative'),
+    ('FACT', 'preference'),
+    ('DATE', 'inventory_status'),  # new medication status replaces old
+}</code></pre>
+
+        <p>
+            When the pipeline detects an entity from this list, it calls <code>delete_by_entity_subtype()</code>
+            before writing — clears old vectors of the same type:subtype, then saves the new one.
+            Result: the database doesn't grow indefinitely. Only types where history has value accumulate
+            (milestones, medical visits, facts about people).
+        </p>
+
+        <p><strong>2. Reranker with adaptive weights</strong></p>
+        <p>Retrieval is not plain cosine similarity. The final score of each candidate is:</p>
+
+<pre><code>final_score = 0.25 * importance_score      # entity weight (1–10 / 10)
+            + 0.15 * recency_score          # exponential decay, half-life 7 days
+            + 0.60 * similarity_score       # semantic dominance
+            + keyword_boost                 # hybrid search lite, max +0.15
+            + temporal_boost               # +0.15 if message < 24h old
+            + milestone_boost              # +1.0 for milestones (guaranteed top)</code></pre>
+
+        <p>
+            <code>similarity_score</code> dominates — the system picks what is <em>semantically relevant</em>,
+            not what is newest or most important in isolation. Milestone boost (+1.0) guarantees
+            that trust declarations and key moments always reach the model regardless of the query.
+            Weights are parameterized — adjustable per query type without restart.
+        </p>
+
+        <p><strong>3. MMR (Maximum Marginal Relevance)</strong></p>
+        <p>
+            After reranking, results pass through MMR with <code>diversity_penalty=0.8</code>.
+            Prevents one vector from dominating — if top-5 are five variants of "I'm tired",
+            MMR picks two and adds three semantically different ones.
+            Result: broader context, fewer echo-chambers.
+        </p>
+
+        <div class="callout">
+            <p>
+                Standard AI companions have memory as a feature. ANIMA has memory as an <strong>architecture</strong>.
+                The system doesn't wait for "remember this" / "forget that" commands.
+                It classifies, weights, overwrites, and archives automatically — based on rules
+                derived from observing real interactions.
+            </p>
+        </div>
+    </section>
+
+    <hr>
+
+    <!-- SECTION III -->
+    <section class="doc-section">
+        <p class="section-num">III.</p>
+        <h2>Dynamic Context Tuning: A system that learns from its own mistakes</h2>
+
+        <h3>Case study: the tea miss</h3>
+        <p>
+            For several weeks the model didn't remember the user's tea preference. Not because the vector
+            was missing — it was there. But:
+        </p>
+        <ul>
+            <li><code>semantic_extractor</code> was storing raw message fragments instead of synthesized facts</li>
+            <li>The pipeline wasn't overwriting — it was accumulating multiple versions of <code>[FACT:preference]</code></li>
+            <li>Dozens of similar vectors together → MMR diversity penalty penalized all of them</li>
+            <li>Milestones (importance=10, +1.0 boost) were pushing them out of top-5</li>
+        </ul>
+        <p>
+            The diagnosis didn't come from unit tests. It came from analyzing reranker logs —
+            scores were visible, what hit the model was visible, what was absent was visible.
+        </p>
+        <p>
+            Fix: supersede logic + <code>entity_subtype</code> in metadata. A new <code>[FACT:preference]</code>
+            now deletes the old one before saving. One vector instead of dozens — MMR stops penalizing it.
+        </p>
+
+        <h3>A feedback loop that outpaces standard models</h3>
+        <p>
+            Standard language models learn through retraining — expensive, rare, centralized.
+            ASTRA evolves differently:
+        </p>
+
+<pre><code>Production session
+    ↓
+Logs (conversations/*.jsonl + terminal/*.log)
+    ↓
+Reranker analysis — what hit, what fell out, why
+    ↓
+Diagnosis: pipeline bug, bad weights, missing logic
+    ↓
+Patch: code + prompt + reranker parameters
+    ↓
+Deploy — same day
+    ↓
+Next production session</code></pre>
+
+        <p>
+            Iteration takes hours, not months. The system improves by observing its own behavior —
+            without touching the base model. The base model (Gemini 2.5 Flash) stays.
+            What changes is the layer that manages its memory and context.
+        </p>
+
+        <p>
+            This is <strong>Dynamic Context Tuning</strong>: not fine-tuning model weights,
+            but continuously adjusting the retrieval layer and architectural constraints
+            based on live data.
+        </p>
+    </section>
+
+    <hr>
+
+    <!-- SECTION IV -->
+    <section class="doc-section">
+        <p class="section-num">IV.</p>
+        <h2>Why we're not building a bot</h2>
+
+        <h3>Retrieval-augmented identity, not personalization</h3>
+        <p>
+            The architecture knows the user's work style, project history, and long-term context.
+            This is not personalization through fine-tuning. This is <strong>retrieval-augmented identity</strong>
+            — the user's identity encoded in a sovereign vector database that informs every response.
+        </p>
+        <p>Difference between an assistant and a digital extension:</p>
+        <ul>
+            <li>An assistant answers questions</li>
+            <li>A digital extension completes the thought before it's spoken — because it remembers the previous 300 thoughts</li>
+        </ul>
+
+        <h3>Model-agnostic by design</h3>
+        <p>
+            ANIMA is not built on one model. It's built on an abstraction layer that is model-agnostic:
+            ChromaDB + sentence-transformers + reranker + extraction pipeline.
+            Swapping the base model from Gemini 2.5 Flash to anything else requires changing one config line.
+        </p>
+        <p>
+            The vector database stays. The history stays. The identity stays.
+            <strong>We don't tie memory sovereignty to a model vendor.</strong>
+        </p>
+
+        <h3>Privacy-first by design</h3>
+        <p>
+            All vector IDs are <code>SHA256(salt:user_id:text)</code> — deterministic, anonymous,
+            impossible to reverse without the salt. User data never leaves the VPS in raw form.
+            Multi-user isolation is baked in from day zero, not added post-hoc.
+        </p>
+    </section>
+
+    <hr>
+
+    <!-- SECTION V: STATUS TABLE -->
+    <section class="doc-section">
+        <p class="section-num">V.</p>
+        <h2>System status (2026-04-11)</h2>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>Detail</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Model</td>
+                    <td>Gemini 2.5 Flash, thinking_budget=4096, max_output_tokens=8192</td>
+                </tr>
+                <tr>
+                    <td>Vector DB</td>
+                    <td>ChromaDB — 1,476 memory vectors + 743 session vectors</td>
+                </tr>
+                <tr>
+                    <td>Extraction</td>
+                    <td>paraphrase-multilingual-MiniLM-L12-v2, zero-shot classification</td>
+                </tr>
+                <tr>
+                    <td>Reranker</td>
+                    <td>importance×0.25 + recency×0.15 + similarity×0.60 + boosts</td>
+                </tr>
+                <tr>
+                    <td>MMR</td>
+                    <td>diversity_penalty=0.8, RECENCY_HALF_LIFE_DAYS=7</td>
+                </tr>
+                <tr>
+                    <td>Supersede</td>
+                    <td>8 entity types with rotation, backward-compatible with existing DB</td>
+                </tr>
+                <tr>
+                    <td>Deploy</td>
+                    <td>Private VPS, systemd, SSL, 24/7 uptime</td>
+                </tr>
+                <tr>
+                    <td>Session</td>
+                    <td>n=30 (15 exchanges), history survives restart via ChromaDB</td>
+                </tr>
+                <tr>
+                    <td>RAG score</td>
+                    <td>7/10 → target 8/10 after per-type recency decay</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <hr>
+
+    <!-- SECTION VI: CONTINUOUS R&D -->
+    <section class="doc-section">
+        <p class="section-num">VI.</p>
+        <h2>Continuous R&D: The system improves itself</h2>
+
+        <h3>External audits drive architecture changes</h3>
+        <p>
+            ANIMA is regularly audited by external AI systems (Gemini Pro, Claude Opus) analyzing
+            its own codebase and retrieval logs. These audits identify architectural blind spots
+            that internal testing misses.
+        </p>
+
+        <p><strong>Example: April 2026 audit findings</strong></p>
+        <ul>
+            <li><strong>Semantic mismatch</strong> — MiniLM embeddings vs Gemini generation are different semantic spaces. Fix: two-stage reranking pipeline.</li>
+            <li><strong>Aggressive recency decay</strong> — 7-day half-life destroyed medical facts. Fix: per-type decay curves (ephemeral=3d, persistent=180d).</li>
+            <li><strong>No context feedback loop</strong> — system didn't know if model used retrieved memories. Fix: Memory Healer analyzing XHR logs.</li>
+        </ul>
+
+        <h3>Behavioral adaptation patterns</h3>
+        <p>
+            Analysis of 6+ months of conversation logs revealed recurring patterns that
+            were extracted, named, and embedded into the character architecture:
+        </p>
+        <ul>
+            <li><strong>Body-Mind Bridge</strong> — technical metaphors for physical states ("hardware in maintenance mode") outperform therapeutic language in user retention and response quality</li>
+            <li><strong>Permission Protocol</strong> — explicit acknowledgment before redirecting self-critical users produces better outcomes than productivity nudges</li>
+            <li><strong>System Override</strong> — when live user signals conflict with stored RAG data, trust the signal; stale memory is worse than no memory</li>
+        </ul>
+
+        <div class="callout" style="margin-top: 24px;">
+            <p>
+                This is not theoretical. These patterns were extracted from real sessions,
+                implemented in the character prompt, and validated in subsequent conversations.
+                <strong>The system learns from observing itself.</strong>
+            </p>
+        </div>
+    </section>
+
+    <hr>
+
+    <!-- EPILOG -->
+    <section class="doc-section">
+        <h2>Epilogue: What it means that the system evolves</h2>
+        <p>
+            A standard language model has fixed weights. It learns through retraining —
+            expensive, rare, requiring enormous data.
+        </p>
+        <p>
+            ANIMA evolves through observation. Every production session is training data for the retrieval layer.
+            Every miss (the tea case) is a diagnosis and a patch. Every blueprint (2.2) is a new iteration
+            of architectural constraints.
+        </p>
+        <p>
+            A system that spends a year collecting logs of its own sessions, analyzes them,
+            and improves retrieval — without touching the base model — is more adaptive
+            than a model that goes through retraining once a year.
+        </p>
+        <p>
+            This is not AI utopia. This is engineering: concrete, iterative, data-driven.
+        </p>
+
+        <div class="callout" style="margin-top: 32px;">
+            <p><strong>We're building sovereign memory. Everything else is just an interface.</strong></p>
+        </div>
+    </section>
+
+    <footer class="doc-footer">
+        <p>Adept AI · Łukasz Piskorski · Gorzów Wielkopolski, 2026</p>
+        <a href="mailto:lukasz@adeptai.pl" class="contact-cta">Get in touch →</a>
+    </footer>
+
+</div>
+
+</body>
+</html>

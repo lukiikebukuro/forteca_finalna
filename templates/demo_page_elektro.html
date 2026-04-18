@@ -107,6 +107,30 @@
     
     </head>
 <body>
+    <!-- RAW PROTOTYPE NOTICE -->
+    <div style="
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%);
+        color: #94a3b8;
+        font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        font-size: 13px;
+        padding: 14px 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 16px;
+        z-index: 9999;
+        border-top: 2px solid #475569;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+    ">
+        <span style="color: #fbbf24; font-size: 18px;">⚠</span>
+        <span><strong style="color: #f8fafc; font-size: 14px;">RAW PROTOTYPE</strong> — This demo focuses on functionality, not visual design. Production UI is customized per client.</span>
+        <a href="/" style="color: #10b981; text-decoration: none; font-weight: 600; padding: 6px 14px; border: 1px solid #10b981; border-radius: 6px; transition: all 0.2s;">← Back to portfolio</a>
+    </div>
+
     <div class="connection-status" id="connectionStatus">
         <i class="fas fa-wifi"></i>
         <span>Łączenie...</span>
@@ -119,10 +143,6 @@
     📊 Pokaż Centrum Analityczne
 </button>
 
-            <div class="clarification-banner">
-                <strong>💡 Uwaga: To tylko prezentacja MOŻLIWOŚCI silnika.</strong>
-                Instalacja chatbota jest opcjonalna, a nie wymagana. Nasz System Analityczny może działać w tle, nasłuchując Państwa obecnej wyszukiwarki. Poniżej w ofercie wyjaśniamy szczegóły.
-            </div>
             <div class="bot-content">
                 <div class="app-container" data-api-prefix="/elektrobot-prototype">
                     <div style="background: linear-gradient(135deg, #10b981 0%, #047857 100%); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1);">
@@ -333,8 +353,8 @@
             <a href="/login" class="header-cta-link">
                 <span style="font-size: 16px;">📊</span>
                 <span>
-                    OTWÓRZ PEŁNE<br>
-                    CENTRUM ANALITYCZNE
+                    DOSTĘP DLA<br>
+                    PARTNERÓW
                 </span>
             </a>
         </div>
@@ -543,16 +563,7 @@
                 </section>
             </div>
         </div>
-    </div> <div class="offer-notification" id="offerNotification">
-    <div class="notification-content">
-        <span class="notification-icon">💰</span>
-        <div class="notification-text">
-            <strong>Sprawdź naszą ofertę poniżej!</strong>
-            <span>Dowiedz się dlaczego jesteśmy lepsi od konkurencji</span>
-        </div>
-        <button class="notification-close" onclick="document.getElementById('offerNotification').style.display='none'">×</button>
     </div>
-</div>
     
     
     <div id="loading-overlay" class="loading-overlay">
@@ -578,266 +589,69 @@
     <section class="sales-arguments">
     <div class="arguments-container">
         <div class="arguments-header">
-            <h2>To Więcej Niż Bot. To Partnerstwo Strategiczne.</h2>
+            <h2>How LDI works</h2>
+            <p style="font-size: 15px; color: #9ca3af; margin-top: 8px; font-weight: 400;">Lost Demand Intelligence — a search analytics engine built for e-commerce</p>
         </div>
-        
+
         <div class="advantage-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 32px;">
-    <div class="advantage-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 16px;">
-        <div class="advantage-icon">🧠</div>
-        <div class="advantage-content">
-            <h4>System Analityczny, a nie Bot-Zabawka</h4>
-            <p style="font-size: 19px; line-height: 1.65;">Każde "brak wyników" to klient, który właśnie wychodzi z Twojego sklepu z pieniędzmi w ręku. Nasz <span style="color: #FFD700;">silnik analityczny</span> w czasie rzeczywistym odróżnia przypadkową <strong>literówkę</strong> od zapytania o produkt <strong>warty tysiące złotych</strong>. Zmieniamy porażkę w twarde dane wywiadowcze.</p>
-        </div>
-    </div>
 
-    <div class="advantage-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 16px;">
-    <div class="advantage-icon">💰</div>
-    <div class="advantage-content">
-        <h4>Inteligencja, nie Surowe Dane</h4>
-        <p style="font-size: 19px; line-height: 1.65;">Standardowe narzędzia zasypują Cię surowymi logami i mówią "analizuj sam". My działamy inaczej. Otrzymujesz <strong>zweryfikowany przez eksperta, cotygodniowy raport PDF</strong> z gotowymi wnioskami i rekomendacjami. Twoja rola to podejmować decyzje, a nie grzebać w danych.</p>
-    </div>
-</div>
-
-    <div class="advantage-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 16px;">
-        <div class="advantage-icon">🛠️</div>
-        <div class="advantage-content">
-            <h4>Nieskończone Możliwości, a nie Zamknięte Pudełko</h4>
-            <p style="font-size: 19px; line-height: 1.65;"><strong>Jesteśmy Twoim zespołem inżynierów. Wdrożymy predykcję popytu AI, alerty VIP o wejściu kluczowych firm (np. Orlen) i pełną integrację z magazynem. Nie kupujesz gotowej wtyczki – kodujemy Twoją przewagę technologiczną szytą na miarę.</strong></p>
-        </div>
-    </div>
-    <div class="advantage-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 16px;">
-        <div class="advantage-icon">👨‍💻</div>
-        <div class="advantage-content">
-            <h4>Bezpośredni Kontakt z Architektem</h4>
-            <p style="font-size: 20px; line-height: 1.7;">Nie rozmawiasz z działem wsparcia. Masz bezpośredni dostęp do mnie – architekta, który zna każdą linijkę kodu. <strong>Modyfikacje i nowe pomysły wdrażamy w godzinach, a nie tygodniach.</strong></p>
-        </div>
-    </div>
-
-    <div class="advantage-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 16px;">
-        <div class="advantage-icon">💸</div>
-        <div class="advantage-content">
-            <h4>Zwrot z Inwestycji (ROI), a nie Koszt</h4>
-            <p style="font-size: 19px; line-height: 1.65;">Nie pytaj "ile to kosztuje". Zapytaj "ile tracę bez tego?".
-    Nasz system nie jest kosztem – jest <strong>dźwignią finansową</strong>.
-    Identyfikujemy luki w sprzedaży, które są niewidoczne dla standardowych narzędzi.
-    Dla średniego e-commerce to odzyskany przychód rzędu <strong>kilkunastu tysięcy tygodniowo</strong>.
-    Inwestycja zwraca się w pierwszym kwartale.</p>
-        </div>
-    </div>
-
-    <div class="advantage-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 16px;">
-        <div class="advantage-icon">🔮</div>
-        <div class="advantage-content">
-            <h4>Przyszłość: Machine Learning + Predykcja</h4>
-            <p style="font-size: 20px; line-height: 1.7;">To dopiero początek technologiczny. <strong>Następny cel: ML do predykcji przyszłego popytu.</strong> Będziemy przewidywać trendy zanim zobaczy je rynek. Nasz produkt rozwija się każdego dnia.</p>
-        </div>
-    </div>
-</div>
-
-
-        <div class="security-section">
-    <h3>🛡️ PANCERNA INFRASTRUKTURA I BEZPIECZEŃSTWO</h3>
-    <div class="security-content">
-        <p><strong>Gwarancja bezpieczeństwa danych:</strong> System operuje na infrastrukturze <strong>Render</strong> z certyfikatem ISO 27001, spełniającym międzynarodowe standardy bezpieczeństwa danych. Globalny shield <strong>Cloudflare</strong> chroni przed atakami DDoS, botami i zagrożeniami cyberbezpieczeństwa. To gwarantuje nie tylko inteligencję, ale i bezwzględną ochronę.</p>
-    </div>
-</div>
-<div class="pricing-section">
-   
-
-    <div class="comparison-intro-box" 
-     style="margin-bottom: 24px; 
-            padding: 24px; 
-            background: rgba(255, 255, 255, 0.05); /* Lekko przezroczyste tło, nie białe */
-            border-radius: 12px; 
-            border: 1px solid rgba(255, 255, 255, 0.1);">
-    
-    <div style="display: flex; gap: 16px; align-items: flex-start;">
-        <div style="font-size: 24px; margin-top: 5px;">🤔</div>
-        <div>
-            <h4 style="margin-bottom: 12px; color: #FFFFFF; font-size: 16px; font-weight: 700;">Chatbot vs. System Analityczny - jaka jest różnica?</h4>
-            <p style="font-size: 14px; line-height: 1.6; color: #e5e7eb;">
-                Wielu klientów pyta: 'Czym to się różni od chatbota?'<br>
-                Oto kluczowa różnica:
-            </p>
-            <ul style="list-style-position: inside; margin-top: 10px; font-size: 0.9em; color: #e5e7eb; padding-left: 5px;">
-                <li><strong>Chatbot (Tidio, Tawk.to) = INTERFEJS</strong> (rozmawia z klientem)</li>
-                <li><strong>Nasz System = ANALITYKA</strong> (nasłuchuje w tle, wykrywa utracony popyt)</li>
-            </ul>
-            <p style="margin-top: 10px; font-size: 14px; color: #e5e7eb;">
-                Możesz mieć:
-                <strong style="color: #FFFFFF;">✓ Tylko nasz system analityczny</strong> (z Twoją wyszukiwarką)<br>
-                <strong style="color: #FFFFFF;">✓ Nasz system + Twój istniejący bot</strong> (dajemy mu "mózg")<br>
-                <strong style="color: #FFFFFF;">✓ Nasz system + nasz bot</strong> (pełna integracja)
-            </p>
-        </div>
-    </div>
-</div>
-   
-   
-   <h3>💎 MODEL WSPÓŁPRACY: AUDYT ZAMIAST OBIETNIC</h3>
-
-<div class="pricing-content">
-    <div class="pricing-main">
-        <div class="pricing-card special-offer">
-            <div class="pricing-header">
-                <h4>Strategia "Proof of Value"</h4>
-                <span class="badge-special">Bez Ryzyka</span>
-            </div>
-
-            <div class="pricing-details">
-                <div class="price-item main" style="display: block; text-align: center;">
-                    <span class="price-label" style="font-size: 1.1em; display: block; margin-bottom: 10px;">Propozycja dla liderów rynku:</span>
-                    <span class="price-value" style="font-size: 2em; line-height: 1.2;">30-dniowy Płatny<br>Pilot Analityczny</span>
+            <div class="advantage-item" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 24px;">
+                <div class="advantage-content">
+                    <h4 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 10px; font-weight: 600;">Real-time intent classification</h4>
+                    <p style="font-size: 15px; line-height: 1.65; color: #e5e7eb;">Every "no results" event is classified before the user presses Enter. The engine separates typos from genuine B2B queries — queries that signal missing inventory, not broken UX.</p>
                 </div>
-                <p style="font-size: 0.9em; text-align: center; margin-top: 15px; color: #555; padding: 0 15px; font-style: italic;">
-                    Nie sprzedajemy "kota w worku". Zamiast wiązać się umową na rok w ciemno, sprawdź skuteczność systemu na żywym organizmie Twojego sklepu.
-                </p>
             </div>
 
-            <div class="pricing-includes">
-                <h5>W ramach pilotażu otrzymujesz:</h5>
-                <ul class="includes-list">
-                    <li>✓ <strong>Bezinwazyjne Wdrożenie:</strong> Wpinamy system "Satelita" bez ingerencji w Twój silnik sklepu.</li>
-                    <li>✓ <strong>30 Dni Wywiadu:</strong> Zbieramy dane o realnym, utraconym popycie i identyfikujemy klientów B2B.</li>
-                    <li>✓ <strong>Raport ROI:</strong> Twardy dowód finansowy. Widzisz czarno na białym, ile pieniędzy ucieka Ci tygodniowo.</li>
-                    <li>✓ <strong>Konsultacja z Architektem:</strong> Analiza wyników i strategia "uszczelnienia" lejka sprzedażowego.</li>
-                    <li style="font-weight: bold;">✓ Gwarancja Bezpieczeństwa Danych (ISO 27001)</li>
-                </ul>
+            <div class="advantage-item" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 24px;">
+                <div class="advantage-content">
+                    <h4 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 10px; font-weight: 600;">Gold Signal detection</h4>
+                    <p style="font-size: 15px; line-height: 1.65; color: #e5e7eb;">When a user searches for a product that doesn't exist in the catalog, then buys an alternative anyway — that's a Gold Signal. Confirmed purchase intent on an untracked product. The highest-value training signal in the system.</p>
+                </div>
+            </div>
+
+            <div class="advantage-item" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 24px;">
+                <div class="advantage-content">
+                    <h4 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 10px; font-weight: 600;">Domain generalization</h4>
+                    <p style="font-size: 15px; line-height: 1.65; color: #e5e7eb;">The same engine runs on automotive parts and consumer electronics without retraining. 169/183 correct classifications on the electronics domain out of the box — 92.3% accuracy on a new vertical.</p>
+                </div>
+            </div>
+
+            <div class="advantage-item" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 24px;">
+                <div class="advantage-content">
+                    <h4 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 10px; font-weight: 600;">Structured output for fine-tuning</h4>
+                    <p style="font-size: 15px; line-height: 1.65; color: #e5e7eb;">Every query is stored as a labeled record: intent confidence, semantic validity flag, reward score, Gold/Positive/Negative classification. Ready to export as JSONL fine-tuning data.</p>
+                </div>
+            </div>
+
+            <div class="advantage-item" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 24px;">
+                <div class="advantage-content">
+                    <h4 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 10px; font-weight: 600;">Weekly intelligence report</h4>
+                    <p style="font-size: 15px; line-height: 1.65; color: #e5e7eb;">Not raw logs. A structured PDF report: top missing products by search volume and estimated revenue impact, with prioritized restocking recommendations. Decision-ready output.</p>
+                </div>
+            </div>
+
+            <div class="advantage-item" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 24px;">
+                <div class="advantage-content">
+                    <h4 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 10px; font-weight: 600;">Stack</h4>
+                    <p style="font-size: 15px; line-height: 1.65; color: #e5e7eb;">Python · Flask · SQLite · WebSocket · custom semantic validation pipeline · reward scoring engine · JSONL fine-tuning export · real-time debug dashboard. Built and maintained by one engineer.</p>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="pricing-footer">
-        <p class="pricing-note" style="text-align: center; margin-bottom: 20px;">
-            <strong>Decyzję o stałej współpracy ("Partnerstwo Strategiczne") podejmujesz na podstawie LICZB, a nie prezentacji.</strong>
-        </p>
-        
-        <div class="cta-wrapper">
-            <a href="/cdn-cgi/l/email-protection#086367667c69637c48696c6d787c6961267864377b7d6a626d6b7c35526978717c6966616d2d3a38672d3a385f716b6d66cc912d3a38586164677c69cdb47d2d3a385b697c6d64617c69" class="enterprise-cta-main">
-                <span class="cta-icon-wrapper">
-                    <span class="cta-icon">⚡</span>
-                    <span class="cta-pulse"></span>
-                </span>
-                <span class="cta-title">ZAMÓW WYCENĘ PILOTAŻU</span>
-                <span class="cta-arrow">→</span>
+        <div style="margin-top: 48px; padding: 32px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px;">
+            <h3 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em; color: #6b7280; margin-bottom: 16px; font-weight: 600;">Prior work — Skankran</h3>
+            <p style="font-size: 15px; line-height: 1.7; color: #e5e7eb; max-width: 680px;">
+                Before LDI: built Skankran from scratch in 4 months with no prior programming experience — a water quality analysis platform integrated with Google Gemini API, trained on WHO/EPA medical documentation. First platform of its kind in Poland. That project is what led to this one.
+            </p>
+        </div>
+
+        <div style="margin-top: 48px; text-align: center; padding-bottom: 16px;">
+            <p style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em; color: #6b7280; margin-bottom: 16px;">Interested in the architecture or a conversation?</p>
+            <a href="mailto:lukasz@adeptai.pl" style="display: inline-block; padding: 14px 32px; background: transparent; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #e5e7eb; font-size: 15px; font-weight: 500; text-decoration: none; letter-spacing: 0.02em; transition: border-color 0.2s, color 0.2s;">
+                lukasz@adeptai.pl
             </a>
-            <div class="alternative-contact-cta">
-                lub skontaktuj się bezpośrednio na <a href="/cdn-cgi/l/email-protection#7a1115140e1b110e3a1b1e1f0a0e1b13540a16" class="alt-email"><span class="__cf_email__" data-cfemail="23484c4d57424857634247465357424a0d534f">[email&#160;protected]</span></a>
-            </div>
-        </div>
-        
-    
-    </div>
-</div>
-
-
-
-
-    <h3>Porównanie Technologii: Adept Engine vs. Gotowe rozwiązania Chatbotowe</h3>
-    <p style="text-align: center; font-size: 14px; color: #6b7280; margin-top: 8px; margin-bottom: 24px;">
-        Poniższa tabela pokazuje przewagę naszego <strong>SILNIKA ANALITYCZNEGO</strong> (niezależnie od tego, czy masz interfejs chatbota, czy nie):
-    </p>
-    
-    <div class="comparison-table">
-        <div class="table-header">
-            <div class="feature-col">Cecha</div>
-            <div class="us-col">System Odzyskiwania Utraconego Popytu Adept</div>
-            <div class="nocode-col">Standardowe Chatboty (Tidio, Tawk.to, N8N) - Tylko interfejs, bez analityki</div>
-        </div>
-        
-        <div class="table-row">
-            <div class="feature-col">
-                <strong>Analiza Intencji</strong>
-            </div>
-            <div class="us-col winner">
-                🧠 <strong>Głęboka</strong><br>
-                <small>W Czasie Rzeczywistym, bez 'Enter'</small>
-            </div>
-            <div class="nocode-col loser">
-                ❌ <strong>Płytka</strong><br>
-                <small>Tylko po wysłaniu zapytania</small>
-            </div>
-        </div>
-        
-        <div class="table-row">
-            <div class="feature-col">
-                <strong>Dane Wywiadowcze</strong>
-            </div>
-            <div class="us-col winner">
-                📡 <strong>Pełny Radar</strong><br>
-                <small>"Echo" Rynku</small>
-            </div>
-            <div class="nocode-col loser">
-                📉 <strong>Prosta Lista</strong><br>
-                <small>Błędów i Porażek</small>
-            </div>
-        </div>
-        
-        <div class="table-row">
-            <div class="feature-col">
-                <strong>Możliwości Rozwoju</strong>
-            </div>
-            <div class="us-col winner">
-                🛠️ <strong>Nieskończone</strong><br>
-                <small>Twój Osobisty Dział R&D</small>
-            </div>
-            <div class="nocode-col loser">
-                📦 <strong>Zamknięte</strong><br>
-                <small>Sztywne Pudełko</small>
-            </div>
-        </div>
-        
-        <div class="table-row">
-            <div class="feature-col">
-                <strong>Koszty</strong>
-            </div>
-            <div class="us-col winner">
-                💰 <strong>Przewidywalne</strong><br>
-                <small>Stały, płaski abonament</small>
-            </div>
-            <div class="nocode-col loser">
-                📈 <strong>Nieprzewidywalne</strong><br>
-                <small>Płacisz za sukces i liczbę rozmów</small>
-            </div>
-        </div>
-        
-        <div class="table-row">
-            <div class="feature-col">
-                <strong>Wsparcie</strong>
-            </div>
-            <div class="us-col winner">
-                👨‍💻 <strong>Bezpośrednie</strong><br>
-                <small>Dostęp do Architekta Systemu</small>
-            </div>
-            <div class="nocode-col loser">
-                🎫 <strong>System Ticketowy</strong><br>
-                <small>Konsultanci 1. Linii</small>
-            </div>
-        </div>
-    </div>
-    
-    <div class="battle-conclusion">
-        <p><strong>Wynik: Przewaga Technologiczna Adept AI</strong></p>
-        <p>Standardowe chatboty to narzędzia. Adept Engine to strategiczna broń analityczna.</p>
-    </div>
-</div>
-
-
-
-<div class="proof-section">
-            <h3>Nasze Wdrożenia i Studium Przypadków</h3>
-            <div class="proof-grid">
-                <div class="proof-item">
-                    <span class="proof-check">✅</span>
-                    <strong>Nasz system do analizy jakości wody (skankran.pl) jest w pełni zintegrowany z API Google Gemini,<strong>Był trenowany na dokumentach medycznych WHO/EPA</strong> prowadzi zaawansowane, kontekstowe rozmowy z użytkownikami. Analizuje stacje uzdatniania użytkownika a następnie odpowiada jak wartości ze stacji wpływają na zdrowie użytkownika. To pokazuje naszą zdolność do tworzenia specjalistycznych, zaawansowanych botów dostosowanych do unikalnych potrzeb biznesowych.</div>
-                </div>
-               
-            </div>
         </div>
 
-        
-            </div>
-        </div>
     </div>
 </section>
 

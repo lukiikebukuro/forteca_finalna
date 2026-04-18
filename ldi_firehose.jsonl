@@ -1,0 +1,2 @@
+{"timestamp": "2026-02-06T12:39:15.049631", "session_id": "a5a360dc-4bb3-40e7-b033-1fbc8406c022", "store_id": "demo_store", "event": "cart_add", "reward_score": 45.0, "messages_count": 0, "duration": 0.0016069412231445312}
+{"timestamp": "2026-02-06T12:39:51.388587", "session_id": "0fed0e56-033c-45a3-acf8-0876f7f72508", "store_id": "demo_store", "event": "cart_add", "reward_score": 45.0, "messages_count": 0, "duration": 0.0011997222900390625}

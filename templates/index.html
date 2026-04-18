@@ -1,760 +1,651 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADEPT AI - Budujemy Dedykowane Systemy AI</title>
+    <title>Łukasz Piskorski — AI Systems Architect</title>
+    <meta name="description" content="I build AI systems that detect what standard analytics miss. LDI, ANIMA, Skankran.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --primary-blue: #1E88E5;
-            --dark-blue: #1565C0;
-            --dark-gray: #2C3E50;
-            --light-gray: #F8F9FA;
-            --white: #FFFFFF;
-            --text-dark: #2C3E50;
-            --text-light: #6C757D;
-            --accent-green: #10B981;
-            --accent-purple: #8B5CF6;
-            --accent-orange: #F59E0B;
+            --bg:       #f7f7f5;
+            --bg2:      #efefec;
+            --border:   rgba(0,0,0,0.08);
+            --text:     #1c1c1c;
+            --muted:    #6b7280;
+            --accent:   #059669;
+            --accent2:  #047857;
+            --white:    #ffffff;
         }
+
+        html { scroll-behavior: smooth; }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
             line-height: 1.6;
-            color: var(--text-dark);
-            background-color: var(--white);
         }
 
-        /* Header */
-        header {
-            background: var(--white);
-            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
-
+        /* ── NAV ── */
         nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1rem 2rem;
+            padding: 20px 48px;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.3s, background 0.3s;
         }
-
-        .logo-container {
+        nav.scrolled {
+            background: rgba(247,247,245,0.94);
+            backdrop-filter: blur(12px);
+            border-color: var(--border);
+        }
+        .nav-brand {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: -0.01em;
+            text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 1rem;
         }
-
-        .logo {
-            width: 50px;
-            height: 50px;
+        .nav-brand span {
+            color: var(--accent);
         }
-
-        .company-name {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: var(--dark-gray);
-            letter-spacing: -0.5px;
-        }
-
-        .company-name .ai {
-            color: var(--primary-blue);
-            background: linear-gradient(135deg, var(--primary-blue), #42A5F5);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .nav-menu {
+        .nav-links {
             display: flex;
+            gap: 32px;
             list-style: none;
-            gap: 2rem;
         }
-
-        .nav-menu a {
+        .nav-links a {
+            font-size: 14px;
+            color: var(--muted);
             text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 500;
-            transition: color 0.3s ease;
-            position: relative;
+            transition: color 0.2s;
         }
+        .nav-links a:hover { color: var(--text); }
 
-        .nav-menu a:hover {
-            color: var(--primary-blue);
-        }
-
-        .nav-menu a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -5px;
-            left: 0;
-            background-color: var(--primary-blue);
-            transition: width 0.3s ease;
-        }
-
-        .nav-menu a:hover::after {
-            width: 100%;
-        }
-
-        /* Hero Section */
+        /* ── HERO ── */
         .hero {
-            background: linear-gradient(135deg, var(--light-gray) 0%, var(--white) 100%);
-            padding: 4rem 2rem 6rem;
-            text-align: center;
             min-height: 100vh;
             display: flex;
-            align-items: flex-start;
+            flex-direction: column;
             justify-content: center;
-        }
-
-        .hero-content {
-            max-width: 800px;
+            padding: 0 48px;
+            max-width: 860px;
             margin: 0 auto;
-            padding-top: 4rem;
         }
-
-        .hero-logo {
-            max-width: 280px;
-            display: block;
-            margin: 0 auto 1.5rem auto;
+        .hero-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--accent);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 24px;
         }
-
         .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            color: var(--dark-gray);
-            margin-bottom: 1.5rem;
-            line-height: 1.2;
-            letter-spacing: -1px;
-        }
-
-        .hero .highlight {
-            color: var(--primary-blue);
-            background: linear-gradient(135deg, var(--primary-blue), #42A5F5);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero .subtitle {
-            font-size: 1.3rem;
-            color: var(--text-light);
-            margin-bottom: 3rem;
-            font-weight: 400;
-        }
-
-        .cta-button {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--primary-blue), #42A5F5);
-            color: var(--white);
-            padding: 1rem 2.5rem;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(30, 136, 229, 0.3);
-        }
-
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(30, 136, 229, 0.4);
-        }
-
-        /* Sections */
-        .section {
-            padding: 6rem 2rem;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .section-title {
-            font-size: 2.5rem;
+            font-size: clamp(2.2rem, 5vw, 3.5rem);
             font-weight: 700;
-            text-align: center;
-            margin-bottom: 3rem;
-            color: var(--dark-gray);
+            color: var(--text);
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+            margin-bottom: 24px;
+        }
+        .hero h1 em {
+            font-style: normal;
+            color: var(--accent);
+        }
+        .hero-desc {
+            font-size: 17px;
+            color: var(--muted);
+            max-width: 560px;
+            line-height: 1.75;
+            margin-bottom: 40px;
+        }
+        .hero-cta {
+            display: inline-block;
+            padding: 12px 28px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: border-color 0.2s, color 0.2s;
+        }
+        .hero-cta:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .hero-stats {
+            display: flex;
+            gap: 48px;
+            margin-top: 64px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border);
+        }
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 24px;
+            font-weight: 500;
+            color: var(--text);
+        }
+        .stat-label {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 4px;
         }
 
-        /* About Section */
-        .about {
-            background: var(--light-gray);
-        }
-
-        .about-content {
-            text-align: center;
-            max-width: 700px;
+        /* ── SECTION ── */
+        section {
+            padding: 96px 48px;
+            max-width: 1100px;
             margin: 0 auto;
         }
-
-        .about-content p {
-            font-size: 1.2rem;
-            color: var(--text-light);
-            margin-bottom: 1.5rem;
+        .section-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+        .section-title {
+            font-size: clamp(1.6rem, 3vw, 2.2rem);
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+        }
+        .section-sub {
+            font-size: 15px;
+            color: var(--muted);
+            max-width: 540px;
+            margin-bottom: 56px;
         }
 
-        /* Projects Section */
+        /* ── PROJECT GRID ── */
         .projects-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-            gap: 3rem;
-            margin-top: 4rem;
-        }
-
-        .project-card {
-            background: var(--white);
-            padding: 3rem;
-            border-radius: 20px;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.08);
-            transition: all 0.4s ease;
-            border: 1px solid rgba(30, 136, 229, 0.1);
-            position: relative;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 12px;
             overflow: hidden;
         }
-
-        .project-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(135deg, var(--primary-blue), #42A5F5);
-        }
-
-        .project-card.featured::before {
-            background: linear-gradient(135deg, var(--accent-green), #34D399);
-        }
-
-        .project-card.innovation::before {
-            background: linear-gradient(135deg, var(--accent-purple), #A78BFA);
-        }
-
-        .project-card.public::before {
-            background: linear-gradient(135deg, var(--accent-orange), #FBBF24);
-        }
-
-        .project-card:hover {
-            transform: translateY(-15px);
-            box-shadow: 0 25px 70px rgba(0,0,0,0.15);
-            border-color: var(--primary-blue);
-        }
-
-        .project-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .project-icon {
-            font-size: 2.5rem;
-            margin-right: 1rem;
-        }
-
-        .project-card h3 {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: var(--dark-gray);
-            margin-bottom: 0.5rem;
-        }
-
-        .project-card .url {
-            color: var(--primary-blue);
-            font-weight: 600;
-            font-size: 0.95rem;
-            margin-bottom: 1.5rem;
-            display: block;
-            opacity: 0.8;
-        }
-
-        .project-tagline {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--primary-blue);
-            margin-bottom: 1rem;
-            font-style: italic;
-        }
-
-        .project-card p {
-            color: var(--text-light);
-            margin-bottom: 2.5rem;
-            line-height: 1.7;
-            font-size: 1rem;
-        }
-
-        .project-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--white);
-            background: linear-gradient(135deg, var(--primary-blue), #42A5F5);
-            text-decoration: none;
-            font-weight: 700;
-            padding: 0.8rem 2rem;
-            border-radius: 30px;
-            transition: all 0.3s ease;
-            font-size: 0.95rem;
-        }
-
-        .project-link:hover {
-            transform: translateX(5px);
-            box-shadow: 0 8px 25px rgba(30, 136, 229, 0.3);
-        }
-
-        /* Badge System */
-        .project-badges {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .badge {
-            padding: 0.3rem 0.8rem;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .badge.flagship {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--accent-green);
-        }
-
-        .badge.innovation {
-            background: rgba(139, 92, 246, 0.1);
-            color: var(--accent-purple);
-        }
-
-        .badge.pioneer {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--accent-orange);
-        }
-
-        /* Contact Section */
-        .contact {
-            background: var(--dark-gray);
-            color: var(--white);
-        }
-
-        .contact .section-title {
-            color: var(--white);
-        }
-
-        .contact-content {
-            text-align: center;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .contact-form {
-            display: grid;
-            gap: 1.5rem;
-            margin-top: 3rem;
-        }
-
-        .form-group {
+        .project-card {
+            background: var(--white);
+            padding: 36px;
             display: flex;
             flex-direction: column;
+            gap: 16px;
+            transition: background 0.2s;
         }
-
-        .form-group label {
-            margin-bottom: 0.5rem;
+        .project-card:hover { background: var(--bg2); }
+        .project-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--accent);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .project-card h3 {
+            font-size: 18px;
             font-weight: 600;
-            color: #E9ECEF;
+            color: var(--text);
+            letter-spacing: -0.01em;
         }
-
-        .form-group input,
-        .form-group textarea {
-            padding: 1rem;
-            border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 10px;
-            background: rgba(255,255,255,0.05);
-            color: var(--white);
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
+        .project-card p {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.7;
+            flex: 1;
         }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary-blue);
+        .project-card p strong {
+            color: var(--text);
+            font-weight: 500;
         }
-
-        .form-group input::placeholder,
-        .form-group textarea::placeholder {
-            color: rgba(255,255,255,0.6);
+        .project-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
         }
-
-        .submit-btn {
-            background: linear-gradient(135deg, var(--primary-blue), #42A5F5);
-            color: var(--white);
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 1rem;
+        .meta-chip {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: #1e293b;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 5px 12px;
+            font-weight: 500;
+            letter-spacing: 0.01em;
         }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(30, 136, 229, 0.3);
+        .project-links {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-top: 12px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
         }
-
-        .contact-email {
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .contact-email a {
-            color: var(--primary-blue);
+        .project-link {
+            font-size: 13px;
+            color: var(--accent);
             text-decoration: none;
             font-weight: 600;
-            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s, transform 0.2s;
+            position: relative;
+            animation: subtle-pulse 3s ease-in-out infinite;
+        }
+        @keyframes subtle-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .project-link:hover {
+            color: var(--accent2);
+            transform: translateX(3px);
+            animation: none;
+        }
+        .project-link::after {
+            content: '→';
+            font-size: 14px;
+            transition: transform 0.2s;
+        }
+        .project-link:hover::after {
+            transform: translateX(2px);
+        }
+        .link-sep {
+            color: var(--border);
+            font-size: 12px;
+        }
+        .project-logo {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            height: 70px;
+            width: auto;
+            object-fit: contain;
+        }
+        .project-logo.large {
+            height: 100px;
         }
 
-        /* Footer */
+        /* ── ABOUT ── */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+            align-items: start;
+        }
+        .about-text p {
+            font-size: 15px;
+            color: var(--muted);
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+        .about-text p strong { color: var(--text); font-weight: 500; }
+        .about-skills {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .skill-row {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+        }
+        .skill-row:last-child { border-bottom: none; }
+        .skill-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+        .skill-desc {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        /* ── CONTACT ── */
+        .contact-inner {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 56px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+            align-items: center;
+        }
+        .contact-left h2 {
+            font-size: clamp(1.4rem, 2.5vw, 2rem);
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+        }
+        .contact-left p {
+            font-size: 15px;
+            color: var(--muted);
+            line-height: 1.75;
+        }
+        .contact-right {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .contact-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .contact-item-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--accent);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        .contact-item a {
+            font-size: 15px;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .contact-item a:hover { color: var(--accent); }
+
+        /* ── FOOTER ── */
         footer {
-            background: var(--dark-gray);
-            color: var(--white);
-            text-align: center;
-            padding: 2rem;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            border-top: 1px solid var(--border);
+            padding: 32px 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        footer p {
+            font-size: 13px;
+            color: var(--muted);
+        }
+        .footer-demo {
+            font-size: 13px;
+            color: var(--muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .footer-demo:hover { color: var(--accent); }
+
+        /* ── DIVIDER ── */
+        .full-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 0;
         }
 
-        /* Responsive */
+        /* ── RESPONSIVE ── */
         @media (max-width: 768px) {
-            .nav-menu {
-                display: none;
-            }
-
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .hero .subtitle {
-                font-size: 1.1rem;
-            }
-
-            .projects-grid {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-
-            .project-card {
-                padding: 2rem;
-            }
-
-            nav {
-                padding: 1rem;
-            }
-
-            .section {
-                padding: 4rem 1rem;
-            }
-
-            .hero {
-                padding: 6rem 1rem 4rem;
-            }
-
-            .hero-content {
-                padding-top: 2rem;
-            }
-        }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .animate-fade-in {
-            animation: fadeInUp 0.8s ease-out;
-        }
-
-        .scroll-animate {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.6s ease-out;
-        }
-
-        .scroll-animate.visible {
-            opacity: 1;
-            transform: translateY(0);
+            nav { padding: 16px 24px; }
+            .nav-links { display: none; }
+            .hero { padding: 0 24px; }
+            .hero-stats { gap: 32px; flex-wrap: wrap; }
+            section { padding: 64px 24px; }
+            .projects-grid { grid-template-columns: 1fr; }
+            .about-grid { grid-template-columns: 1fr; gap: 40px; }
+            .contact-inner { grid-template-columns: 1fr; padding: 36px 24px; gap: 40px; }
+            footer { flex-direction: column; gap: 12px; padding: 24px; }
         }
     </style>
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <nav>
-            <div class="logo-container">
-                <svg class="logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Brain hemisphere (left side) -->
-                    <path d="M60 60 C40 60, 25 75, 25 95 C25 115, 40 130, 60 130 C70 130, 80 125, 85 115 L85 75 C80 65, 70 60, 60 60 Z" fill="none" stroke="#2C3E50" stroke-width="4"/>
-                    
-                    <!-- Neural connections in brain -->
-                    <circle cx="45" cy="80" r="3" fill="#2C3E50"/>
-                    <circle cx="50" cy="100" r="3" fill="#2C3E50"/>
-                    <circle cx="65" cy="90" r="3" fill="#2C3E50"/>
-                    <circle cx="70" cy="110" r="3" fill="#2C3E50"/>
-                    
-                    <!-- Connections between neurons -->
-                    <line x1="45" y1="80" x2="50" y2="100" stroke="#2C3E50" stroke-width="2"/>
-                    <line x1="50" y1="100" x2="65" y2="90" stroke="#2C3E50" stroke-width="2"/>
-                    <line x1="65" y1="90" x2="70" y2="110" stroke="#2C3E50" stroke-width="2"/>
-                    <line x1="45" y1="80" x2="65" y2="90" stroke="#2C3E50" stroke-width="2"/>
-                    
-                    <!-- Geometric AI structure (letter A shape) -->
-                    <path d="M100 140 L130 60 L160 140 M110 115 L150 115" fill="none" stroke="#1E88E5" stroke-width="5" stroke-linejoin="round"/>
-                    
-                    <!-- Network nodes in the A -->
-                    <polygon points="130,70 135,75 130,80 125,75" fill="#1E88E5"/>
-                    <polygon points="115,105 120,110 115,115 110,110" fill="#1E88E5"/>
-                    <polygon points="145,105 150,110 145,115 140,110" fill="#1E88E5"/>
-                    <polygon points="105,130 110,135 105,140 100,135" fill="#1E88E5"/>
-                    <polygon points="155,130 160,135 155,140 150,135" fill="#1E88E5"/>
-                    
-                    <!-- Connecting lines between geometric nodes -->
-                    <line x1="130" y1="75" x2="115" y2="110" stroke="#1E88E5" stroke-width="2"/>
-                    <line x1="130" y1="75" x2="145" y2="110" stroke="#1E88E5" stroke-width="2"/>
-                    <line x1="115" y1="110" x2="105" y2="135" stroke="#1E88E5" stroke-width="2"/>
-                    <line x1="145" y1="110" x2="155" y2="135" stroke="#1E88E5" stroke-width="2"/>
-                    
-                    <!-- Bridge connection between brain and AI -->
-                    <line x1="85" y1="95" x2="100" y2="100" stroke="#1E88E5" stroke-width="3" stroke-dasharray="5,5"/>
-                    <circle cx="92" cy="97" r="2" fill="#1E88E5"/>
-                </svg>
-                <span class="company-name">ADEPT <span class="ai">AI</span></span>
+
+    <!-- NAV -->
+    <nav id="main-nav">
+        <a href="/" class="nav-brand">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Adept AI" style="height:28px; width:auto; vertical-align:middle; margin-right:10px;">
+            Łukasz Piskorski <span>/ Adept AI</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#work">Work</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <div class="hero">
+        <p class="hero-label">AI Systems Architect &amp; Founder</p>
+        <h1>I build AI systems<br>that see what standard<br>tools <em>miss.</em></h1>
+        <p class="hero-desc">
+            From detecting lost purchase intent in real time, to long-term memory engines for AI companions —
+            I design and ship end-to-end AI systems solo, from architecture to production.
+        </p>
+        <a href="#work" class="hero-cta">See the work</a>
+
+        <div class="hero-stats">
+            <div>
+                <div class="stat-value">92.3%</div>
+                <div class="stat-label">accuracy on new domain<br>(169/183 classifications)</div>
             </div>
-            <ul class="nav-menu">
-                <li><a href="#about">O nas</a></li>
-                <li><a href="#projects">Projekty</a></li>
-                <li><a href="#contact">Kontakt</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <section class="hero">
-        <div class="hero-content animate-fade-in">
-            <img src="{{ url_for('static', filename='logo.png') }}" alt="Adept AI Logo" class="hero-logo">
-            <h1>Budujemy <span class="highlight">Dedykowane</span> Systemy AI</h1>
-            <p class="subtitle">Które Rozwiązują Twoje Najtrudniejsze Problemy Biznesowe</p>
-            <a href="#projects" class="cta-button">Zobacz Nasze Systemy</a>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section id="about" class="section about">
-        <div class="container">
-            <h2 class="section-title scroll-animate">Haker Rzeczywistości</h2>
-            <div class="about-content">
-                <p class="scroll-animate">Specjalizujemy się w tworzeniu systemów AI, które przekształcają chaotyczne procesy biznesowe w precyzyjnie działające mechanizmy. Każdy projekt to indywidualnie zaprojektowana broń przeciwko nieefektywności.</p>
-                <p class="scroll-animate">Nie oferujemy gotowych rozwiązań. Budujemy dedykowane systemy, które rozwiązują konkretne problemy konkretnych firm.</p>
+            <div>
+                <div class="stat-value">&lt;60ms</div>
+                <div class="stat-label">real-time intent<br>classification latency</div>
+            </div>
+            <div>
+                <div class="stat-value">4 mo.</div>
+                <div class="stat-label">Skankran — built from zero<br>with no prior coding</div>
             </div>
         </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section id="projects" class="section">
-        <div class="container">
-            <h2 class="section-title scroll-animate">Nasze Innowacje</h2>
-            <div class="projects-grid">
-                
-                <!-- Flagship Project - Adept Engine -->
-                <div class="project-card featured scroll-animate">
-    <div class="project-badges">
-        <span class="badge flagship">Flagship</span>
     </div>
-    <div class="project-header">
-        <img src="{{ url_for('static', filename='adept.png') }}" alt="Adept AI Logo" style="width: 90px; height: 90px; object-fit: contain;">
-        <div>
-            <h3>System Wykrywania Utraconego Popytu</h3>
-            <span class="url">Zobacz Ile Pieniędzy Tracisz</span>
-        </div>
-    </div>
-    <p><strong>Pierwszy w Polsce</strong> system analityczny, który wykrywa utracony popyt <strong>w czasie rzeczywistym, <em>zanim</em> klient wciśnie Enter.</strong></p>
 
-<p>To więcej niż chatbot. Każde "brak produktu" = stracony klient i konkretna kwota w złotówkach. Nasz <strong>uniwersalny silnik analityczny Adept Engine</strong> analizuje KAŻDE zapytanie – rozumie <strong>specjalistyczny żargon branżowy</strong>, koryguje <strong>literówki</strong> i precyzyjnie odróżnia przypadkowy bełkot od sygnału, że w Twojej ofercie brakuje produktu wartego tysiące złotych.</p>
+    <div class="full-divider"></div>
 
-<p><strong>Większość generycznych systemów tego nie potrafi. Nasz tak.</strong></p>
-<a href="/elektrobot-prototype" class="project-link">Zobacz Demo w Akcji →</a>
-</div>
+    <!-- WORK -->
+    <section id="work">
+        <p class="section-label">Work</p>
+        <h2 class="section-title">Four systems. One engineer.</h2>
+        <p class="section-sub">Each project started as a problem no off-the-shelf tool could solve.</p>
 
+        <div class="projects-grid">
 
-                <!-- Innovation Medal - Skankran -->
-                <!-- Innovation Medal - Skankran -->
-<div class="project-card innovation scroll-animate">
-    <div class="project-badges">
-        <span class="badge innovation">Medal Honoru</span>
-    </div>
-    <div class="project-header">
-        <img src="{{ url_for('static', filename='skankran.svg') }}" alt="Skankran Logo" style="width: 120px; height: 120px; object-fit: contain;">
-        <div>
-            <h3>Skankran.pl</h3>
-            <span class="url">skankran.pl</span>
-        </div>
-    </div>
-    <p class="project-tagline">Pierwszy w Polsce System Analizy Jakości Wody Kranowej</p>
-    <p><strong>Skankran to kompleksowa platforma</strong>, która przełamała monopol na niezrozumiałe, rządowe dane o wodzie. Jako pierwsi w kraju (a możliwe że na świecie w tej skali): zdigitalizowaliśmy ręcznie dane z wielu miast oraz setek stacji uzdatniania wody, i <strong>dodaliśmy AquaBota</strong> - inteligentnego asystenta zdolnego do prowadzenia kontekstowych rozmów. Trenowany na wiedzy medycznej WHO/EPA. <strong>Rządowe raporty to chaos</strong> - różne formaty PDF, niekompletne dane, brak standaryzacji.   Nasz silnik nauczył się rozróżniać parametry niebezpieczne od irytujących i wiele więcej. Dodatkowo jest podłączony do API Gemini <strong>Wniosek: skoro poradziliśmy sobie z tym, Twoja baza produktowa to dla nas formalność.</strong></p>
-    <a href="https://skankran.pl" class="project-link" target="_blank">Zobacz Innowację</a>
-</div>
-
-                <!-- Public Sector - Gmina AI -->
-                <div class="project-card public scroll-animate">
-                    <div class="project-badges">
-                        <span class="badge pioneer">Pionier Sektora</span>
-                    </div>
-                    <div class="project-header">
-                        <span class="project-icon">🏛️</span>
-                        <div>
-                            <h3>Gmina-AI</h3>
-                            <span class="url">gmina-ai.pl</span>
-                        </div>
-                    </div>
-                    <p class="project-tagline">Inteligentny Asystent dla Administracji Publicznej</p>
-                    <p>Upraszczamy komunikację między urzędem a obywatelem. AI asystent, który rozumie biurokratyczny język i tłumaczy go na ludzki. 24/7 dostępność, zero kolejek, maksymalna efektywność.</p>
-                    <a href="https://gmina-ai.pl" class="project-link" target="_blank">Eksploruj Rozwiązanie</a>
+            <!-- LDI -->
+            <div class="project-card" style="position:relative;">
+                <img src="{{ url_for('static', filename='adept.png') }}" alt="Adept AI" class="project-logo">
+                <p class="project-tag">Flagship · Live</p>
+                <h3>LDI — Lost Demand Intelligence</h3>
+                <p>
+                    An analytics engine that classifies every e-commerce search query <strong>before the user presses Enter</strong>.
+                    It separates typos from genuine B2B intent, and detects the <strong>Gold Signal</strong> —
+                    when a user searches for an unavailable product then buys an alternative anyway.
+                    That's confirmed purchase intent on untracked inventory. The highest-value training signal in the system.
+                </p>
+                <div class="project-meta">
+                    <span class="meta-chip">Python</span>
+                    <span class="meta-chip">Flask</span>
+                    <span class="meta-chip">WebSocket</span>
+                    <span class="meta-chip">Semantic pipeline</span>
+                    <span class="meta-chip">JSONL export</span>
                 </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="section contact">
-        <div class="container">
-            <h2 class="section-title scroll-animate">Gotowy na Transformację?</h2>
-            <div class="contact-content">
-                <form class="contact-form scroll-animate">
-                    <div class="form-group">
-                        <label for="name">Imię i Nazwisko</label>
-                        <input type="text" id="name" name="name" placeholder="Jan Kowalski" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Adres Email</label>
-                        <input type="email" id="email" name="email" placeholder="jan@firma.pl" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="company">Firma</label>
-                        <input type="text" id="company" name="company" placeholder="Nazwa firmy">
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Opisz Swój Problem Biznesowy</label>
-                        <textarea id="message" name="message" rows="5" placeholder="Jakie procesy chcesz zautomatyzować? Jakiego rodzaju system potrzebujesz?" required></textarea>
-                    </div>
-                    <button type="submit" class="submit-btn">Rozpocznij Współpracę</button>
-                </form>
-                <div class="contact-email scroll-animate">
-                    <p>Lub napisz bezpośrednio: <a href="mailto:kontakt@adept-ai.pl">kontakt@adept-ai.pl</a></p>
+                <div class="project-links">
+                    <a href="/live-demo" class="project-link">Live demo</a>
+                    <span class="link-sep">·</span>
+                    <a href="/ldi" class="project-link">Architecture</a>
                 </div>
             </div>
+
+            <!-- ANIMA -->
+            <div class="project-card">
+                <p class="project-tag">Innovation · Production VPS</p>
+                <h3>ANIMA — RAG Memory Engine</h3>
+                <p>
+                    A long-term memory system for AI companions. Three-channel RAG architecture:
+                    episodic memories, behavioral character core, external knowledge — all re-ranked by
+                    <strong>recency decay, semantic similarity, and keyword boost</strong>.
+                    Supersede logic rotates stale facts without losing history.
+                    Powers a personal AI companion running 24/7 on a private VPS with scheduled emotional insights.
+                </p>
+                <div class="project-meta">
+                    <span class="meta-chip">ChromaDB</span>
+                    <span class="meta-chip">Gemini 2.5</span>
+                    <span class="meta-chip">Vector reranker</span>
+                    <span class="meta-chip">Flask + WebSocket</span>
+                    <span class="meta-chip">systemd</span>
+                </div>
+                <div class="project-links">
+                    <a href="/anima" class="project-link">Architecture</a>
+                </div>
+            </div>
+
+            <!-- SKANKRAN -->
+            <div class="project-card" style="position:relative;">
+                <img src="{{ url_for('static', filename='skankran.svg') }}" alt="Skankran" class="project-logo large">
+                <p class="project-tag">Origin Story · Public</p>
+                <h3>Skankran</h3>
+                <p>
+                    Built in <strong>4 months from zero</strong> — before I could code.
+                    Poland's first water quality analysis platform: digitized municipal water station data,
+                    trained a conversational AI on WHO/EPA medical documentation,
+                    and connected it to the Gemini API for contextual health analysis.
+                    The project that started everything.
+                    <strong>If we handled government PDF chaos, your product catalog is trivial.</strong>
+                </p>
+                <div class="project-meta">
+                    <span class="meta-chip">Gemini API</span>
+                    <span class="meta-chip">WHO/EPA corpus</span>
+                    <span class="meta-chip">Flask</span>
+                    <span class="meta-chip">First in Poland</span>
+                </div>
+                <div class="project-links">
+                    <a href="https://skankran.pl" class="project-link" target="_blank" rel="noopener">Visit site</a>
+                </div>
+            </div>
+
+            <!-- GEMINI XHR HACK -->
+            <div class="project-card">
+                <p class="project-tag">Hacker Card · Research</p>
+                <h3>Gemini XHR Stream Injection</h3>
+                <p>
+                    Reverse-engineered the XHR streaming protocol of an undocumented Gemini endpoint
+                    to inject a custom RAG context layer — without an official API key.
+                    <strong>The observation:</strong> the model's response quality changed measurably
+                    depending on the injected context structure.
+                    This became the experimental foundation for the ANIMA retrieval architecture.
+                </p>
+                <div class="project-meta">
+                    <span class="meta-chip">XHR reverse engineering</span>
+                    <span class="meta-chip">Stream parsing</span>
+                    <span class="meta-chip">RAG prototyping</span>
+                </div>
+                <div class="project-links">
+                    <a href="#contact" class="project-link">Ask me about it</a>
+                </div>
+            </div>
+
         </div>
     </section>
 
-    <!-- Footer -->
+    <div class="full-divider"></div>
+
+    <!-- ABOUT -->
+    <section id="about">
+        <p class="section-label">About</p>
+        <h2 class="section-title">Architect of Intent</h2>
+        <div class="about-grid">
+            <div class="about-text">
+                <p>
+                    I'm <strong>Łukasz Piskorski</strong>, based in Gorzów Wielkopolski, Poland.
+                    I design AI systems end-to-end — architecture, backend, frontend, deployment — solo.
+                </p>
+                <p>
+                    My work starts from a problem that existing tools can't solve, and ends when the system
+                    is running in production. I don't prototype and hand off. I ship.
+                </p>
+                <p>
+                    LDI and ANIMA are both live systems, not demos. The accuracy numbers and latency
+                    figures on this page are measured, not estimated.
+                </p>
+                <p>
+                    I'm open to conversations about <strong>acqui-hire, senior AI roles</strong>,
+                    and research collaborations where the problem is genuinely hard.
+                </p>
+            </div>
+            <div class="about-skills">
+                <div class="skill-row">
+                    <div class="skill-name">AI Systems Design</div>
+                    <div class="skill-desc">RAG pipelines, intent classification, reward scoring, semantic validation, fine-tuning data pipelines</div>
+                </div>
+                <div class="skill-row">
+                    <div class="skill-name">Backend</div>
+                    <div class="skill-desc">Python, Flask, SQLite, WebSocket, REST APIs, systemd services, VPS deployment</div>
+                </div>
+                <div class="skill-row">
+                    <div class="skill-name">LLM Integration</div>
+                    <div class="skill-desc">Gemini 2.5 Flash (thinking mode), prompt engineering, JSON mode, streaming, context management</div>
+                </div>
+                <div class="skill-row">
+                    <div class="skill-name">Vector Search</div>
+                    <div class="skill-desc">ChromaDB, custom rerankers, MMR diversity, recency decay, multi-collection architectures</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="full-divider"></div>
+
+    <!-- CONTACT -->
+    <section id="contact">
+        <div class="contact-inner">
+            <div class="contact-left">
+                <h2>Let's talk about<br>a hard problem.</h2>
+                <p>
+                    If you're building something where standard AI tooling isn't enough —
+                    or you're evaluating LDI for your stack — I'd like to hear it.
+                </p>
+            </div>
+            <div class="contact-right">
+                <div class="contact-item">
+                    <span class="contact-item-label">Email</span>
+                    <a href="mailto:lukasz@adeptai.pl">lukasz@adeptai.pl</a>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-item-label">LinkedIn</span>
+                    <a href="https://www.linkedin.com/in/%C5%82ukasz-piskorski-93636a37b/" target="_blank" rel="noopener">linkedin.com/in/łukasz-piskorski</a>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-item-label">Live demo</span>
+                    <a href="/live-demo">adeptai.pl/live-demo</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
     <footer>
-        <p>&copy; 2025 ADEPT AI. Przekuwamy Chaos w Klarowność.</p>
+        <p>&copy; 2026 Adept AI · Łukasz Piskorski</p>
+        <a href="/live-demo" class="footer-demo">LDI live demo →</a>
     </footer>
 
     <script>
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Scroll animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.scroll-animate').forEach(el => {
-            observer.observe(el);
-        });
-
-        // Header background on scroll
+        // Nav scroll state
+        const nav = document.getElementById('main-nav');
         window.addEventListener('scroll', () => {
-            const header = document.querySelector('header');
-            if (window.scrollY > 100) {
-                header.style.background = 'rgba(255, 255, 255, 0.98)';
-                header.style.backdropFilter = 'blur(20px)';
-            } else {
-                header.style.background = 'var(--white)';
-                header.style.backdropFilter = 'none';
-            }
+            nav.classList.toggle('scrolled', window.scrollY > 40);
         });
-
-        // Form submission
-        document.querySelector('.contact-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Get form data
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData);
-            
-            // Show success message (in real implementation, send to server)
-            alert('Dziękujemy za wiadomość! Skontaktujemy się z Państwem wkrótce.');
-            this.reset();
-        });
-
-        // Add stagger animation to project cards
-        setTimeout(() => {
-            document.querySelectorAll('.project-card').forEach((card, index) => {
-                card.style.animationDelay = `${index * 0.3}s`;
-            });
-        }, 100);
     </script>
+
 </body>
 </html>

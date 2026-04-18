@@ -87,10 +87,8 @@ def update_passwords():
     
     print("\n📋 Aktywni użytkownicy w systemie:")
     for username, role in users:
-        if username == 'admin':
-            print(f"  👤 {username} ({role}) - hasło: Nokia5310!")
-        elif username == 'demo':
-            print(f"  👤 {username} ({role}) - hasło: demo123")
+        if username in ('admin', 'demo'):
+            print(f"  👤 {username} ({role}) - hasło ustawione")
         else:
             print(f"  👤 {username} ({role})")
     

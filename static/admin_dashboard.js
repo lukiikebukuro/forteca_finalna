@@ -211,6 +211,54 @@ class AdminDashboard {
     }
     
     /**
+     * Załaduj Active Sessions z serwera (Passive Radar)
+     */
+    async loadActiveSessionsFromServer() {
+        try {
+            const response = await fetch('/api/admin/active-sessions');
+            const result = await response.json();
+            
+            if (result.status === 'success' && result.sessions) {
+                this.activeSessions = result.sessions.map(session => ({
+                    ...session,
+                    timestamp: new Date(session.timestamp)
+                }));
+                console.log(`✅ Załadowano ${this.activeSessions.length} aktywnych sesji`);
+                this.renderPassiveRadar();
+            } else {
+                this.activeSessions = [];
+                console.log('ℹ️ Brak aktywnych sesji');
+            }
+        } catch (e) {
+            console.error('❌ Błąd ładowania sesji:', e);
+            this.activeSessions = [];
+        }
+    }
+    
+    /**
+     * Zapisz Active Sessions na serwer
+     */
+    async saveActiveSessionsToServer() {
+        try {
+            const response = await fetch('/api/admin/save-state', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    state_key: 'active_sessions',
+                    data: this.activeSessions
+                })
+            });
+            
+            const result = await response.json();
+            if (result.status === 'success') {
+                console.log('✅ Active Sessions zapisane');
+            }
+        } catch (e) {
+            console.error('❌ Błąd zapisu sesji:', e);
+        }
+    }
+    
+    /**
      * ============================================
      * INICJALIZACJA
      * ============================================
@@ -224,6 +272,7 @@ class AdminDashboard {
             await this.loadHotLeadsFromServer();
             await this.loadCompaniesFromServer();
             await this.loadLogHistoryFromServer();
+            await this.loadActiveSessionsFromServer();
             
             // POTEM połącz WebSocket i załaduj dzisiejsze dane
             await this.connectWebSocket();
@@ -232,8 +281,9 @@ class AdminDashboard {
             // Przelicz metryki po załadowaniu
             this.updateVisitorStats({});
             
-            // 🔧 FIX 3: Initial render dla Matrix
+            // 🔧 FIX 3: Initial render dla Matrix i Passive Radar
             this.renderLogHistory();
+            this.renderPassiveRadar();
             
             // Odświeżaj co 30 sekund
             setInterval(() => this.refreshStats(), 30000);
@@ -345,8 +395,8 @@ class AdminDashboard {
                         }
                     });
                     
-                    // Zapisz zmergowane firmy na serwerze
-                    await // this.saveCompaniesToServer(); // Backend zapisuje
+                    // Zapisz zmergowane firmy na serwerze (Backend już zapisuje)
+                    // await this.saveCompaniesToServer();
                     
                     this.updateCompanyList(Array.from(this.companies.values()));
                 }
@@ -882,69 +932,75 @@ class AdminDashboard {
     handlePassiveRadarVisit(data) {
         console.log('🎯 PASSIVE RADAR: Dodaję wizytę do UI', data);
         
-        const container = document.getElementById('passiveRadarList');
-        if (!container) return;
+        // Dodaj do activeSessions (trwałe storage)
+        this.activeSessions.unshift({
+            session_id: data.session_id,
+            company: data.company || data.organization || 'Unknown',
+            city: data.city,
+            country: data.country,
+            status: data.status || 'Przegląda',
+            timestamp: new Date()
+        });
         
-        // Usuń placeholder jeśli istnieje
-        const emptyState = container.querySelector('.passive-radar-empty');
-        if (emptyState) {
-            emptyState.remove();
+        // Trzymaj tylko 20 ostatnich
+        if (this.activeSessions.length > 20) {
+            this.activeSessions = this.activeSessions.slice(0, 20);
         }
         
-        // Stwórz wpis
-        const item = document.createElement('div');
-        item.className = 'passive-radar-item new-entry';
-        item.dataset.sessionId = data.session_id;
+        // Zapisz na serwerze
+        this.saveActiveSessionsToServer();
         
-        const location = [data.city, data.country].filter(x => x && x !== 'Unknown').join(', ') || 'Unknown';
-        
-        // Określ klasę statusu
-        let statusClass = '';
-        if (data.status === 'Przegląda') statusClass = 'status-przeglada';
-        else if (data.status === 'Pisze') statusClass = 'status-pisze';
-        else if (data.status === 'Opuścił') statusClass = 'status-opuscil';
-        
-        item.innerHTML = `
-            <div class="passive-radar-header">
-                <div class="passive-radar-time">${data.timestamp}</div>
-                <div class="passive-radar-status ${statusClass}">${data.status}</div>
-            </div>
-            <div class="passive-radar-company">${this.escapeHtml(data.company)}</div>
-            <div class="passive-radar-location">📍 ${this.escapeHtml(location)}</div>
-        `;
-        
-        // Dodaj na początek listy
-        container.insertBefore(item, container.firstChild);
-        
-        // Trzymaj tylko ostatnie 5 wizyt
-        const items = container.querySelectorAll('.passive-radar-item');
-        if (items.length > 5) {
-            items[items.length - 1].remove();
-        }
-        
-        // Animacja: usuń klasę 'new-entry' po 600ms
-        setTimeout(() => {
-            item.classList.remove('new-entry');
-        }, 600);
-        
-        // INTEGRACJA: Jak ten sam gość zacznie pisać, zaktualizuj status
-        // (będziemy to robić przez session_id)
-        this.trackPassiveRadarSession(data.session_id, data.company);
+        // Renderuj w DOM
+        this.renderPassiveRadar();
     }
     
     /**
-     * 🎯 PASSIVE RADAR: Śledź sesję żeby móc zaktualizować status
+     * 🎯 PASSIVE RADAR: Renderuj listę sesji (po załadowaniu z serwera)
      */
-    trackPassiveRadarSession(sessionId, company) {
-        if (!this.passiveRadarSessions) {
-            this.passiveRadarSessions = new Map();
+    renderPassiveRadar() {
+        const container = document.getElementById('passiveRadarList');
+        if (!container) return;
+        
+        // Wyczyść kontener
+        container.innerHTML = '';
+        
+        if (this.activeSessions.length === 0) {
+            container.innerHTML = `
+                <div class="passive-radar-empty">
+                    Czekam na pierwsze odwiedziny...<br>
+                    <small>Dane pojawią się natychmiast po wejściu klienta</small>
+                </div>
+            `;
+            return;
         }
         
-        this.passiveRadarSessions.set(sessionId, {
-            company: company,
-            status: 'Przegląda',
-            timestamp: new Date()
+        // Renderuj ostatnie 5 sesji
+        this.activeSessions.slice(0, 5).forEach(session => {
+            const item = document.createElement('div');
+            item.className = 'passive-radar-item';
+            item.dataset.sessionId = session.session_id;
+            
+            const location = [session.city, session.country].filter(x => x && x !== 'Unknown').join(', ') || 'Unknown';
+            const timestamp = this.timeAgo(session.timestamp);
+            
+            let statusClass = '';
+            if (session.status === 'Przegląda') statusClass = 'status-przeglada';
+            else if (session.status === 'Pisze') statusClass = 'status-pisze';
+            else if (session.status === 'Opuścił') statusClass = 'status-opuscil';
+            
+            item.innerHTML = `
+                <div class="passive-radar-header">
+                    <div class="passive-radar-time">${timestamp}</div>
+                    <div class="passive-radar-status ${statusClass}">${session.status}</div>
+                </div>
+                <div class="passive-radar-company">${this.escapeHtml(session.company)}</div>
+                <div class="passive-radar-location">📍 ${this.escapeHtml(location)}</div>
+            `;
+            
+            container.appendChild(item);
         });
+        
+        console.log(`✅ PASSIVE RADAR: Wyrenderowano ${this.activeSessions.length} sesji`);
     }
     
     /**
@@ -956,6 +1012,15 @@ class AdminDashboard {
         
         console.log(`🟢 RADAR: Updating session ${sessionId} to status "${newStatus}"`);
         
+        // Zaktualizuj w activeSessions
+        const session = this.activeSessions.find(s => s.session_id === sessionId);
+        if (session) {
+            session.status = newStatus;
+            session.timestamp = new Date(); // Aktualizuj czas
+            this.saveActiveSessionsToServer();
+        }
+        
+        // Zaktualizuj w DOM
         const item = document.querySelector(`.passive-radar-item[data-session-id="${sessionId}"]`);
         
         if (item) {
@@ -978,30 +1043,10 @@ class AdminDashboard {
                     statusBadge.classList.add('status-opuscil');
                 }
                 
-                // Kolor animacji zależny od statusu
-                let bgColor = 'rgba(59, 130, 246, 0.25)';  // Niebieski dla "Pisze"
-                if (newStatus === 'Opuścił') {
-                    bgColor = 'rgba(239, 68, 68, 0.25)';  // Czerwony dla "Opuścił"
-                } else if (newStatus === 'Przegląda') {
-                    bgColor = 'rgba(34, 197, 94, 0.25)';  // Zielony dla "Przegląda"
-                }
-                
-                // Dodaj animację zmiany
-                item.style.background = bgColor;
-                setTimeout(() => {
-                    item.style.background = 'rgba(255, 255, 255, 0.15)';
-                }, 500);
-                
                 console.log(`🎉 RADAR: Status updated successfully!`);
-            } else {
-                console.error(`❌ RADAR: Status badge not found in item`);
             }
         } else {
             console.error(`❌ RADAR: No item found for session ${sessionId}`);
-            console.log(`🔍 RADAR: Available sessions:`, 
-                Array.from(document.querySelectorAll('.passive-radar-item'))
-                    .map(el => el.dataset.sessionId)
-            );
         }
     }
     

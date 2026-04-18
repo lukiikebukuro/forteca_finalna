@@ -1,39 +1,23 @@
-import eventlet
-eventlet.monkey_patch()  # MUSI BYĆ JAKO PIERWSZE
-
-# DODAJ INICJALIZACJĘ BAZY PRZED IMPORTEM APP
+"""
+WSGI entry point for Gunicorn/Render deployment.
+All initialization happens in app.py on import.
+"""
 import os
-import sqlite3
 import subprocess
 import sys
 
+# Database initialization (first run only)
 if not os.path.exists('dashboard.db'):
-    print("[WSGI] Baza nie istnieje - tworzę...")
-    subprocess.run([sys.executable, 'createdb.py'])
-    subprocess.run([sys.executable, 'skrypthasla.py'])
-    print("[WSGI] Baza utworzona!")
+    print("[WSGI] Database does not exist - creating...")
+    subprocess.run([sys.executable, 'createdb.py'], check=True)
+    print("[WSGI] Database created. Run 'python skrypthasla.py' to set initial passwords.")
 
-# TERAZ IMPORTUJ APP
+# Import app - this triggers all initialization in app.py
 from app import app, socketio, bot, DatabaseManager
-from datetime import datetime, timedelta
 
-# Initialize on module load
-print("[WSGI] Initializing application...")
-
+print("[WSGI] Initializing bot data...")
 bot.initialize_data()
-DatabaseManager.initialize_database()
 
-try:
-    conn = sqlite3.connect('dashboard.db')
-    cursor = conn.cursor()
-    cutoff_date = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
-    cursor.execute('DELETE FROM events WHERE date(timestamp) < ?', (cutoff_date,))
-    conn.commit()
-    conn.close()
-    print("[WSGI] Database cleaned")
-except Exception as e:
-    print(f"[WSGI] Database error: {e}")
-
-print("[WSGI] Application initialized")
+print("[WSGI] Application initialized successfully")
 
 application = app
