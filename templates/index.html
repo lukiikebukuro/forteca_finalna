@@ -286,6 +286,76 @@
             height: 100px;
         }
 
+        /* ── VISION ── */
+        .vision-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+            align-items: start;
+        }
+        .vision-text p {
+            font-size: 16px;
+            color: #374151;
+            margin-bottom: 16px;
+            line-height: 1.7;
+        }
+        .vision-status {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--accent);
+            font-weight: 600;
+            margin-top: 24px;
+            padding: 10px 16px;
+            background: #ecfdf5;
+            border-left: 3px solid var(--accent);
+            border-radius: 0 6px 6px 0;
+        }
+        .vision-blocks {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .vision-block {
+            padding: 20px 24px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            position: relative;
+        }
+        .vision-block.live {
+            background: var(--white);
+        }
+        .vision-block.planned {
+            background: var(--bg2);
+            border-style: dashed;
+            opacity: 0.75;
+        }
+        .vision-block-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            position: absolute;
+            top: 16px;
+            right: 16px;
+        }
+        .vision-block.live .vision-block-label { color: var(--accent); }
+        .vision-block.planned .vision-block-label { color: var(--muted); }
+        .vision-block-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+        .vision-block.planned .vision-block-name { color: var(--muted); }
+        .vision-block-desc {
+            font-size: 13px;
+            color: var(--muted);
+        }
+        @media (max-width: 768px) {
+            .vision-grid { grid-template-columns: 1fr; gap: 40px; }
+        }
+
         /* ── ABOUT ── */
         .about-grid {
             display: grid;
@@ -599,6 +669,50 @@
                 <div class="skill-row">
                     <div class="skill-name">Vector Search</div>
                     <div class="skill-desc">ChromaDB, custom rerankers, MMR diversity, recency decay, multi-collection architectures</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="full-divider"></div>
+
+    <!-- VISION -->
+    <section id="vision">
+        <p class="section-label">What's next</p>
+        <h2 class="section-title">The stateful sales agent.</h2>
+        <div class="vision-grid">
+            <div class="vision-text">
+                <p>
+                    LDI captures intent before Enter. ANIMA remembers everything.
+                    The missing piece: an agent that connects them.
+                </p>
+                <p>
+                    A customer returns to your store. The agent already knows they searched
+                    for "Brembo E46 brake pads" three weeks ago and didn't find them.
+                    It knows their price range, their purchase history, their patterns.
+                    It doesn't ask — <strong>it already knows.</strong>
+                </p>
+                <p>
+                    Not a chatbot that answers questions.<br>
+                    A salesperson with perfect memory.
+                </p>
+                <p class="vision-status">Two thirds of this is already built.</p>
+            </div>
+            <div class="vision-blocks">
+                <div class="vision-block live">
+                    <span class="vision-block-label">Live</span>
+                    <div class="vision-block-name">LDI</div>
+                    <div class="vision-block-desc">Real-time intent classification before Enter</div>
+                </div>
+                <div class="vision-block live">
+                    <span class="vision-block-label">Live</span>
+                    <div class="vision-block-name">ANIMA</div>
+                    <div class="vision-block-desc">Sovereign long-term memory engine</div>
+                </div>
+                <div class="vision-block planned">
+                    <span class="vision-block-label">In design</span>
+                    <div class="vision-block-name">Agent layer</div>
+                    <div class="vision-block-desc">Connects intent + memory into autonomous action</div>
                 </div>
             </div>
         </div>
