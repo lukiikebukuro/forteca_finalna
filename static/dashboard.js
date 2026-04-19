@@ -767,7 +767,7 @@ class TacticalDashboard {
     }
     
     hideLoadingOverlay() {
-        const overlay = document.getElementById('loadingOverlay');
+        const overlay = document.getElementById('loading-overlay');
         if (overlay) {
             overlay.classList.add('hidden');
             setTimeout(() => {
