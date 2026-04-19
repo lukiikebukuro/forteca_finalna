@@ -18,7 +18,7 @@ from logging.handlers import RotatingFileHandler
 # ========================================
 DEBUG = os.getenv('FLASK_DEBUG', 'false').lower() == 'true'
 DATABASE_URL = os.getenv('DATABASE_URL', '')
-CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'https://adeptai.pl,http://localhost:5000,http://127.0.0.1:5000').split(',')
+CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'https://adeptai.pl,https://www.adeptai.pl,http://localhost:5000,http://127.0.0.1:5000').split(',')
 
 # ========================================
 # FLASK APP
