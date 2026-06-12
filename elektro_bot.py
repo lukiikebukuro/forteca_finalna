@@ -773,9 +773,39 @@ class EcommerceBot:
         """
         if not tokens or len(tokens) == 0:
             return True
-        
+
         query_lower = ' '.join(tokens).lower()
-        
+
+        # === PRIORYTET 0a: CROSS-DOMAIN — terminy motoryzacyjne w sklepie elektronicznym ===
+        # "iphone 13 klocki" → "iphone 13" to produkt elektroniczny, ale "klocki" to część samochodowa.
+        # Musi być przed early-return z kontekstu elektronicznego.
+        AUTOMOTIVE_ONLY_TERMS = {
+            'klocki', 'hamulce', 'hamulcowe', 'opony', 'amortyzator', 'amortyzatory',
+            'tarcza', 'tarcze', 'świeca', 'świece', 'alternator', 'rozrusznik',
+            'sprzęgło', 'skrzynia biegów', 'filtr oleju', 'olej silnikowy',
+            'akumulator samochodowy', 'felgi', 'zawieszenie',
+        }
+        if any(term in query_lower for term in AUTOMOTIVE_ONLY_TERMS):
+            print(f"[NONSENSE] [X] Termin motoryzacyjny w zapytaniu elektro: {query_lower}")
+            return True
+
+        # === PRIORYTET 0b: NIEREALISTYCZNE NUMERY MODELI (iPhone 30, Galaxy S99) ===
+        # Musi być przed screen-size exclusion bo "30" w "iphone 30" wyzwala tę pętlę jako "rozmiar ekranu".
+        # Znana marka + niemożliwy numer = halucynacja użytkownika, nie utracony popyt.
+        UNREALISTIC_MODEL_LIMITS = {
+            'iphone': 16,    # iPhone 16 = max (2026)
+            'galaxy s': 25,  # Galaxy S25 = max
+            'pixel': 9,      # Pixel 9 = max
+            'xiaomi': 14,    # Xiaomi 14 = max
+            'redmi': 14,
+        }
+        for brand_prefix, max_model in UNREALISTIC_MODEL_LIMITS.items():
+            if brand_prefix in query_lower:
+                for token in tokens:
+                    if token.isdigit() and int(token) > max_model:
+                        print(f"[NONSENSE] [X] Nierealistyczny model: {brand_prefix} {token} (max={max_model})")
+                        return True
+
         # === WYKLUCZ SPECYFIKACJE TECHNICZNE (nigdy nie filtruj!) ===
         # Pamięć: 128gb, 256gb, 512gb
         for token in tokens:
@@ -796,7 +826,7 @@ class EcommerceBot:
         
         # === SPRAWDŹ KONTEKST ELEKTRONICZNY ===
         has_context = self.has_electronics_context(tokens)
-        
+
         if has_context:
             print(f"[NONSENSE] [WARN]  Ma kontekst elektroniczny - łagodniejsze filtry")
             # Jeśli jest kontekst, nie filtruj agresywnie

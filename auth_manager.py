@@ -231,9 +231,9 @@ class User(UserMixin):
             if role in ['admin', 'debug'] and client_id is not None:
                 raise ValueError("Admin/debug role cannot have client_id")
             
-            # Generate password hash z solą
-            salt = secrets.token_hex(16)
-            password_hash = generate_password_hash(password + salt)
+            # werkzeug sam dodaje wewnętrzny salt — nie dokładamy własnego
+            salt = ''
+            password_hash = generate_password_hash(password)
             
             conn = sqlite3.connect('dashboard.db')
             cursor = conn.cursor()

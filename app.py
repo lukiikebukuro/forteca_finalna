@@ -60,6 +60,7 @@ with app.app_context():
     print("=" * 70)
 
     ensure_tables_exist()
+    setup_default_users()
 
     print("[STARTUP] DB initialized")
     init_database()

@@ -1272,9 +1272,20 @@ class EcommerceBot:
         """
         if not tokens:
             return True
-        
+
         query_text = ' '.join(tokens).lower()
-        
+
+        # === PRIORYTET 0: CROSS-DOMAIN — marki elektroniki użytkowej w sklepie moto ===
+        # "iphone 13 klocki" → "klocki" daje kontekst auto, ale iPhone nie jest częścią samochodową.
+        # Musi być przed product-code substring check bo token "13" jest podciągiem kodu "13.0460-7218".
+        CONSUMER_ELECTRONICS_BRANDS = {
+            'iphone', 'macbook', 'airpods', 'ipad',
+            'galaxy s', 'playstation', 'xbox', 'nintendo',
+        }
+        if any(brand in query_text for brand in CONSUMER_ELECTRONICS_BRANDS):
+            print(f"[NONSENSE] [X] Marka elektroniki użytkowej w zapytaniu moto: {query_text}")
+            return True
+
         # KROK 1: Wyklucz kody techniczne oleju
         technical_codes = ['5w30', '0w40', '5w40', '10w40', '0w30', '15w40', 'w30', 'w40', 'w50']
         if any(code in query_text for code in technical_codes):
