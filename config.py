@@ -1,6 +1,3 @@
-import eventlet
-eventlet.monkey_patch()
-
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -86,7 +83,7 @@ if not DEBUG:
 # SocketIO
 socketio = SocketIO(app,
     cors_allowed_origins=CORS_ORIGINS,
-    async_mode='eventlet',
+    async_mode='threading',
     logger=DEBUG,
     engineio_logger=DEBUG,
     ping_timeout=120,
