@@ -3,7 +3,7 @@ flask-socketio
 requests
 fuzzywuzzy
 python-Levenshtein
-gunicorn
+gunicorn==20.1.0
 eventlet==0.33.3
 flask-login==0.6.3
 Werkzeug>=2.0.0
