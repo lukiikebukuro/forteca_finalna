@@ -4,6 +4,7 @@ requests
 fuzzywuzzy
 python-Levenshtein
 gunicorn
+gevent
 flask-login==0.6.3
 Werkzeug>=2.0.0
 maxminddb

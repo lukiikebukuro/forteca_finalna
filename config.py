@@ -1,3 +1,6 @@
+from gevent import monkey
+monkey.patch_all()
+
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -83,7 +86,7 @@ if not DEBUG:
 # SocketIO
 socketio = SocketIO(app,
     cors_allowed_origins=CORS_ORIGINS,
-    async_mode='threading',
+    async_mode='gevent',
     logger=DEBUG,
     engineio_logger=DEBUG,
     ping_timeout=120,
