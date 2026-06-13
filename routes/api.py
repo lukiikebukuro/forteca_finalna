@@ -75,17 +75,15 @@ def public_chat():
     try:
         model_with_system = genai.GenerativeModel(
             'gemini-2.0-flash',
-            system_instruction=system_prompt or 'Odpowiadasz zwięźle po polsku.'
+            system_instruction=system_prompt or 'Odpowiadasz zwięźle po polsku.',
+            generation_config={'temperature': 0.0}
         )
         chat = model_with_system.start_chat(history=gemini_history)
-        response = chat.send_message(
-            user_message,
-            generation_config=genai.types.GenerationConfig(temperature=0.0)
-        )
+        response = chat.send_message(user_message)
         reply = response.text.strip()
     except Exception as e:
-        app.logger.error(f'[public_chat] Gemini error: {e}')
-        reply = 'Coś poszło nie tak. Napisz bezpośrednio: adeptai.pl'
+        app.logger.error(f'[public_chat] Gemini error: {type(e).__name__}: {e}')
+        reply = f'Bot chwilowo niedostępny. Napisz bezpośrednio: adeptai.pl'
 
     return jsonify({'reply': reply})
 
