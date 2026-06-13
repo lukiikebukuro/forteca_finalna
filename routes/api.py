@@ -31,7 +31,7 @@ try:
     _gemini_key = os.getenv('GEMINI_API_KEY', '')
     if _gemini_key:
         genai.configure(api_key=_gemini_key)
-        _gemini_model = genai.GenerativeModel('gemini-2.0-flash')
+        _gemini_model = genai.GenerativeModel('gemini-2.5-flash')
     else:
         _gemini_model = None
 except ImportError:
@@ -74,7 +74,7 @@ def public_chat():
 
     try:
         model_with_system = genai.GenerativeModel(
-            'gemini-2.0-flash',
+            'gemini-2.5-flash',
             system_instruction=system_prompt or 'Odpowiadasz zwięźle po polsku.',
             generation_config={'temperature': 0.0}
         )
