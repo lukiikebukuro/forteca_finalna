@@ -78,7 +78,10 @@ def public_chat():
             system_instruction=system_prompt or 'Odpowiadasz zwięźle po polsku.'
         )
         chat = model_with_system.start_chat(history=gemini_history)
-        response = chat.send_message(user_message)
+        response = chat.send_message(
+            user_message,
+            generation_config=genai.types.GenerationConfig(temperature=0.0)
+        )
         reply = response.text.strip()
     except Exception as e:
         app.logger.error(f'[public_chat] Gemini error: {e}')
