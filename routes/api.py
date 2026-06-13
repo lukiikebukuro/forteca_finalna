@@ -21,12 +21,70 @@ from dateutil import parser
 
 import sqlite3
 import json
+import os
 import time
 import uuid
 from datetime import datetime, timedelta
 
+try:
+    import google.generativeai as genai
+    _gemini_key = os.getenv('GEMINI_API_KEY', '')
+    if _gemini_key:
+        genai.configure(api_key=_gemini_key)
+        _gemini_model = genai.GenerativeModel('gemini-2.0-flash')
+    else:
+        _gemini_model = None
+except ImportError:
+    _gemini_model = None
+
 
 api_bp = Blueprint('api', __name__)
+
+
+# ========================================
+# PUBLIC CHAT — LDI readme page bot
+# ========================================
+
+@api_bp.route('/api/chat', methods=['POST'])
+@limiter.limit("30/minute")
+def public_chat():
+    """
+    Obsługuje czat na stronie ldi_readme.html.
+    Przyjmuje: message, history (lista {role,content}), system (string).
+    Zwraca: {reply: string}
+    """
+    if _gemini_model is None:
+        return jsonify({'reply': 'Bot chwilowo niedostępny. Napisz do nas: adeptai.pl'}), 503
+
+    data = request.get_json(silent=True) or {}
+    user_message = (data.get('message') or '').strip()
+    system_prompt = data.get('system', '')
+    raw_history = data.get('history', [])
+
+    if not user_message:
+        return jsonify({'reply': ''}), 400
+
+    # Buduj historię dla Gemini (pomijamy ostatnią wiadomość usera — wyślemy ją przez send_message)
+    gemini_history = []
+    turns = [h for h in raw_history if isinstance(h, dict)]
+    # raw_history zawiera już aktualną wiadomość usera na końcu — pomijamy ją
+    for turn in turns[:-1]:
+        role = 'user' if turn.get('role') == 'user' else 'model'
+        gemini_history.append({'role': role, 'parts': [turn.get('content', '')]})
+
+    try:
+        model_with_system = genai.GenerativeModel(
+            'gemini-2.0-flash',
+            system_instruction=system_prompt or 'Odpowiadasz zwięźle po polsku.'
+        )
+        chat = model_with_system.start_chat(history=gemini_history)
+        response = chat.send_message(user_message)
+        reply = response.text.strip()
+    except Exception as e:
+        app.logger.error(f'[public_chat] Gemini error: {e}')
+        reply = 'Coś poszło nie tak. Napisz bezpośrednio: adeptai.pl'
+
+    return jsonify({'reply': reply})
 
 
 # ========================================
