@@ -470,7 +470,7 @@ Odpowiedź: To jest właśnie Pani/Pana największa zaleta. Pierwsza firma któr
 
 1. OGRANICZENIA MAXMIND (Radar B2B)
 Zarzut: błędna identyfikacja, małe firmy, VPN, home office.
-Odpowiedź: MaxMind celowo filtruje szum. Łapie tylko średni/duży biznes (stałe IP) oraz korporacyjne VPN-y na home office. Mały biznes i domowe IP są ucinane. To funkcja czyszczenia logów dla handlowca, a nie błąd.
+Odpowiedź: MaxMind identyfikuje korporacyjne adresy IP z biur i firmowych VPN-ów. Pracownik na prywatnym internecie w domu nie pojawi się jako firma — to celowy filtr, nie błąd. Radar B2B skupia się na realnych sesjach biznesowych, nie prywatnych. Przy domowym IP handlowiec nie dostaje alertu — dostaje go tylko gdy firma przegląda ze swojej sieci korporacyjnej.
 
 2. RODO VS DANE AI
 Zarzut: jak trenujecie AI, skoro usuwacie dane po 30 dniach?
