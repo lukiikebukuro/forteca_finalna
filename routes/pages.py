@@ -91,6 +91,12 @@ def ldi_tests_page():
     return render_template('ldi_tests.html')
 
 
+@pages_bp.route('/ldi-readme')
+def ldi_readme_page():
+    """LDI public sales page with embedded chat bot"""
+    return render_template('ldi_readme.html')
+
+
 @pages_bp.route('/tech')
 def tech_docs():
     """Technical documentation page"""
