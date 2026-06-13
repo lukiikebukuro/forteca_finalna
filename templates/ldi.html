@@ -339,7 +339,7 @@
         <p class="doc-subtitle">
             LDI is a real-time classification engine that identifies purchase intent in e-commerce
             search queries — before the user presses Enter. This document explains the architecture
-            that achieved 92.3% accuracy on a new product domain without retraining.
+            that achieved 91% accuracy on a new product domain without retraining.
         </p>
         <div class="doc-meta">
             <span>Author: Łukasz Piskorski / Adept AI</span>
@@ -351,8 +351,8 @@
     <!-- STATS BAR -->
     <div class="stats-bar">
         <div class="stat-item">
-            <div class="stat-value">92.3%</div>
-            <div class="stat-label">Classification accuracy<br>169/183 test scenarios</div>
+            <div class="stat-value">91%</div>
+            <div class="stat-label">Classification accuracy<br>91/100 test scenarios</div>
         </div>
         <div class="stat-item">
             <div class="stat-value">&lt;60ms</div>
@@ -624,7 +624,7 @@ FuzzyWuzzy matcher (products.json) → confidence_level
     <!-- SECTION VI: TEST RESULTS -->
     <section class="doc-section">
         <p class="section-num">VI.</p>
-        <h2>Test results: 183 scenarios, 92.3% accuracy</h2>
+        <h2>Test results: 100 scenarios, 91% accuracy</h2>
 
         <h3>Test methodology</h3>
         <p>
@@ -651,42 +651,49 @@ FuzzyWuzzy matcher (products.json) → confidence_level
             </thead>
             <tbody>
                 <tr>
-                    <td>Exact match</td>
-                    <td>45</td>
-                    <td>45</td>
+                    <td>Basic queries + product codes</td>
+                    <td>30</td>
+                    <td>30</td>
                     <td>100%</td>
                 </tr>
                 <tr>
-                    <td>Fuzzy match (typos)</td>
-                    <td>38</td>
-                    <td>36</td>
-                    <td>94.7%</td>
+                    <td>Typo handling (basic + hard)</td>
+                    <td>20</td>
+                    <td>20</td>
+                    <td>100%</td>
                 </tr>
                 <tr>
-                    <td>Lost demand detection</td>
-                    <td>52</td>
-                    <td>47</td>
-                    <td>90.4%</td>
+                    <td>Context &amp; mixed language</td>
+                    <td>20</td>
+                    <td>18</td>
+                    <td>90%</td>
                 </tr>
                 <tr>
-                    <td>Noise rejection</td>
-                    <td>48</td>
-                    <td>41</td>
-                    <td>85.4%</td>
+                    <td>Mechanic slang + tech specs</td>
+                    <td>20</td>
+                    <td>15</td>
+                    <td>75%</td>
+                </tr>
+                <tr>
+                    <td>Noise rejection + edge cases</td>
+                    <td>10</td>
+                    <td>8</td>
+                    <td>80%</td>
                 </tr>
                 <tr style="font-weight: 600;">
                     <td>TOTAL</td>
-                    <td>183</td>
-                    <td>169</td>
-                    <td>92.3%</td>
+                    <td>100</td>
+                    <td>91</td>
+                    <td>91%</td>
                 </tr>
             </tbody>
         </table>
 
         <div class="callout">
             <p>
-                The 14 failures are documented. Most are edge cases in Polish morphology
-                (declension variants) and OEM code formats. They're on the roadmap — not blockers.
+                The 9 failures are documented. Most are edge cases in mechanic slang variants,
+                rare technical specifications, and Polish morphology edge cases. They're on the roadmap — not blockers.
+                <a href="/ldi-tests" style="color: #3b82f6; text-decoration: none; font-weight: 600;">→ Full test methodology (91/100 scenarios)</a>
             </p>
         </div>
     </section>

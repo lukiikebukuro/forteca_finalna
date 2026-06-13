@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LDI Test Suite — 91/100 — Adept AI</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background: #0d1117;
+            color: #c9d1d9;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #58a6ff;
+            text-decoration: none;
+            font-size: 13px;
+            margin-bottom: 24px;
+            letter-spacing: 0.02em;
+        }
+        .back-link:hover { text-decoration: underline; }
+
+        .header {
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 24px;
+            margin-bottom: 32px;
+            background: #161b22;
+        }
+
+        .header-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #f0f6fc;
+            margin-bottom: 8px;
+        }
+
+        .header-subtitle {
+            font-size: 13px;
+            color: #8b949e;
+            margin-bottom: 20px;
+        }
+
+        .summary-score {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .score-big {
+            font-size: 48px;
+            font-weight: bold;
+            color: #3fb950;
+        }
+
+        .score-label {
+            font-size: 13px;
+            color: #8b949e;
+            line-height: 1.6;
+        }
+
+        .score-label strong {
+            display: block;
+            color: #f0f6fc;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-green { background: #1a4a27; color: #3fb950; border: 1px solid #2ea043; }
+        .badge-red   { background: #4a1a1a; color: #f85149; border: 1px solid #da3633; }
+        .badge-grey  { background: #21262d; color: #8b949e; border: 1px solid #30363d; }
+
+        .run-info {
+            margin-top: 16px;
+            font-size: 12px;
+            color: #6e7681;
+        }
+
+        .section {
+            margin-bottom: 28px;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            background: #161b22;
+            border-bottom: 1px solid #30363d;
+            cursor: pointer;
+        }
+
+        .section-name {
+            font-size: 13px;
+            font-weight: bold;
+            color: #f0f6fc;
+            letter-spacing: 0.05em;
+        }
+
+        .section-score {
+            font-size: 13px;
+            font-weight: bold;
+        }
+        .score-perfect { color: #3fb950; }
+        .score-good    { color: #d29922; }
+        .score-low     { color: #f85149; }
+
+        .progress-bar {
+            height: 3px;
+            background: #21262d;
+        }
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        .fill-perfect { background: #2ea043; }
+        .fill-good    { background: #9e6a03; }
+        .fill-low     { background: #da3633; }
+
+        .tests-list {
+            padding: 8px 0;
+        }
+
+        .test-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 7px 16px;
+            font-size: 12px;
+            border-bottom: 1px solid #1c2128;
+        }
+        .test-row:last-child { border-bottom: none; }
+
+        .test-status {
+            flex-shrink: 0;
+            width: 18px;
+            font-size: 13px;
+        }
+
+        .test-num {
+            flex-shrink: 0;
+            width: 28px;
+            color: #6e7681;
+        }
+
+        .test-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .test-query {
+            color: #e6edf3;
+            word-break: break-word;
+        }
+
+        .test-expected {
+            color: #6e7681;
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        .test-fail-reason {
+            color: #f85149;
+            font-size: 11px;
+            margin-top: 3px;
+            font-style: italic;
+        }
+
+        .cmd-line {
+            font-size: 12px;
+            color: #8b949e;
+            margin-bottom: 24px;
+            padding: 12px 16px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+        }
+        .cmd-line .prompt { color: #3fb950; }
+        .cmd-line .cmd    { color: #79c0ff; }
+
+        @media (max-width: 600px) {
+            body { padding: 20px 12px; }
+            .score-big { font-size: 36px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <a href="/ldi" class="back-link">← Back to LDI documentation</a>
+
+    <div class="cmd-line">
+        <span class="prompt">$</span>
+        <span class="cmd"> python -X utf8 debug.py</span>
+    </div>
+
+    <div class="header">
+        <div class="header-title">LDI Automotive Bot — Test Suite Results</div>
+        <div class="header-subtitle">ecommerce_bot.py · SemanticValidator + FuzzyMatcher + RewardEngine · 100 scenarios across 11 categories</div>
+
+        <div class="summary-score">
+            <div class="score-big">91%</div>
+            <div class="score-label">
+                <strong>91 / 100 scenarios passed</strong>
+                9 failures · 11 test groups · automotive domain
+            </div>
+        </div>
+
+        <div class="badges">
+            <span class="badge badge-green">✓ 91 PASSED</span>
+            <span class="badge badge-red">✗ 9 FAILED</span>
+            <span class="badge badge-grey">6 groups perfect (100%)</span>
+            <span class="badge badge-grey">5 groups partial</span>
+        </div>
+
+        <div class="run-info">
+            Run: ecommerce_bot.py v5.1 · Python 3.13 · SQLite backend · 100-scenario test suite
+        </div>
+    </div>
+
+    <!-- GROUP 1: PODSTAWOWA SPRZEDAŻ -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-name">PODSTAWOWA SPRZEDAŻ</span>
+            <span class="section-score score-perfect">10 / 10 · 100%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill fill-perfect" style="width:100%"></div></div>
+        <div class="tests-list">
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#1</span><div class="test-body"><div class="test-query">klocki hamulcowe BMW</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#2</span><div class="test-body"><div class="test-query">filtr oleju Toyota Corolla</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#3</span><div class="test-body"><div class="test-query">tarcze hamulcowe Audi A4</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#4</span><div class="test-body"><div class="test-query">olej silnikowy 5W30</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#5</span><div class="test-body"><div class="test-query">amortyzatory przednie Opel Astra</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#6</span><div class="test-body"><div class="test-query">pasek rozrządu Volkswagen Golf</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#7</span><div class="test-body"><div class="test-query">świece zapłonowe NGK</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#8</span><div class="test-body"><div class="test-query">sprzęgło Ford Focus</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#9</span><div class="test-body"><div class="test-query">chłodnica wody Mercedes E220</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#10</span><div class="test-body"><div class="test-query">akumulator 12V 60Ah</div><div class="test-expected">expected: HIGH</div></div></div>
+        </div>
+    </div>
+
+    <!-- GROUP 2: PODSTAWOWE LITERÓWKI -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-name">PODSTAWOWE LITERÓWKI</span>
+            <span class="section-score score-perfect">10 / 10 · 100%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill fill-perfect" style="width:100%"></div></div>
+        <div class="tests-list">
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#11</span><div class="test-body"><div class="test-query">kloki hamulcowe BMW</div><div class="test-expected">expected: HIGH · fuzzy → klocki</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#12</span><div class="test-body"><div class="test-query">filrt oleju Toyota</div><div class="test-expected">expected: HIGH · fuzzy → filtr</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#13</span><div class="test-body"><div class="test-query">amortyzatr Opel</div><div class="test-expected">expected: HIGH · fuzzy → amortyzator</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#14</span><div class="test-body"><div class="test-query">tarcze hamulcovve Audi</div><div class="test-expected">expected: HIGH · fuzzy → hamulcowe</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#15</span><div class="test-body"><div class="test-query">swece zapłonowe NGK</div><div class="test-expected">expected: HIGH · fuzzy → świece</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#16</span><div class="test-body"><div class="test-query">olej silnikwy 5W30</div><div class="test-expected">expected: HIGH · fuzzy → silnikowy</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#17</span><div class="test-body"><div class="test-query">pasek rorzadu VW Golf</div><div class="test-expected">expected: HIGH · fuzzy → rozrządu</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#18</span><div class="test-body"><div class="test-query">sprzegle Ford</div><div class="test-expected">expected: HIGH · fuzzy → sprzęgło</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#19</span><div class="test-body"><div class="test-query">chlodnica Mercedes</div><div class="test-expected">expected: HIGH · fuzzy → chłodnica</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#20</span><div class="test-body"><div class="test-query">akmulator 60Ah</div><div class="test-expected">expected: HIGH · fuzzy → akumulator</div></div></div>
+        </div>
+    </div>
+
+    <!-- GROUP 3: TRUDNE LITERÓWKI -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-name">TRUDNE LITERÓWKI</span>
+            <span class="section-score score-perfect">10 / 10 · 100%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill fill-perfect" style="width:100%"></div></div>
+        <div class="tests-list">
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#21</span><div class="test-body"><div class="test-query">merecedes klocki</div><div class="test-expected">expected: HIGH · fuzzy → mercedes</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#22</span><div class="test-body"><div class="test-query">wolsvagen pasek</div><div class="test-expected">expected: HIGH · fuzzy → volkswagen</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#23</span><div class="test-body"><div class="test-query">tojota filtr</div><div class="test-expected">expected: HIGH · fuzzy → toyota</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#24</span><div class="test-body"><div class="test-query">frod amortyzatory</div><div class="test-expected">expected: HIGH · fuzzy → ford</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#25</span><div class="test-body"><div class="test-query">opi tarcze</div><div class="test-expected">expected: HIGH · fuzzy → opel</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#26</span><div class="test-body"><div class="test-query">bmv olej silnikowy</div><div class="test-expected">expected: HIGH · fuzzy → bmw</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#27</span><div class="test-body"><div class="test-query">renolt świece</div><div class="test-expected">expected: HIGH · fuzzy → renault</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#28</span><div class="test-body"><div class="test-query">skoda hamulce tarcze</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#29</span><div class="test-body"><div class="test-query">peugot sprzęgło</div><div class="test-expected">expected: HIGH · fuzzy → peugeot</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#30</span><div class="test-body"><div class="test-query">hyuandai filtr</div><div class="test-expected">expected: HIGH · fuzzy → hyundai</div></div></div>
+        </div>
+    </div>
+
+    <!-- GROUP 4: KODY PRODUKTÓW -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-name">KODY PRODUKTÓW</span>
+            <span class="section-score score-perfect">10 / 10 · 100%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill fill-perfect" style="width:100%"></div></div>
+        <div class="tests-list">
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#31</span><div class="test-body"><div class="test-query">1J0 615 301</div><div class="test-expected">expected: HIGH · OEM code VW brake disc</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#32</span><div class="test-body"><div class="test-query">BP-VW-0013-01</div><div class="test-expected">expected: HIGH · internal SKU format</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#33</span><div class="test-body"><div class="test-query">4B0 698 151 B</div><div class="test-expected">expected: HIGH · Audi OEM</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#34</span><div class="test-body"><div class="test-query">LPR 05P1095</div><div class="test-expected">expected: HIGH · manufacturer part number</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#35</span><div class="test-body"><div class="test-query">BOSCH 0986494040</div><div class="test-expected">expected: HIGH · Bosch part number</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#36</span><div class="test-body"><div class="test-query">NGK BKR6E</div><div class="test-expected">expected: HIGH · spark plug code</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#37</span><div class="test-body"><div class="test-query">Castrol 5W-30 LL</div><div class="test-expected">expected: HIGH · oil specification</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#38</span><div class="test-body"><div class="test-query">13.0460-7218.2</div><div class="test-expected">expected: HIGH · ATE part number</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#39</span><div class="test-body"><div class="test-query">KYB 334285</div><div class="test-expected">expected: HIGH · shock absorber part</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#40</span><div class="test-body"><div class="test-query">MANN W712/52</div><div class="test-expected">expected: HIGH · oil filter code</div></div></div>
+        </div>
+    </div>
+
+    <!-- GROUP 5: ZAPYTANIA KONTEKSTOWE -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-name">ZAPYTANIA KONTEKSTOWE</span>
+            <span class="section-score score-good">9 / 10 · 90%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill fill-good" style="width:90%"></div></div>
+        <div class="tests-list">
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#41</span><div class="test-body"><div class="test-query">co pasuje do BMW E46 320d</div><div class="test-expected">expected: MEDIUM</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#42</span><div class="test-body"><div class="test-query">zamiennik klocków Textar</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#43</span><div class="test-body"><div class="test-query">tanie klocki do Golfika</div><div class="test-expected">expected: MEDIUM · slang "Golfik"</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#44</span><div class="test-body"><div class="test-query">coś do skrzyni biegów ZF</div><div class="test-expected">expected: MEDIUM</div><div class="test-fail-reason">got: LOW — "coś" zbyt niespecyficzne, klasyfikator nie rozpoznał intencji zakupu</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#45</span><div class="test-body"><div class="test-query">ile kosztuje wymiana sprzęgła</div><div class="test-expected">expected: LOW (query intent, not purchase)</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#46</span><div class="test-body"><div class="test-query">przednie hamulce Opel Vectra 1.9 CDTi</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#47</span><div class="test-body"><div class="test-query">wymieniam amortyzatory co polecacie</div><div class="test-expected">expected: MEDIUM</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#48</span><div class="test-body"><div class="test-query">silnik stuka warto sprawdzić</div><div class="test-expected">expected: LOW</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#49</span><div class="test-body"><div class="test-query">tarcze 300mm przód A3</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#50</span><div class="test-body"><div class="test-query">filtr kabinowy z węglem aktywnym Ford S-Max</div><div class="test-expected">expected: HIGH</div></div></div>
+        </div>
+    </div>
+
+    <!-- GROUP 6: SLANG MECHANIKÓW -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-name">SLANG MECHANIKÓW</span>
+            <span class="section-score score-low">8 / 10 · 80%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill fill-good" style="width:80%"></div></div>
+        <div class="tests-list">
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#51</span><div class="test-body"><div class="test-query">hamulce do beemki</div><div class="test-expected">expected: HIGH · slang "beemka" → BMW</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#52</span><div class="test-body"><div class="test-query">tarcze do Golfa</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#53</span><div class="test-body"><div class="test-query">klocki do Escorta</div><div class="test-expected">expected: HIGH · Ford Escort</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#54</span><div class="test-body"><div class="test-query">klocki do japońca 1.8</div><div class="test-expected">expected: MEDIUM</div><div class="test-fail-reason">got: LOW — "japoniec" jest w slowniku ale bez pojemności 1.8 klasyfikator odpada</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#55</span><div class="test-body"><div class="test-query">olej do niemca</div><div class="test-expected">expected: MEDIUM · slang "niemiec" → German brand</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#56</span><div class="test-body"><div class="test-query">sprzęgło do francuza</div><div class="test-expected">expected: MEDIUM · "francuz" → French brand</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#57</span><div class="test-body"><div class="test-query">amortyzatory do kombika</div><div class="test-expected">expected: MEDIUM · "kombik" → kombi/estate</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#58</span><div class="test-body"><div class="test-query">pasek do turbodiesla</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#59</span><div class="test-body"><div class="test-query">coś do skrzyni manuala</div><div class="test-expected">expected: MEDIUM</div><div class="test-fail-reason">got: LOW — "manual" bez marki/produktu → zbyt ogólne</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#60</span><div class="test-body"><div class="test-query">tarcze wentylowane do sportówki</div><div class="test-expected">expected: HIGH</div></div></div>
+        </div>
+    </div>
+
+    <!-- GROUP 7: MIESZANE JĘZYKI -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-name">MIESZANE JĘZYKI</span>
+            <span class="section-score score-good">9 / 10 · 90%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill fill-good" style="width:90%"></div></div>
+        <div class="tests-list">
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#61</span><div class="test-body"><div class="test-query">BMW oil filter 5W30</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#62</span><div class="test-body"><div class="test-query">brake pads Audi</div><div class="test-expected">expected: HIGH</div><div class="test-fail-reason">got: MEDIUM — "brake pads" w angielskim nie trafia do polskiego słownika klocki hamulcowe</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#63</span><div class="test-body"><div class="test-query">shock absorbers VW Golf</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#64</span><div class="test-body"><div class="test-query">klocki brake pads BMW</div><div class="test-expected">expected: HIGH · mixed pl+en</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#65</span><div class="test-body"><div class="test-query">timing belt Opel</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#66</span><div class="test-body"><div class="test-query">Stoßdämpfer Opel Astra</div><div class="test-expected">expected: HIGH · German "Stoßdämpfer" → amortyzatory</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#67</span><div class="test-body"><div class="test-query">oil filter Mann BMW 520d</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#68</span><div class="test-body"><div class="test-query">clutch kit Ford Focus diesel</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#69</span><div class="test-body"><div class="test-query">alternator Toyota remanufactured</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#70</span><div class="test-body"><div class="test-query">Bremsscheiben Audi A6</div><div class="test-expected">expected: HIGH · German "Bremsscheiben" → tarcze</div></div></div>
+        </div>
+    </div>
+
+    <!-- GROUP 8: SPECYFIKACJE TECHNICZNE -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-name">SPECYFIKACJE TECHNICZNE</span>
+            <span class="section-score score-low">7 / 10 · 70%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill fill-low" style="width:70%"></div></div>
+        <div class="tests-list">
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#71</span><div class="test-body"><div class="test-query">tarcze 288x25mm wentylowane przód</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#72</span><div class="test-body"><div class="test-query">olej 0W40 full synthetic</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#73</span><div class="test-body"><div class="test-query">klocki 17 calowe BMW</div><div class="test-expected">expected: HIGH</div><div class="test-fail-reason">got: MEDIUM — "17 calowe" odnosi się do felg nie klocków; klasyfikator robi błąd kontekstowy</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#74</span><div class="test-body"><div class="test-query">akumulator 74Ah 750A rozruchowy</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#75</span><div class="test-body"><div class="test-query">filtr powietrza panel 285x225mm</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#76</span><div class="test-body"><div class="test-query">pasek wielorowkowy 6PK1550</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#77</span><div class="test-body"><div class="test-query">amortyzator Ø 55mm skok 155mm</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#78</span><div class="test-body"><div class="test-query">świece 14mm 19mm klucz NGK</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#79</span><div class="test-body"><div class="test-query">hamulce 265/65R17</div><div class="test-expected">expected: MEDIUM — rozmiar opony, nie hamulców</div><div class="test-fail-reason">got: HIGH — klasyfikator rozpoznał hamulce ale zignorował rozmiar oponowy jako niespójność</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#80</span><div class="test-body"><div class="test-query">sprzęgło moment 340Nm pojemność 2.0</div><div class="test-expected">expected: HIGH</div><div class="test-fail-reason">got: MEDIUM — specyfikacja momentu obrotowego rzadka w katalogu, fuzzy nie trafia</div></div></div>
+        </div>
+    </div>
+
+    <!-- GROUP 9: FILTROWANIE NONSENSU -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-name">FILTROWANIE NONSENSU</span>
+            <span class="section-score score-good">4 / 5 · 80%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill fill-good" style="width:80%"></div></div>
+        <div class="tests-list">
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#81</span><div class="test-body"><div class="test-query">pizza carbonara</div><div class="test-expected">expected: NO_MATCH · food domain</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#82</span><div class="test-body"><div class="test-query">qwerty asdf zxcv</div><div class="test-expected">expected: NO_MATCH · keyboard mash</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#83</span><div class="test-body"><div class="test-query">iPhone 13</div><div class="test-expected">expected: NO_MATCH · consumer electronics in moto store</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#84</span><div class="test-body"><div class="test-query">Galaxy S23 Ultra</div><div class="test-expected">expected: NO_MATCH · smartphone in moto store</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#85</span><div class="test-body"><div class="test-query">klocki do roweru górskiego</div><div class="test-expected">expected: NO_MATCH · bicycle, not automotive</div><div class="test-fail-reason">got: MEDIUM — "klocki" trafił do słownika moto; brak rozróżnienia rower vs. auto</div></div></div>
+        </div>
+    </div>
+
+    <!-- GROUP 10: UTRACONY POPYT PREMIUM -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-name">UTRACONY POPYT PREMIUM</span>
+            <span class="section-score score-perfect">10 / 10 · 100%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill fill-perfect" style="width:100%"></div></div>
+        <div class="tests-list">
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#86</span><div class="test-body"><div class="test-query">Brembo GT 6-tłoczkowy</div><div class="test-expected">expected: NO_MATCH (premium not in catalog)</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#87</span><div class="test-body"><div class="test-query">klocki Pagid Racing</div><div class="test-expected">expected: NO_MATCH (racing brand)</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#88</span><div class="test-body"><div class="test-query">EBC Yellowstuff BMW M3</div><div class="test-expected">expected: NO_MATCH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#89</span><div class="test-body"><div class="test-query">amortyzatory KW Variant 3</div><div class="test-expected">expected: NO_MATCH (coilover kit)</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#90</span><div class="test-body"><div class="test-query">olej Motul 300V 5W40</div><div class="test-expected">expected: NO_MATCH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#91</span><div class="test-body"><div class="test-query">Öhlins TTX GP</div><div class="test-expected">expected: NO_MATCH (motorsport)</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#92</span><div class="test-body"><div class="test-query">Bilstein B16 BMW E90</div><div class="test-expected">expected: NO_MATCH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#93</span><div class="test-body"><div class="test-query">Stoptech Street klocki Audi RS</div><div class="test-expected">expected: NO_MATCH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#94</span><div class="test-body"><div class="test-query">AP Racing CP9660 zacisk</div><div class="test-expected">expected: NO_MATCH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#95</span><div class="test-body"><div class="test-query">Ferodo DS2500 klocki wyścigowe</div><div class="test-expected">expected: NO_MATCH</div></div></div>
+        </div>
+    </div>
+
+    <!-- GROUP 11: EDGE CASES -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-name">EDGE CASES</span>
+            <span class="section-score score-good">4 / 5 · 80%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill fill-good" style="width:80%"></div></div>
+        <div class="tests-list">
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#96</span><div class="test-body"><div class="test-query">k</div><div class="test-expected">expected: NO_MATCH · single character</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#97</span><div class="test-body"><div class="test-query">123456789</div><div class="test-expected">expected: NO_MATCH · pure digits</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#98</span><div class="test-body"><div class="test-query">!!!???###</div><div class="test-expected">expected: NO_MATCH · special chars only</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#99</span><div class="test-body"><div class="test-query">klocki klocki klocki klocki klocki klocki klocki klocki klocki klocki</div><div class="test-expected">expected: LOW · spam repetition</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#100</span><div class="test-body"><div class="test-query">nowe hamulce i może opony też albo nie wiem</div><div class="test-expected">expected: MEDIUM</div><div class="test-fail-reason">got: LOW — wieloczłonowe niezdecydowane zapytanie; klasyfikator nie wyciąga intencji z naturalnej mowy</div></div></div>
+        </div>
+    </div>
+
+    <!-- FOOTER SUMMARY -->
+    <div style="margin-top: 32px; padding: 20px; background: #161b22; border: 1px solid #30363d; border-radius: 6px; font-size: 13px;">
+        <div style="color: #3fb950; font-weight: bold; margin-bottom: 12px;">WYNIK KOŃCOWY: 91/100 scenariuszy (91.0%)</div>
+        <div style="color: #8b949e; line-height: 1.8;">
+            Grupy bezbłędne: PODSTAWOWA SPRZEDAŻ · PODSTAWOWE LITERÓWKI · TRUDNE LITERÓWKI · KODY PRODUKTÓW · UTRACONY POPYT PREMIUM<br>
+            Do poprawy: SPECYFIKACJE TECHNICZNE (70%) · FILTROWANIE NONSENSU (80%) · SLANG MECHANIKÓW (80%)<br>
+            <br>
+            <span style="color: #6e7681;">Ta sama architektura na domenie elektroniki: 169/183 (w poprzednim teście). System generalizuje między domenami bez przetrainowania modelu.</span>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

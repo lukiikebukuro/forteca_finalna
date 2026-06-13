@@ -85,6 +85,12 @@ def ldi_page():
     return render_template('ldi.html')
 
 
+@pages_bp.route('/ldi-tests')
+def ldi_tests_page():
+    """LDI test suite results — 91/100 scenarios"""
+    return render_template('ldi_tests.html')
+
+
 @pages_bp.route('/tech')
 def tech_docs():
     """Technical documentation page"""
