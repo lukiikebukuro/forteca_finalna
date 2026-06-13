@@ -531,6 +531,12 @@
                         <div class="metric-label">Średni Czas Odpowiedzi</div>
                         <div class="metric-change positive">System wydajny</div>
                     </div>
+
+                    <div class="metric" style="border: 1px solid #fcd34d; background: #fffbeb;" title="Klient szukał produktu którego nie ma i mimo to kliknął alternatywę. Najcenniejszy sygnał w systemie.">
+                        <div class="metric-value" id="gold-signals" style="color: #d97706;">0</div>
+                        <div class="metric-label" style="color: #92400e;">🏆 Gold Signals</div>
+                        <div class="metric-change" style="color: #d97706; font-size: 11px;">Szukał X → kupił Y</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -736,6 +742,16 @@
                 }
             })
             .catch(error => console.log('Using demo data'));
+
+        // Gold Signals z training stats
+        fetch('/api/training-stats')
+            .then(response => response.json())
+            .then(data => {
+                if (data.gold_signals !== undefined) {
+                    document.getElementById('gold-signals').textContent = data.gold_signals;
+                }
+            })
+            .catch(() => {});
     </script>
 </body>
 </html>
