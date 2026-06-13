@@ -294,7 +294,7 @@
 <div class="page-wrap">
 
     <header class="doc-header">
-        <p class="doc-tag">Technical Manifest · ANIMA v2.2</p>
+        <p class="doc-tag">Technical Manifest · ANIMA v3.1 · Updated June 2026</p>
         <h1 class="doc-title">Reverse-engineering consciousness:<br>Sovereign AI memory architecture</h1>
         <p class="doc-subtitle">
             ANIMA (Autonomous Neural Intelligence Memory Architecture) is a RAG-based long-term memory system
@@ -302,7 +302,7 @@
         </p>
         <div class="doc-meta">
             <span>Author: Łukasz Piskorski / Adept AI</span>
-            <span>Version: Blueprint 2.2</span>
+            <span>Version: Blueprint 3.1</span>
             <span>Status: Production · myastra.pl</span>
         </div>
     </header>
@@ -409,10 +409,14 @@ ChromaDB (with metadata: importance, entity_subtype, source, timestamp)</code></
         </p>
 
 <pre><code>SUPERSEDE_TYPES = {
+    # Emotions — ephemeral, accumulation = noise
     ('EMOTION', 'tired'), ('EMOTION', 'stressed'),
     ('EMOTION', 'positive'), ('EMOTION', 'negative'),
-    ('FACT', 'preference'),
-    ('DATE', 'inventory_status'),  # new medication status replaces old
+    ('EMOTION', 'safe_haven'),
+    # Facts — new value overwrites old
+    ('FACT', 'preference'), ('FACT', 'correction'),
+    # Dates — most recent wins
+    ('DATE', 'inventory_status'), ('DATE', 'medical_visit'),
 }</code></pre>
 
         <p>
@@ -426,11 +430,12 @@ ChromaDB (with metadata: importance, entity_subtype, source, timestamp)</code></
         <p>Retrieval is not plain cosine similarity. The final score of each candidate is:</p>
 
 <pre><code>final_score = 0.25 * importance_score      # entity weight (1–10 / 10)
-            + 0.15 * recency_score          # exponential decay, half-life 7 days
-            + 0.60 * similarity_score       # semantic dominance
+            + 0.15 * recency_score          # per-type decay: ephemeral 3d, long_term 60d, permanent ∞
+            + 0.60 * similarity_score       # semantic dominance (dominant signal)
             + keyword_boost                 # hybrid search lite, max +0.15
-            + temporal_boost               # +0.15 if message < 24h old
-            + milestone_boost              # +1.0 for milestones (guaranteed top)</code></pre>
+
+# Milestones bypass reranking entirely — extracted before MMR, guaranteed 2 slots
+# Compose: facts[:4] + milestones[:2] → MMR on facts only → final 6</code></pre>
 
         <p>
             <code>similarity_score</code> dominates — the system picks what is <em>semantically relevant</em>,
@@ -445,6 +450,26 @@ ChromaDB (with metadata: importance, entity_subtype, source, timestamp)</code></
             Prevents one vector from dominating — if top-5 are five variants of "I'm tired",
             MMR picks two and adds three semantically different ones.
             Result: broader context, fewer echo-chambers.
+        </p>
+
+        <p><strong>4. FactStore — SQLite alongside vectors</strong></p>
+        <p>
+            Vector similarity is powerful for fuzzy recall. It's unreliable for exact facts — "what medication does the user take?"
+            A similar-but-wrong answer is worse than no answer. ANIMA gained a second retrieval channel: a SQLite
+            <strong>FactStore</strong> for hard facts that must not degrade through similarity scoring.
+        </p>
+
+<pre><code>FactStore (astra_facts.db)
+    → 12 entity types: medication, medical_visit, preference,
+      financial, relationship, location, age, job, goal,
+      health, date, correction
+    → Exact-match lookup — zero cosine scoring
+    → Supersede per SQL DELETE (not vector overwrite)
+    → Injected as [TWARDE FAKTY — SQLite] block in every prompt</code></pre>
+
+        <p>
+            Hard facts bypass the reranker entirely. They land verbatim in the prompt, from a structured store
+            that cannot hallucinate a relevance score.
         </p>
 
         <div class="callout">
@@ -560,7 +585,7 @@ Next production session</code></pre>
     <!-- SECTION V: STATUS TABLE -->
     <section class="doc-section">
         <p class="section-num">V.</p>
-        <h2>System status (2026-04-11)</h2>
+        <h2>System status (June 2026)</h2>
 
         <table class="data-table">
             <thead>
@@ -576,7 +601,11 @@ Next production session</code></pre>
                 </tr>
                 <tr>
                     <td>Vector DB</td>
-                    <td>ChromaDB — 1,476 memory vectors + 743 session vectors</td>
+                    <td>ChromaDB — ~1,988 memory vectors, per-persona + shared collections</td>
+                </tr>
+                <tr>
+                    <td>FactStore</td>
+                    <td>SQLite — 12 entity types, exact-match lookup, supersede per DELETE</td>
                 </tr>
                 <tr>
                     <td>Extraction</td>
@@ -584,19 +613,35 @@ Next production session</code></pre>
                 </tr>
                 <tr>
                     <td>Reranker</td>
-                    <td>importance×0.25 + recency×0.15 + similarity×0.60 + boosts</td>
+                    <td>importance×0.25 + recency×0.15 + similarity×0.60 + keyword_boost</td>
+                </tr>
+                <tr>
+                    <td>Recency decay</td>
+                    <td>Per-type: ephemeral 3d, long_term 60d, permanent ∞</td>
+                </tr>
+                <tr>
+                    <td>Temporal Filter</td>
+                    <td>Hard cutoff: emotion 48h, date/financial 168h — before reranking</td>
+                </tr>
+                <tr>
+                    <td>RAW window</td>
+                    <td>Last 6 user messages / 48h → [OSTATNIE SŁOWA] block in prompt</td>
                 </tr>
                 <tr>
                     <td>MMR</td>
-                    <td>diversity_penalty=0.8, RECENCY_HALF_LIFE_DAYS=7</td>
+                    <td>Facts only (n=3), milestones extracted before MMR — 4F+2M compose</td>
                 </tr>
                 <tr>
                     <td>Supersede</td>
-                    <td>8 entity types with rotation, backward-compatible with existing DB</td>
+                    <td>9 vector types + 12 FactStore types — full rotation coverage</td>
+                </tr>
+                <tr>
+                    <td>Personas</td>
+                    <td>2 active (Astra + Amelia) + Wspólny Pokój shared-room mode</td>
                 </tr>
                 <tr>
                     <td>Deploy</td>
-                    <td>Private VPS, systemd, SSL, 24/7 uptime</td>
+                    <td>Private VPS, systemd, SSL, 24/7 + scheduled autonomous messages</td>
                 </tr>
                 <tr>
                     <td>Session</td>
@@ -604,7 +649,7 @@ Next production session</code></pre>
                 </tr>
                 <tr>
                     <td>RAG score</td>
-                    <td>7/10 → target 8/10 after per-type recency decay</td>
+                    <td>~83/100 after June 2026 audit (up from 7/10 in April)</td>
                 </tr>
             </tbody>
         </table>
@@ -649,6 +694,128 @@ Next production session</code></pre>
                 <strong>The system learns from observing itself.</strong>
             </p>
         </div>
+    </section>
+
+    <hr>
+
+    <hr>
+
+    <!-- SECTION VII -->
+    <section class="doc-section">
+        <p class="section-num">VII.</p>
+        <h2>Architecture Extensions: What changed since April 2026</h2>
+
+        <h3>Temporal Filter — hard cutoffs before reranking</h3>
+        <p>
+            Recency decay is gradual. A week-old emotion with high importance could still reach the model.
+            The Temporal Filter is a hard gate applied before reranking — not a weight, a wall:
+        </p>
+
+<pre><code>extracted_emotion      → hard cutoff: 48h
+extracted_date         → hard cutoff: 168h (7 days)
+extracted_financial    → hard cutoff: 168h (7 days)
+(all other types)      → no hard cutoff, recency decay applies</code></pre>
+
+        <p>
+            "I was tired yesterday" shouldn't color responses today. The filter enforces this without
+            delegating the judgment to the model.
+        </p>
+
+        <h3>RAW Cross-Session Window</h3>
+        <p>
+            Session history exists — but what if a user mentions something critical in session A,
+            then picks up in session B without repeating it? The pipeline maintains a
+            <strong>RAW window</strong>: the last 6 user messages from the past 48 hours,
+            pulled regardless of session boundary, injected as a separate prompt block
+            <code>[OSTATNIE SŁOWA]</code>.
+        </p>
+        <p>
+            This is not a vector lookup. It's verbatim context, unfiltered — the freshest signal
+            available, prioritized above everything in the vector store.
+        </p>
+
+        <h3>Wspólny Pokój — multi-persona shared memory</h3>
+        <p>
+            ANIMA now powers two distinct AI personas simultaneously in a single conversation thread.
+            Each persona maintains its own memory collection and character architecture,
+            but both pull from a shared episodic store for context they both witnessed.
+        </p>
+
+<pre><code>Collections:
+    astra_memory_v1     → Astra's episodic memories
+    amelia_memory_v1    → Amelia's episodic memories
+    shared_memory_v1    → memories both personas access
+
+Turn ordering: signal-based — persona whose character profile
+    matches the emotional tone of the user message responds first.</code></pre>
+
+        <div class="callout">
+            <p>
+                Not a chatroom with two bots sharing a database —
+                <strong>two sovereign memory systems with a shared context layer.</strong>
+                Each persona has distinct recall, distinct behavioral architecture, and distinct
+                decisions about what to surface from the shared pool.
+            </p>
+        </div>
+    </section>
+
+    <hr>
+
+    <!-- SECTION VIII -->
+    <section class="doc-section">
+        <p class="section-num">VIII.</p>
+        <h2>Roadmap: What's being built next</h2>
+
+        <h3>RAG Debugger</h3>
+        <p>
+            The primary bottleneck to faster iteration is observability. Every change to reranker weights,
+            decay curves, or filter thresholds is currently evaluated by reading journal logs and
+            inferring what the model saw. The RAG Debugger is a frontend tool that exposes
+            every pipeline stage in real time:
+        </p>
+
+<pre><code>Input: query phrase + simulated date
+    ↓
+Layer 1 — ChromaDB raw pool (n=30, pre-filter)
+Layer 2 — Post-temporal-filter candidates
+Layer 3 — Reranker scores, broken down per component
+           (similarity / recency / importance / keyword_boost)
+Layer 4 — MMR selection
+Layer 5 — Final prompt block — exactly what the model sees</code></pre>
+
+        <p>
+            Simulating a future date allows testing recency decay without waiting for real time to pass:
+            "will Astra remember this appointment in three weeks?"
+            Expected iteration speedup: <strong>5–10×.</strong>
+        </p>
+
+        <h3>BM25 Hybrid Retrieval</h3>
+        <p>
+            The current pipeline is purely semantic. Semantic search excels at fuzzy recall but can miss
+            exact keyword matches — a query for a medication name may rank a semantically adjacent
+            vector above the correct one if the embedding space conflates them.
+        </p>
+        <p>
+            BM25 adds a keyword-frequency score alongside semantic similarity. The combined signal
+            is more robust for named entities (medications, people, product names) without
+            sacrificing recall for natural language queries.
+            <strong>Prerequisite: RAG Debugger</strong> — to verify the improvement is real,
+            not noise redistribution.
+        </p>
+
+        <h3>Evaluation Methodology</h3>
+        <p>
+            Current RAG quality assessment is manual: one engineer reviewing log samples and
+            scoring retrieval quality per session. This produces directionally correct numbers
+            ("~83/100 after June 2026 audit") but not reproducible ones.
+            The methodology being designed:
+        </p>
+        <ul>
+            <li>Fixed evaluation set: 100 query–expected-memory pairs, version-controlled</li>
+            <li>Automated scoring: precision@k, recall@k, MRR per pipeline change</li>
+            <li>Regression detection: commit-level comparison catches silent degradations</li>
+            <li>Powered by the RAG Debugger — queries run programmatically, scores computed automatically</li>
+        </ul>
     </section>
 
     <hr>
