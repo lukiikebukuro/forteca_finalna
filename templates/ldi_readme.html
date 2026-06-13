@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LDI — Lost Demand Intelligence | Adept AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        h1,h2,h3,h4 { font-family: 'Poppins', sans-serif; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        .pulse { animation: pulse 2s infinite; }
+        .gold-glow { box-shadow: 0 0 40px rgba(234,179,8,0.3); border: 2px solid rgba(234,179,8,0.5); }
+        .navbar-blur { backdrop-filter: blur(20px); background: rgba(15,23,42,0.95); }
+        .nav-link { transition: color 0.2s; color: #94a3b8; }
+        .nav-link:hover { color: #eab308; }
+        .gradient-text { background: linear-gradient(135deg, #eab308, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
+        .card-hover:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); }
+        .floating-chat { position: fixed; bottom: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; align-items: flex-end; }
+        .chat-window {
+            width: 360px; height: 480px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            display: flex; flex-direction: column;
+            transform-origin: bottom right;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            margin-bottom: 12px;
+        }
+        .chat-window.closed { transform: scale(0); opacity: 0; pointer-events: none; }
+        .chat-toggle {
+            width: 56px; height: 56px;
+            background: linear-gradient(135deg, #eab308, #f97316);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 6px 24px rgba(234,179,8,0.5);
+            transition: transform 0.2s;
+        }
+        .chat-toggle:hover { transform: scale(1.1); }
+        .chat-bubble-bot { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px 16px 16px 4px; }
+        .chat-bubble-user { background: #1e293b; color: white; border-radius: 16px 16px 4px 16px; }
+    </style>
+</head>
+<body class="bg-white text-gray-900">
+
+<!-- NAVBAR -->
+<nav class="navbar-blur fixed top-0 left-0 right-0 z-50 px-6 py-4 border-b border-white/10">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center font-black text-slate-900 text-sm">L</div>
+            <span class="text-white font-bold">LDI</span>
+            <span class="text-slate-500 text-sm hidden md:inline">by Adept AI</span>
+        </div>
+        <div class="flex items-center gap-6">
+            <a href="#p1" class="nav-link text-sm font-medium">P1 — Raport</a>
+            <a href="#p2" class="nav-link text-sm font-medium">P2 — Radar B2B</a>
+            <a href="#p3" class="nav-link text-sm font-medium">P3 — Dane AI</a>
+            <a href="#vs" class="nav-link text-sm font-medium hidden md:inline">vs. GA</a>
+        </div>
+        <a href="https://adeptai.pl/live-demo" target="_blank" class="bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-bold text-sm px-4 py-2 rounded-xl transition">
+            Live Demo →
+        </a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 pt-32 pb-20 px-6">
+    <div class="max-w-6xl mx-auto text-center">
+        <div class="inline-flex items-center gap-2 bg-yellow-500/20 text-yellow-400 text-sm font-semibold px-4 py-2 rounded-full mb-8 border border-yellow-500/30">
+            <span class="w-2 h-2 bg-yellow-400 rounded-full pulse"></span>
+            Production · v5.1 · Adept AI
+        </div>
+        <h1 class="text-5xl md:text-6xl font-black text-white mb-4 leading-tight">
+            Lost Demand <span class="gradient-text">Intelligence</span>
+        </h1>
+        <p class="text-xl text-slate-300 mb-3 max-w-2xl mx-auto">
+            Widzimy czego klient chciał — zanim nacisnął Enter.
+        </p>
+        <p class="text-slate-400 mb-12 max-w-xl mx-auto">
+            Google Analytics widzi <span class="text-red-400 font-semibold">bounce</span>. 
+            LDI widzi <span class="text-yellow-400 font-semibold">intencję zakupową</span> — i ile kosztuje jej brak w złotówkach.
+        </p>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <div class="text-3xl font-black text-yellow-400">91%</div>
+                <div class="text-slate-400 text-xs mt-1">Dokładność</div>
+            </div>
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <div class="text-3xl font-black text-blue-400">&lt;60ms</div>
+                <div class="text-slate-400 text-xs mt-1">Latency p95</div>
+            </div>
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <div class="text-3xl font-black text-green-400">90%</div>
+                <div class="text-slate-400 text-xs mt-1">Redukcja ruchu</div>
+            </div>
+            <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <div class="text-3xl font-black text-orange-400">+15</div>
+                <div class="text-slate-400 text-xs mt-1">Gold Signal</div>
+            </div>
+        </div>
+        <div class="mt-6 text-center">
+            <a href="/ldi-tests" class="text-slate-400 text-sm hover:text-yellow-400 transition-colors">→ Metodologia pokrycia zapytań (91/100 scenariuszy)</a>
+        </div>
+    </div>
+</section>
+
+<!-- VS GA / ALGOLIA -->
+<section id="vs" class="py-20 px-6 bg-slate-50">
+    <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-slate-900 mb-3">Czego nie widzą Google Analytics i Algolia</h2>
+            <p class="text-slate-600">Klient wpisuje "iPhone 14 Pro różowy". Sklepu nie ma. Klient wychodzi.</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-white rounded-2xl p-6 border-2 border-red-100 shadow-sm">
+                <div class="text-red-500 text-2xl mb-3"><i class="fas fa-times-circle"></i></div>
+                <h3 class="font-bold text-slate-800 mb-2">Google Analytics</h3>
+                <div class="text-3xl font-black text-red-400 mb-2">Bounce</div>
+                <p class="text-slate-500 text-sm">Zero informacji o intencji. Zero informacji o wartości straty.</p>
+            </div>
+            <div class="bg-white rounded-2xl p-6 border-2 border-orange-100 shadow-sm">
+                <div class="text-orange-400 text-2xl mb-3"><i class="fas fa-search"></i></div>
+                <h3 class="font-bold text-slate-800 mb-2">Algolia / Wyszukiwarki</h3>
+                <div class="text-3xl font-black text-orange-400 mb-2">0 wyników</div>
+                <p class="text-slate-500 text-sm">Wie że nie znalazła. Nie wie czy to błąd użytkownika czy luka w katalogu.</p>
+            </div>
+            <div class="bg-white rounded-2xl p-6 border-2 border-yellow-400 shadow-sm gold-glow">
+                <div class="text-yellow-500 text-2xl mb-3"><i class="fas fa-bolt"></i></div>
+                <h3 class="font-bold text-slate-800 mb-2">LDI</h3>
+                <div class="text-2xl font-black text-yellow-500 mb-2">Intencja + kwota straty</div>
+                <p class="text-slate-600 text-sm">Przechwytuje zapytanie <strong>przed Enter</strong>. Klasyfikuje. Liczy ile to kosztuje w złotówkach.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- P1 -->
+<section id="p1" class="py-20 px-6 bg-white">
+    <div class="max-w-6xl mx-auto">
+        <div class="flex items-center gap-4 mb-8">
+            <span class="bg-blue-100 text-blue-700 font-bold text-lg px-5 py-2 rounded-xl border border-blue-200">P1</span>
+            <div>
+                <h2 class="text-3xl font-bold text-slate-900">Dashboard Klienta</h2>
+                <p class="text-blue-600 font-medium">Cotygodniowy raport utraconego popytu</p>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8">
+            <div>
+                <p class="text-slate-600 mb-6">Top produkty których klienci szukają a których nie ma w sklepie — z szacowaną utratą w złotówkach i rekomendacjami strategicznymi. Plus <strong class="text-yellow-600">Gold Signal</strong>: ile razy klient kupił alternatywę mimo braku produktu.</p>
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3 p-4 bg-slate-50 rounded-xl">
+                        <span class="w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center font-bold text-xs">!</span>
+                        <div class="flex-1">
+                            <div class="font-semibold text-slate-800 text-sm">iPhone 15 Pro 256GB Natural</div>
+                            <div class="text-slate-500 text-xs">18 zapytań × 5,400 zł</div>
+                        </div>
+                        <div class="text-red-600 font-bold">97,200 zł</div>
+                    </div>
+                    <div class="flex items-center gap-3 p-4 bg-slate-50 rounded-xl">
+                        <span class="w-8 h-8 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center font-bold text-xs">1</span>
+                        <div class="flex-1">
+                            <div class="font-semibold text-slate-800 text-sm">Laptop Dell XPS 15 64GB RAM</div>
+                            <div class="text-slate-500 text-xs">7 zapytań × 9,200 zł</div>
+                        </div>
+                        <div class="text-orange-600 font-bold">64,400 zł</div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-yellow-50 border border-yellow-200 rounded-2xl p-6">
+                <div class="text-yellow-700 font-bold mb-3">🏆 Gold Signal — co to znaczy?</div>
+                <p class="text-slate-700 text-sm mb-3">Klient szukał produktu X którego nie ma → system pokazał alternatywę Y → klient kliknął i kupił.</p>
+                <div class="bg-white rounded-xl p-4 font-mono text-xs text-slate-600">
+                    <div>NO_MATCH: "dell xps 14"</div>
+                    <div class="text-green-600">→ kliknął: "dell xps 15"</div>
+                    <div class="text-yellow-600 font-bold">→ Gold Signal: +15.0 ✓</div>
+                </div>
+                <p class="text-slate-500 text-xs mt-3">Najwyższa waga w systemie. Dowód realnej intencji zakupowej — nie przypadek.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- P2 -->
+<section id="p2" class="py-20 px-6 bg-slate-900">
+    <div class="max-w-6xl mx-auto">
+        <div class="flex items-center gap-4 mb-8">
+            <span class="bg-orange-500/20 text-orange-400 font-bold text-lg px-5 py-2 rounded-xl border border-orange-500/30">P2</span>
+            <div>
+                <h2 class="text-3xl font-bold text-white">Radar B2B</h2>
+                <p class="text-orange-400 font-medium">Alert dla handlowców w czasie rzeczywistym</p>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+            <div>
+                <p class="text-slate-400 mb-6">Gdy duża firma wchodzi na stronę — handlowiec dostaje alert natychmiast. Widzi co firma wpisuje <strong class="text-white">na żywo</strong>. Może zadzwonić zanim klient wyjdzie do konkurencji.</p>
+                <div class="space-y-3">
+                    <div class="flex items-start gap-3 text-slate-300 text-sm">
+                        <i class="fas fa-check text-green-400 mt-1"></i>
+                        <span>Identyfikacja firm przez MaxMind — nie wymaga logowania klienta</span>
+                    </div>
+                    <div class="flex items-start gap-3 text-slate-300 text-sm">
+                        <i class="fas fa-check text-green-400 mt-1"></i>
+                        <span>Sygnał głosowy gdy pojawi się duże konto</span>
+                    </div>
+                    <div class="flex items-start gap-3 text-slate-300 text-sm">
+                        <i class="fas fa-check text-green-400 mt-1"></i>
+                        <span>Historia wszystkich zapytań danej firmy w jednym widoku</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-slate-800 border border-orange-500/30 rounded-2xl p-6">
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="w-3 h-3 bg-orange-400 rounded-full pulse"></span>
+                    <span class="text-orange-400 font-semibold text-sm">HOT LEAD — pisze teraz</span>
+                </div>
+                <div class="text-white font-bold mb-1">Orange Polska Spółka Akcyjna</div>
+                <div class="text-slate-400 text-sm mb-3">Szczecin, Poland · 84 zapytania · 31 HOT</div>
+                <div class="bg-red-500/20 border border-red-500/30 rounded-xl p-3 text-sm">
+                    <div class="text-red-300 font-semibold">UTRACONA OKAZJA</div>
+                    <div class="text-white">szuka: "Samsung S26"</div>
+                </div>
+                <div class="mt-3 text-slate-400 text-xs">→ Handlowiec dzwoni. Ratuje sprzedaż.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- P3 -->
+<section id="p3" class="py-20 px-6 bg-white">
+    <div class="max-w-6xl mx-auto">
+        <div class="flex items-center gap-4 mb-8">
+            <span class="bg-yellow-100 text-yellow-700 font-bold text-lg px-5 py-2 rounded-xl border border-yellow-200">P3</span>
+            <div>
+                <h2 class="text-3xl font-bold text-slate-900">Pipeline danych AI</h2>
+                <p class="text-yellow-600 font-medium">Ropa naftowa e-commerce 2026/2027</p>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8 items-start">
+            <div>
+                <p class="text-slate-600 mb-6">Dane JSONL gotowe do trenowania modeli AI. Każdy rekord to kompletna para treningowa. W 2026/2027 AI zacznie zarabiać na reklamach — dane o intencjach zakupowych będą bezcenne. I tylko Ty je masz.</p>
+                <div class="space-y-4">
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 h-6 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">1</div>
+                        <div>
+                            <div class="font-semibold text-slate-800 text-sm">Klasyfikacja intencji branżowej</div>
+                            <div class="text-slate-500 text-xs">"amory tył" → amortyzator tylny. Specyficzne dla Twojej branży.</div>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 h-6 bg-yellow-100 text-yellow-600 rounded-lg flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">2</div>
+                        <div>
+                            <div class="font-semibold text-slate-800 text-sm">Mapowanie substytutów</div>
+                            <div class="text-slate-500 text-xs">Gold Signal uczy model: "szukał X → polecaj Y".</div>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 h-6 bg-green-100 text-green-600 rounded-lg flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">3</div>
+                        <div>
+                            <div class="font-semibold text-slate-800 text-sm">Identyfikacja luk w katalogu</div>
+                            <div class="text-slate-500 text-xs">NO_MATCH bez kliknięcia = lista zakupowa dla działu zaopatrzenia.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-slate-900 rounded-2xl p-6 font-mono text-sm">
+                <div class="text-slate-400 font-sans text-xs mb-3">Przykład rekordu JSONL:</div>
+                <div class="space-y-1">
+                    <div><span class="text-blue-400">"query"</span><span class="text-slate-400">: </span><span class="text-green-400">"dell xps 14"</span></div>
+                    <div><span class="text-blue-400">"confidence"</span><span class="text-slate-400">: </span><span class="text-red-400">"NO_MATCH"</span></div>
+                    <div><span class="text-blue-400">"clicked_alternative"</span><span class="text-slate-400">: </span><span class="text-yellow-400">true</span></div>
+                    <div><span class="text-blue-400">"reward_score"</span><span class="text-slate-400">: </span><span class="text-yellow-400">+15.0</span></div>
+                    <div><span class="text-blue-400">"ai_ready"</span><span class="text-slate-400">: </span><span class="text-yellow-400">true</span></div>
+                </div>
+                <div class="mt-4 text-slate-400 font-sans text-xs">Eksportujesz JSONL → fine-tuning w jeden wieczór → Twój bot wie że "coś do filmowania z drona nocą" = kamera z dużą matrycą.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- WDROŻENIE + BEZPIECZEŃSTWO -->
+<section class="py-20 px-6 bg-slate-50">
+    <div class="max-w-6xl mx-auto">
+        <div class="grid md:grid-cols-2 gap-12">
+            <div>
+                <h2 class="text-2xl font-bold text-slate-900 mb-6">Wdrożenie w 5 minut</h2>
+                <div class="space-y-4">
+                    <div class="flex items-start gap-4">
+                        <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center font-bold flex-shrink-0">1</div>
+                        <div>
+                            <div class="font-semibold text-slate-800">Jeden tag JS przez GTM</div>
+                            <div class="text-slate-500 text-sm">Może wdrożyć osoba nietechniczna. Zero ingerencji w kod sklepu.</div>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center font-bold flex-shrink-0">2</div>
+                        <div>
+                            <div class="font-semibold text-slate-800">3–7 dni adaptacja</div>
+                            <div class="text-slate-500 text-sm">Dostarczasz listę produktów i cen. Resztą zajmujemy się my.</div>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-8 h-8 bg-yellow-400 text-slate-900 rounded-xl flex items-center justify-center font-bold flex-shrink-0">✓</div>
+                        <div>
+                            <div class="font-semibold text-slate-800">Darmowy miesiąc pilotażowy</div>
+                            <div class="text-slate-500 text-sm">Zero KPI, zero zobowiązań. Jeśli nie pasuje — rozchodzimy się.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-slate-900 mb-6">RODO — dwie warstwy ochrony</h2>
+                <div class="space-y-3">
+                    <div class="bg-white rounded-xl p-4 border border-green-100">
+                        <div class="font-semibold text-green-700 text-sm mb-1">Przeglądarka klienta</div>
+                        <div class="text-slate-600 text-sm">scrubPII() usuwa PESEL, kartę, IBAN przed wysłaniem. IP hashowane SHA-256 lokalnie — surowe IP nigdy nie opuszcza urządzenia.</div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 border border-green-100">
+                        <div class="font-semibold text-green-700 text-sm mb-1">Serwer</div>
+                        <div class="text-slate-600 text-sm">Drugi przejazd filtrowania PII. Automatyczne usuwanie danych po 30 dniach. Firmy B2B identyfikowane przez MaxMind, nie IP.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-slate-900 text-slate-500 py-10 px-6 text-center">
+    <div class="flex items-center justify-center gap-3 mb-3">
+        <div class="w-7 h-7 bg-yellow-400 rounded-lg flex items-center justify-center font-black text-slate-900 text-xs">L</div>
+        <span class="text-white font-bold">Adept AI</span>
+    </div>
+    <p class="text-sm">Łukasz Piskorski · Gorzów Wielkopolski, 2026</p>
+    <p class="mt-1 text-sm"><a href="https://adeptai.pl/ldi" class="text-yellow-500 hover:text-yellow-400">adeptai.pl/ldi</a> · <a href="https://adeptai.pl/live-demo" class="text-yellow-500 hover:text-yellow-400">live-demo</a></p>
+</footer>
+
+<!-- FLOATING CHATBOT -->
+<div class="floating-chat">
+    <div id="chat-window" class="chat-window closed">
+        <div class="bg-slate-900 rounded-t-2xl px-4 py-3 flex items-center justify-between flex-shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-yellow-400 rounded-xl flex items-center justify-center text-base">🤖</div>
+                <div>
+                    <div class="text-white font-bold text-sm">LDI Expert</div>
+                    <div class="flex items-center gap-1 text-green-400 text-xs">
+                        <span class="w-1.5 h-1.5 bg-green-400 rounded-full pulse"></span>
+                        Zna cały system LDI
+                    </div>
+                </div>
+            </div>
+            <button onclick="toggleChat()" class="text-slate-400 hover:text-white text-lg transition">✕</button>
+        </div>
+
+        <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3 bg-white">
+            <div class="flex gap-2">
+                <div class="w-6 h-6 bg-yellow-100 rounded-lg flex items-center justify-center text-xs flex-shrink-0 mt-1">🤖</div>
+                <div class="chat-bubble-bot p-3 text-sm text-slate-700">Cześć! Zapytaj mnie o LDI — RODO, wdrożenie, ceny, Gold Signal, dane AI.</div>
+            </div>
+            <div class="flex gap-2">
+                <div class="w-6 h-6 bg-yellow-100 rounded-lg flex items-center justify-center text-xs flex-shrink-0 mt-1">🤖</div>
+                <div class="chat-bubble-bot p-3 text-sm text-slate-600">
+                    <span class="text-blue-600 cursor-pointer hover:underline block" onclick="quickAsk('Czy to nie keylogger?')">💬 Czy to nie keylogger?</span>
+                    <span class="text-blue-600 cursor-pointer hover:underline block mt-1" onclick="quickAsk('Ile kosztuje?')">💬 Ile kosztuje?</span>
+                    <span class="text-blue-600 cursor-pointer hover:underline block mt-1" onclick="quickAsk('Jak działają dane AI?')">💬 Jak działają dane AI?</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-t border-slate-100 p-3 flex gap-2 flex-shrink-0 bg-white rounded-b-2xl">
+            <input id="chat-input" type="text" placeholder="Zapytaj o LDI..."
+                class="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                onkeydown="if(event.key==='Enter') sendMessage()">
+            <button onclick="sendMessage()" class="bg-yellow-400 hover:bg-yellow-500 text-slate-900 px-3 py-2 rounded-xl transition text-sm font-bold">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="chat-toggle" onclick="toggleChat()">
+        <span id="chat-icon" class="text-slate-900 text-xl">🤖</span>
+    </div>
+</div>
+
+<script>
+let chatOpen = false;
+const history = [];
+
+function toggleChat() {
+    chatOpen = !chatOpen;
+    document.getElementById('chat-window').classList.toggle('closed', !chatOpen);
+    document.getElementById('chat-icon').textContent = chatOpen ? '✕' : '🤖';
+    if (chatOpen) document.getElementById('chat-input').focus();
+}
+
+function quickAsk(text) {
+    document.getElementById('chat-input').value = text;
+    sendMessage();
+}
+
+const SYSTEM = `Jesteś ekspertem LDI (Lost Demand Intelligence) Adept AI. Odpowiadasz zwięźle — 2-4 zdania, po polsku, konkretnie i profesjonalnie.
+
+RODO: Nasłuchuje tylko okno wyszukiwarki. PESEL/karta/IBAN usuwane w przeglądarce przed wysłaniem. IP hashowane SHA-256 lokalnie. Serwer — drugi przejazd filtrowania, dane usuwane po 30 dniach. MaxMind identyfikuje firmy B2B, nie surowe IP.
+WYDAJNOŚĆ: Skrypt asynchroniczny <60ms, nie blokuje strony. 200ms podpowiedzi, 800ms zapis. Redukcja ruchu 90%.
+WDROŻENIE: Jeden tag JS przez GTM, osoba nietechniczna da radę. Adaptacja do branży 3-7 dni. Min. 1000 sesji/mc.
+P1: Cotygodniowy raport utraconego popytu + Gold Signal.
+P2: Alert gdy duża firma wchodzi na stronę, handlowiec widzi co wpisują na żywo.
+P3: Dane JSONL do trenowania AI — klasyfikacja intencji, mapowanie substytutów, luki w katalogu.
+GOLD SIGNAL: NO_MATCH + kliknięcie alternatywy = +15.0 (najwyższa waga, standardowe +10.0).
+DANE AI: Eksport JSONL → fine-tuning w jeden wieczór. Wartość unikalna dla branży. W 2026/2027 AI zarabia na reklamach, te dane będą bezcenne.
+CENA: Darmowy miesiąc pilotażowy, zero KPI. Po pilocie SaaS ~1500-2500 zł/mc.
+PARTNERSTWO: Atrakcyjny program revenue share. Stawki indywidualnie. Kontakt: adeptai.pl.
+PRZEWAGA: GA widzi zdarzenia po kliknięciu. LDI widzi intencję przed Enter. Algolia wie że 0 wyników — LDI wie dlaczego i ile to kosztuje.`;
+
+async function sendMessage() {
+    const input = document.getElementById('chat-input');
+    const msgs = document.getElementById('chat-messages');
+    const text = input.value.trim();
+    if (!text) return;
+
+    history.push({ role: 'user', content: text });
+    msgs.innerHTML += `<div class="flex gap-2 justify-end"><div class="chat-bubble-user p-3 text-sm max-w-xs">${text}</div></div>`;
+    input.value = '';
+    msgs.scrollTop = msgs.scrollHeight;
+
+    const lid = 'l' + Date.now();
+    msgs.innerHTML += `<div id="${lid}" class="flex gap-2"><div class="w-6 h-6 bg-yellow-100 rounded-lg flex items-center justify-center text-xs flex-shrink-0 mt-1">🤖</div><div class="chat-bubble-bot p-3 text-sm text-slate-400 animate-pulse">Pisze...</div></div>`;
+    msgs.scrollTop = msgs.scrollHeight;
+
+    try {
+        const res = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: text, history, system: SYSTEM })
+        });
+        const data = await res.json();
+        const reply = data.reply || 'Przepraszam, błąd. Napisz bezpośrednio: adeptai.pl';
+        history.push({ role: 'assistant', content: reply });
+        document.getElementById(lid)?.remove();
+        msgs.innerHTML += `<div class="flex gap-2"><div class="w-6 h-6 bg-yellow-100 rounded-lg flex items-center justify-center text-xs flex-shrink-0 mt-1">🤖</div><div class="chat-bubble-bot p-3 text-sm text-slate-700 max-w-xs">${reply}</div></div>`;
+        msgs.scrollTop = msgs.scrollHeight;
+    } catch(e) {
+        document.getElementById(lid)?.remove();
+        msgs.innerHTML += `<div class="flex gap-2"><div class="w-6 h-6 bg-yellow-100 rounded-lg flex items-center justify-center text-xs flex-shrink-0 mt-1">🤖</div><div class="chat-bubble-bot p-3 text-sm text-red-500 max-w-xs">Błąd. Napisz: adeptai.pl</div></div>`;
+        msgs.scrollTop = msgs.scrollHeight;
+    }
+}
+</script>
+</body>
+</html>
