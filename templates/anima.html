@@ -803,19 +803,139 @@ Layer 5 — Final prompt block — exactly what the model sees</code></pre>
             not noise redistribution.
         </p>
 
-        <h3>Evaluation Methodology</h3>
+        <h3>Evaluation Methodology — how we measure progress</h3>
         <p>
-            Current RAG quality assessment is manual: one engineer reviewing log samples and
-            scoring retrieval quality per session. This produces directionally correct numbers
-            ("~83/100 after June 2026 audit") but not reproducible ones.
-            The methodology being designed:
+            On April 22, 2026, ANIMA received an independent full-stack audit against a five-dimension rubric.
+            Baseline score: <strong>34/100</strong>.
+            The same rubric applied to the June 2026 state shows where fixes landed and what remains.
         </p>
-        <ul>
-            <li>Fixed evaluation set: 100 query–expected-memory pairs, version-controlled</li>
-            <li>Automated scoring: precision@k, recall@k, MRR per pipeline change</li>
-            <li>Regression detection: commit-level comparison catches silent degradations</li>
-            <li>Powered by the RAG Debugger — queries run programmatically, scores computed automatically</li>
-        </ul>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Dimension</th>
+                    <th>Weight</th>
+                    <th>April 22</th>
+                    <th>June 2026</th>
+                    <th>Δ pts</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Core architecture</td>
+                    <td>20%</td>
+                    <td>75 → 15 pts</td>
+                    <td>~90 → 18 pts</td>
+                    <td>+3</td>
+                </tr>
+                <tr>
+                    <td>RAG quality (facts return correctly)</td>
+                    <td>25%</td>
+                    <td>15 → 3.75 pts</td>
+                    <td><strong>~83 → 20.75 pts</strong></td>
+                    <td><strong>+17</strong></td>
+                </tr>
+                <tr>
+                    <td>Character consistency</td>
+                    <td>20%</td>
+                    <td>35 → 7 pts</td>
+                    <td>~78 → 15.6 pts</td>
+                    <td>+8.6</td>
+                </tr>
+                <tr>
+                    <td>Reliability / no critical bugs</td>
+                    <td>15%</td>
+                    <td>20 → 3 pts</td>
+                    <td>~65 → 9.75 pts</td>
+                    <td>+6.75</td>
+                </tr>
+                <tr>
+                    <td>Commercial readiness</td>
+                    <td>20%</td>
+                    <td>25 → 5 pts</td>
+                    <td>~35 → 7 pts</td>
+                    <td>+2</td>
+                </tr>
+                <tr>
+                    <td><strong>TOTAL</strong></td>
+                    <td>100%</td>
+                    <td><strong>34 / 100</strong></td>
+                    <td><strong>~71 / 100</strong></td>
+                    <td><strong>+37</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            The RAG Quality dimension was the critical bottleneck in April — DB corruption, milestone boost
+            consuming all retrieval slots, topical blindness producing false confidence.
+            After targeted fixes (DB cleanup −175 vectors, milestone compose 4F+2M,
+            FactStore, Temporal Filter, MMR cosine, PERSON threshold), RAG Quality
+            jumped from <strong>15 → ~83</strong> — the largest single gain in the system's history.
+        </p>
+        <p>
+            Commercial Readiness remains low by design — ANIMA is currently a single-user production system,
+            not a multi-tenant SaaS. The architectural decisions (per-user vector isolation, SHA256 IDs)
+            are already in place; the remaining gap is operational (streaming, monitoring, rate limiting).
+        </p>
+
+        <h3>Progress roadmap (original audit targets)</h3>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Threshold</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>45 / 100</strong></td>
+                    <td>System stops lying with false confidence</td>
+                    <td>✓ Reached — Phase 0 fixes + DB cleanup</td>
+                </tr>
+                <tr>
+                    <td><strong>58 / 100</strong></td>
+                    <td>RAG reliably returns facts</td>
+                    <td>✓ Exceeded — FactStore + Temporal Filter delivered this without BM25</td>
+                </tr>
+                <tr>
+                    <td><strong>68 / 100</strong></td>
+                    <td>Consistent character (structured store + curiosity threads)</td>
+                    <td>✓ Exceeded — Domowy Ambient + safe_haven gate + character refactor</td>
+                </tr>
+                <tr>
+                    <td><strong>71 / 100</strong></td>
+                    <td>Current estimated state (June 2026)</td>
+                    <td>← We are here</td>
+                </tr>
+                <tr>
+                    <td><strong>78 / 100</strong></td>
+                    <td>Beta-ready (multi-user + streaming + monitoring)</td>
+                    <td>Next — RAG Debugger + BM25 unlocks this range</td>
+                </tr>
+                <tr>
+                    <td><strong>88 / 100</strong></td>
+                    <td>Commercially ready (evaluation framework + 3 months testing)</td>
+                    <td>Roadmap Q4 2026</td>
+                </tr>
+                <tr>
+                    <td><strong>95+ / 100</strong></td>
+                    <td>Market leader (voice, mobile, fine-tuning on custom model)</td>
+                    <td>Long-term vision</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="callout" style="margin-top: 24px;">
+            <p>
+                The June 2026 scores above are manually estimated — the same bottleneck the April audit
+                identified (no evaluation framework). The <strong>RAG Debugger</strong> will make these
+                scores reproducible: fixed query set, automated precision@k and recall@k,
+                commit-level regression detection. The first reproducible audit is the next milestone.
+            </p>
+        </div>
     </section>
 
     <hr>
