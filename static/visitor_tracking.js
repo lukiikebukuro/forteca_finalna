@@ -766,27 +766,72 @@ class VisitorTracker {
     }
 }
 
-// Auto-initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    if (document.querySelector('.demo-container')) {
+// ── COOKIE CONSENT BANNER ──────────────────────────────────────────────────
+
+VisitorTracker.showConsentBanner = function(onAccept) {
+    const banner = document.createElement('div');
+    banner.id = 'ldi-cookie-banner';
+    banner.style.cssText = [
+        'position:fixed', 'bottom:0', 'left:0', 'right:0', 'z-index:9999',
+        'background:#1e293b', 'color:#f1f5f9', 'padding:16px 24px',
+        'display:flex', 'align-items:center', 'justify-content:space-between',
+        'gap:16px', 'flex-wrap:wrap',
+        'font-family:-apple-system,sans-serif', 'font-size:14px', 'line-height:1.5',
+        'border-top:1px solid #334155', 'box-shadow:0 -4px 20px rgba(0,0,0,0.3)'
+    ].join(';');
+
+    banner.innerHTML =
+        '<span style="flex:1;min-width:200px;">' +
+            'Ta strona używa analityki do poprawy wyszukiwania. ' +
+            'Dane są anonimowe — zero surowego IP, zero cookies śledzących.' +
+        '</span>' +
+        '<div style="display:flex;gap:10px;flex-shrink:0;">' +
+            '<button id="ldi-consent-reject" style="padding:8px 16px;background:transparent;color:#94a3b8;border:1px solid #475569;border-radius:6px;cursor:pointer;font-size:13px;">Nie, dziękuję</button>' +
+            '<button id="ldi-consent-accept" style="padding:8px 18px;background:#3b82f6;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;">Akceptuję</button>' +
+        '</div>';
+
+    document.body.appendChild(banner);
+
+    document.getElementById('ldi-consent-accept').addEventListener('click', function() {
+        localStorage.setItem('ldi_cookie_consent', 'accepted');
+        banner.remove();
+        console.log('🛰️ SATELITA: Cookie consent accepted - starting tracker');
+        if (onAccept) onAccept();
+    });
+
+    document.getElementById('ldi-consent-reject').addEventListener('click', function() {
+        localStorage.setItem('ldi_cookie_consent', 'rejected');
+        banner.remove();
+        console.log('🛰️ SATELITA: Cookie consent rejected - tracking disabled');
+    });
+};
+
+// ── AUTO-INITIALIZE (waits for cookie consent) ────────────────────────────
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (!document.querySelector('.demo-container')) return;
+
+    // Expose debug/opt-out helpers regardless of consent state
+    window.getVisitorSummary = function() {
+        if (window.visitorTracker) console.table(window.visitorTracker.getVisitorSummary());
+    };
+    window.satelitaOptOut = function() { VisitorTracker.optOut(); };
+    window.satelitaOptIn  = function() { VisitorTracker.optIn(); };
+
+    function startTracker() {
         window.visitorTracker = new VisitorTracker();
-        
-        // Debug commands
-        window.getVisitorSummary = () => {
-            if (window.visitorTracker) {
-                console.table(window.visitorTracker.getVisitorSummary());
-            }
-        };
-        
-        // RODO: Public opt-out/opt-in methods
-        window.satelitaOptOut = () => VisitorTracker.optOut();
-        window.satelitaOptIn = () => VisitorTracker.optIn();
-        
         console.log('🛰️ SATELITA v2.0: Visitor tracking active (GDPR Compliant)');
-        console.log('Commands:');
-        console.log('  getVisitorSummary() - Show session info');
-        console.log('  satelitaOptOut() - Disable tracking');
-        console.log('  satelitaOptIn() - Enable tracking');
+    }
+
+    var consent = localStorage.getItem('ldi_cookie_consent');
+
+    if (consent === 'accepted') {
+        startTracker();
+    } else if (consent === 'rejected') {
+        console.log('🛰️ SATELITA: Cookie consent previously rejected - tracking disabled');
+    } else {
+        // No decision yet — show banner, start only on accept
+        VisitorTracker.showConsentBanner(startTracker);
     }
 });
 

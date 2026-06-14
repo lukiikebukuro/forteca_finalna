@@ -542,7 +542,7 @@ Odpowiedź: Radar B2B identyfikuje firmę, nie konkretną osobę. Handlowiec kon
 
 19. COOKIE CONSENT / CONSENT MODE
 Zarzut: czy skrypt odpala się przed akceptacją cookie baneru? Czy respektujecie Consent Mode?
-Odpowiedź: Skrypt ma własne warstwy ochrony: respektuje Do Not Track, ma opt-out przez localStorage, zero surowego IP, zero cookies trackingowych. Pełny Consent Mode v2 jest na roadmapie. Dla pilotażu nie jest to bloker — działamy na podstawie uzasadnionego interesu właściciela sklepu zgodnie z RODO.`;
+Odpowiedź: Skrypt startuje dopiero po akceptacji przez użytkownika — na każdej stronie demo pojawia się baner "Ta strona używa analityki do poprawy wyszukiwania. Dane są anonimowe." z przyciskami Akceptuję/Nie dziękuję. Bez kliknięcia Akceptuję tracking nie startuje. Dodatkowo: zero surowego IP, zero cookies śledzących, respektujemy Do Not Track. Pełny Consent Mode v2 jest na roadmapie.`;
 
 async function sendMessage() {
     const input = document.getElementById('chat-input');
