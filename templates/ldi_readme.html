@@ -534,7 +534,15 @@ Odpowiedź: Architektura RODO zaprojektowana zgodnie z unijnym standardem, nie t
 
 17. KOPIOWANIE POMYSŁU PRZEZ KONKURENCJĘ
 Zarzut: to można skopiować.
-Odpowiedź: Można skopiować architekturę, nie można skopiować danych zebranych przez 6-12 miesięcy. Kto zaczyna dziś, ma 6-12 miesięcy przewagi w danych.`;
+Odpowiedź: Można skopiować architekturę, nie można skopiować danych zebranych przez 6-12 miesięcy. Kto zaczyna dziś, ma 6-12 miesięcy przewagi w danych.
+
+18. JAK HANDLOWIEC KONTAKTUJE SIĘ Z FIRMĄ Z RADARU B2B
+Zarzut: skąd handlowiec wie z kim rozmawiać, skoro system identyfikuje firmę a nie osobę?
+Odpowiedź: Radar B2B identyfikuje firmę, nie konkretną osobę. Handlowiec kontaktuje się przez znane mu kanały — numer główny firmy, LinkedIn, własne kontakty. System daje sygnał KIEDY dzwonić — nie zastępuje relacji handlowca.
+
+19. COOKIE CONSENT / CONSENT MODE
+Zarzut: czy skrypt odpala się przed akceptacją cookie baneru? Czy respektujecie Consent Mode?
+Odpowiedź: Skrypt ma własne warstwy ochrony: respektuje Do Not Track, ma opt-out przez localStorage, zero surowego IP, zero cookies trackingowych. Pełny Consent Mode v2 jest na roadmapie. Dla pilotażu nie jest to bloker — działamy na podstawie uzasadnionego interesu właściciela sklepu zgodnie z RODO.`;
 
 async function sendMessage() {
     const input = document.getElementById('chat-input');
