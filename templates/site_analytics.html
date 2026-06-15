@@ -438,10 +438,6 @@
 </div>
 
 <script>
-// ===== DATA STORES =====
-const allBotQueries  = [];
-const allCopyEvents  = [];
-
 // ===== HELPERS =====
 function pageBadge(path) {
     const map = {
@@ -503,9 +499,7 @@ function truncate(s, n) {
 }
 
 // ===== MODALS =====
-function openBotModal(idx) {
-    const q = allBotQueries[idx];
-    if (!q) return;
+function openBotModal(q) {
     document.getElementById('bot-modal-meta').textContent =
         `${q.organization || 'Nieznana firma'} · ${q.city || '—'} · ${formatTime(q.timestamp)}`;
     document.getElementById('bot-modal-question').textContent = q.user_message || '—';
@@ -513,9 +507,7 @@ function openBotModal(idx) {
     document.getElementById('bot-modal').classList.add('active');
 }
 
-function openCopyModal(idx) {
-    const c = allCopyEvents[idx];
-    if (!c) return;
+function openCopyModal(c) {
     document.getElementById('copy-modal-meta').innerHTML =
         `${esc(c.organization || 'Nieznana firma')} · ${esc(c.city || '—')} · ${pageBadge(c.page_path)} · ${formatTime(c.timestamp)}`;
     document.getElementById('copy-modal-text').textContent  = c.copy_text || '';
@@ -554,12 +546,11 @@ function renderVisitRow(v, prepend) {
 // ===== BOT CARDS =====
 function renderBotCard(q, prepend) {
     document.getElementById('bot-empty')?.remove();
-    const idx = allBotQueries.push(q) - 1;
     const list = document.getElementById('bot-list');
     const div  = document.createElement('div');
     div.className = 'bot-card' + (prepend ? ' new-flash' : '');
-    div.setAttribute('data-idx', idx);
-    div.onclick = () => openBotModal(idx);
+    div.dataset.item = JSON.stringify(q);
+    div.addEventListener('click', function() { openBotModal(JSON.parse(this.dataset.item)); });
     div.innerHTML = `
         <div class="bot-meta">
             <span class="bot-time">${formatTime(q.timestamp)}</span>
@@ -572,13 +563,13 @@ function renderBotCard(q, prepend) {
 }
 
 // ===== COPY EVENTS (grouped by day) =====
-// dayGroups: { 'YYYY-MM-DD': [idx, idx, ...] }
+// dayGroups: { 'YYYY-MM-DD': count }
 const dayGroups = {};
 const dayOrder  = [];
 
 function ensureDayGroup(dk, labelTs) {
-    if (dayGroups[dk]) return;
-    dayGroups[dk] = [];
+    if (dk in dayGroups) return;
+    dayGroups[dk] = 0;
     // Insert in reverse chronological order
     dayOrder.unshift(dk);
 
@@ -600,21 +591,21 @@ function ensureDayGroup(dk, labelTs) {
 }
 
 function renderCopyCard(c, prepend) {
-    const idx = allCopyEvents.push(c) - 1;
-    const dk  = dateKey(c.timestamp);
+    const dk = dateKey(c.timestamp);
 
     ensureDayGroup(dk, c.timestamp);
-    dayGroups[dk].push(idx);
+    dayGroups[dk]++;
 
     // Update day count badge
+    const n = dayGroups[dk];
     const countEl = document.getElementById('day-count-' + dk);
-    if (countEl) countEl.textContent = dayGroups[dk].length + (dayGroups[dk].length === 1 ? ' kopiowanie' : ' kopiowania');
+    if (countEl) countEl.textContent = n + (n === 1 ? ' kopiowanie' : ' kopiowania');
 
     const grid = document.getElementById('day-grid-' + dk);
     const div  = document.createElement('div');
     div.className = 'copy-card' + (prepend ? ' new-flash' : '');
-    div.setAttribute('data-idx', idx);
-    div.onclick = () => openCopyModal(idx);
+    div.dataset.item = JSON.stringify(c);
+    div.addEventListener('click', function() { openCopyModal(JSON.parse(this.dataset.item)); });
 
     const preview = truncate(c.copy_text || '', 120);
     const needsModal = (c.copy_text || '').length > 120;
