@@ -955,6 +955,27 @@ def get_site_analytics_stats():
                 'tests_visits': 0, 'bot_queries': 0}
 
 
+def ensure_p5_user():
+    """
+    Tworzy użytkownika 'p5viewer' przy każdym starcie (INSERT OR IGNORE).
+    Osobne konto wyłącznie do /site-analytics — nie jest to główny admin.
+    """
+    from werkzeug.security import generate_password_hash
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        cursor = conn.cursor()
+        pwd_hash = generate_password_hash('Radar2025!')
+        cursor.execute('''
+            INSERT OR IGNORE INTO users (username, email, password_hash, salt, role, is_active)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', ('p5viewer', 'p5viewer@adeptai.pl', pwd_hash, '', 'admin', True))
+        conn.commit()
+        conn.close()
+        print("[STARTUP] p5viewer user ensured")
+    except Exception as e:
+        print(f"[STARTUP] p5viewer ensure error: {e}")
+
+
 def init_database():
     """Initialize database integrity on startup"""
     print("[STARTUP] Checking database integrity...")
@@ -967,6 +988,9 @@ def init_database():
         print("[STARTUP] Admin state & persistent storage tables OK")
     except Exception as e:
         print(f"[STARTUP] Warning verifying admin tables: {e}")
+
+    # 2. Ensure P5 viewer user exists (runs every startup, idempotent)
+    ensure_p5_user()
 
     # 2. Check if users table exists (new database)
     conn = sqlite3.connect(DATABASE_NAME)
