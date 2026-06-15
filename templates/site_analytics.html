@@ -215,11 +215,13 @@
             display: none; position: fixed; inset: 0;
             background: rgba(15,39,72,0.7); backdrop-filter: blur(3px);
             z-index: 1000; align-items: center; justify-content: center;
+            padding: 20px; /* zapobiega przyklejaniu modala do krawędzi na małych ekranach */
         }
         .modal-overlay.active { display: flex; }
         .modal-box {
             background: #fff; border-radius: 16px; width: 680px; max-width: 95vw;
             max-height: 85vh; display: flex; flex-direction: column;
+            overflow: hidden; /* CRITICAL: bez tego max-height nie wymusza granicy dla flex children */
             box-shadow: 0 24px 64px rgba(0,0,0,0.4);
             animation: modalIn .25s ease-out;
         }
@@ -239,8 +241,10 @@
         }
         .modal-close:hover { background: #fee2e2; color: #b91c1c; }
         .modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; min-height: 0; }
-        .modal-body::-webkit-scrollbar { width: 5px; }
-        .modal-body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .modal-body::-webkit-scrollbar { width: 6px; }
+        .modal-body::-webkit-scrollbar-track { background: #f1f5f9; }
+        .modal-body::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+        .modal-body::-webkit-scrollbar-thumb:hover { background: #64748b; }
 
         /* Bot modal */
         .convo-bubble {
