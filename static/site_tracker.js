@@ -1,7 +1,7 @@
 /**
  * LDI Site Tracker — P5 Analytics
- * Fires on /ldi, /ldi-readme, /ldi-tests
- * No cookie consent needed: no PII stored, IP is hashed server-side.
+ * Fires on /ldi, /ldi-readme, /ldi-tests, /anima
+ * Tracks: page visits + copy events. No raw IP/PII stored.
  */
 (function () {
     'use strict';
@@ -58,4 +58,24 @@
             }).catch(function () {});
         }
     });
+
+    // Copy tracking
+    document.addEventListener('copy', function () {
+        var selected = window.getSelection ? window.getSelection().toString() : '';
+        if (!selected || selected.trim().length < 3) return;
+
+        fetch('/api/site-track', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                event_type: 'copy',
+                visit_id: visitId,
+                page_path: pagePath,
+                copy_text: selected.slice(0, 300),
+                organization: geoData.organization,
+                city: geoData.city
+            })
+        }).catch(function () {});
+    });
+
 })();

@@ -809,6 +809,20 @@ def ensure_site_tracking_tables():
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_bot_queries_ts ON bot_queries(timestamp)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_bot_queries_visit ON bot_queries(visit_id)')
 
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS copy_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            visit_id TEXT,
+            page_path TEXT NOT NULL,
+            copy_text TEXT NOT NULL,
+            ip_hash TEXT,
+            organization TEXT,
+            city TEXT,
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_copy_events_ts ON copy_events(timestamp)')
+
     conn.commit()
     conn.close()
     print("[DATABASE] P5 site tracking tables initialized")
@@ -870,6 +884,28 @@ def get_recent_bot_queries(limit=30):
         return []
 
 
+def get_recent_copy_events(limit=25):
+    """Get recent copy events for P5 dashboard"""
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT visit_id, page_path, copy_text, organization, city, timestamp
+            FROM copy_events
+            ORDER BY timestamp DESC LIMIT ?
+        ''', (limit,))
+        rows = cursor.fetchall()
+        conn.close()
+        return [{
+            'visit_id': r[0], 'page_path': r[1], 'copy_text': r[2],
+            'organization': r[3] or 'Nieznana firma',
+            'city': r[4] or '—', 'timestamp': r[5]
+        } for r in rows]
+    except Exception as e:
+        print(f"[P5] get_recent_copy_events error: {e}")
+        return []
+
+
 def get_site_analytics_stats():
     """Get today's stats for P5 dashboard"""
     try:
@@ -900,13 +936,18 @@ def get_site_analytics_stats():
             "SELECT COUNT(*) FROM bot_queries WHERE date(timestamp) = ?", (today,))
         bot_queries = cursor.fetchone()[0]
 
+        cursor.execute(
+            "SELECT COUNT(*) FROM copy_events WHERE date(timestamp) = ?", (today,))
+        copy_count = cursor.fetchone()[0]
+
         conn.close()
         return {
             'total_visits': total_visits,
             'ldi_visits': ldi_visits,
             'readme_visits': readme_visits,
             'tests_visits': tests_visits,
-            'bot_queries': bot_queries
+            'bot_queries': bot_queries,
+            'copy_events': copy_count
         }
     except Exception as e:
         print(f"[P5] get_site_analytics_stats error: {e}")

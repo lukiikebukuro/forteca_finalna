@@ -83,7 +83,7 @@
         /* ===== STATS ROW ===== */
         .stats-row {
             max-width: 1600px; margin: 24px auto 0; padding: 0 24px;
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
+            display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px;
         }
         .stat-card {
             background: #fff;
@@ -98,6 +98,7 @@
         .stat-card.readme { border-left-color: #0ea5e9; }
         .stat-card.tests  { border-left-color: #8b5cf6; }
         .stat-card.bot    { border-left-color: #f59e0b; }
+        .stat-card.copy   { border-left-color: #10b981; }
         .stat-label { font-size: 11px; color: #6b7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
         .stat-value { font-size: 28px; font-weight: 700; color: #1e3a5f; margin-top: 4px; }
         .stat-sub   { font-size: 11px; color: #9ca3af; margin-top: 2px; }
@@ -107,6 +108,7 @@
             max-width: 1600px; margin: 20px auto; padding: 0 24px 32px;
             display: grid; grid-template-columns: 1fr 380px; gap: 20px;
         }
+        .right-col { display: flex; flex-direction: column; gap: 16px; }
 
         /* ===== PANEL ===== */
         .panel {
@@ -130,7 +132,7 @@
         }
 
         /* ===== VISITS TABLE ===== */
-        .visits-scroll { max-height: calc(100vh - 320px); overflow-y: auto; }
+        .visits-scroll { max-height: calc(100vh - 310px); overflow-y: auto; }
         .visits-table { width: 100%; border-collapse: collapse; }
         .visits-table th {
             background: #f8fafc; color: #6b7280;
@@ -177,8 +179,34 @@
             100% { background: transparent; }
         }
 
-        /* ===== BOT QUERIES PANEL ===== */
-        .bot-scroll { max-height: calc(100vh - 320px); overflow-y: auto; padding: 12px; }
+        /* ===== BOT QUERIES + COPY PANELS ===== */
+        .bot-scroll { max-height: 260px; overflow-y: auto; padding: 12px; }
+        .copy-scroll { max-height: 260px; overflow-y: auto; padding: 12px; }
+
+        /* Copy event cards */
+        .copy-card {
+            background: #f0fdf4; border: 1px solid #bbf7d0;
+            border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+        .copy-card:hover { background: #dcfce7; border-color: #86efac; }
+        .copy-card.new-flash { animation: flashCopy 1.5s ease; }
+        @keyframes flashCopy {
+            0%   { background: #bbf7d0; border-color: #34d399; }
+            100% { background: #f0fdf4; border-color: #bbf7d0; }
+        }
+        .copy-meta {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 5px;
+        }
+        .copy-time { font-size: 11px; color: #6b7280; font-weight: 600; }
+        .copy-org  { font-size: 11px; color: #374151; font-weight: 600; margin-bottom: 4px; }
+        .copy-text {
+            font-size: 12px; color: #064e3b; background: #fff;
+            border-left: 3px solid #10b981; padding: 5px 10px;
+            border-radius: 0 6px 6px 0; font-family: monospace;
+            word-break: break-word;
+        }
         .bot-card {
             background: #f8fafc; border: 1px solid #e5e7eb;
             border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;
@@ -216,11 +244,14 @@
 
         /* ===== SCROLLBAR ===== */
         .visits-scroll::-webkit-scrollbar,
-        .bot-scroll::-webkit-scrollbar { width: 4px; }
+        .bot-scroll::-webkit-scrollbar,
+        .copy-scroll::-webkit-scrollbar { width: 4px; }
         .visits-scroll::-webkit-scrollbar-track,
-        .bot-scroll::-webkit-scrollbar-track { background: #f8fafc; }
+        .bot-scroll::-webkit-scrollbar-track,
+        .copy-scroll::-webkit-scrollbar-track { background: #f8fafc; }
         .visits-scroll::-webkit-scrollbar-thumb,
-        .bot-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .bot-scroll::-webkit-scrollbar-thumb,
+        .copy-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -232,7 +263,7 @@
             <div class="header-icon">📡</div>
             <div class="header-titles">
                 <h1>Site Analytics — P5</h1>
-                <div class="subtitle">Wizyty na adeptai.pl/ldi · /ldi-readme · /ldi-tests</div>
+                <div class="subtitle">Wizyty na adeptai.pl/ldi · /ldi-readme · /ldi-tests · /anima</div>
             </div>
         </div>
         <div class="header-right">
@@ -273,6 +304,11 @@
         <div class="stat-value" id="stat-bot">—</div>
         <div class="stat-sub">dziś łącznie</div>
     </div>
+    <div class="stat-card copy">
+        <div class="stat-label">Kopiowania</div>
+        <div class="stat-value" id="stat-copy">—</div>
+        <div class="stat-sub">skopiowany tekst</div>
+    </div>
 </div>
 
 <!-- MAIN CONTENT -->
@@ -312,21 +348,43 @@
         </div>
     </div>
 
-    <!-- RIGHT: BOT QUERIES -->
-    <div class="panel">
-        <div class="panel-header">
-            <div>
-                <div class="panel-title">Zapytania do bota</div>
-                <div class="panel-subtitle">Co pytają odwiedzający</div>
+    <!-- RIGHT COLUMN: BOT QUERIES + COPY EVENTS -->
+    <div class="right-col">
+
+        <!-- Bot Queries -->
+        <div class="panel">
+            <div class="panel-header">
+                <div>
+                    <div class="panel-title">Zapytania do bota</div>
+                    <div class="panel-subtitle">Co pytają odwiedzający</div>
+                </div>
+                <div class="panel-badge" id="bot-count">0</div>
             </div>
-            <div class="panel-badge" id="bot-count">0</div>
-        </div>
-        <div class="bot-scroll" id="bot-list">
-            <div class="empty-state" id="bot-empty">
-                <div class="empty-state-icon">🤖</div>
-                <div class="empty-state-text">Brak zapytań do bota dziś</div>
+            <div class="bot-scroll" id="bot-list">
+                <div class="empty-state" id="bot-empty">
+                    <div class="empty-state-icon">🤖</div>
+                    <div class="empty-state-text">Brak zapytań do bota dziś</div>
+                </div>
             </div>
         </div>
+
+        <!-- Copy Events -->
+        <div class="panel">
+            <div class="panel-header">
+                <div>
+                    <div class="panel-title">Kopiowania tekstu</div>
+                    <div class="panel-subtitle">Co kopiują ze stron LDI · /anima</div>
+                </div>
+                <div class="panel-badge" id="copy-count">0</div>
+            </div>
+            <div class="copy-scroll" id="copy-list">
+                <div class="empty-state" id="copy-empty">
+                    <div class="empty-state-icon">📋</div>
+                    <div class="empty-state-text">Nikt nic nie skopiował dziś</div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 </div>
@@ -405,6 +463,30 @@ function updateVisitRow(visitId, duration) {
     if (cells[4]) cells[4].innerHTML = '⬜';
 }
 
+function renderCopyCard(c, prepend) {
+    const empty = document.getElementById('copy-empty');
+    if (empty) empty.remove();
+
+    const list = document.getElementById('copy-list');
+    const div = document.createElement('div');
+    div.className = 'copy-card' + (prepend ? ' new-flash' : '');
+
+    div.innerHTML = `
+        <div class="copy-meta">
+            <span class="copy-time">${c.timestamp ? formatTime(c.timestamp) : (c.time || '—')}</span>
+            ${pageBadge(c.page_path || '/ldi')}
+        </div>
+        <div class="copy-org">${c.organization || 'Nieznana firma'} · ${c.city || '—'}</div>
+        <div class="copy-text">${truncate(c.copy_text, 180)}</div>
+    `;
+
+    if (prepend) {
+        list.insertBefore(div, list.firstChild);
+    } else {
+        list.appendChild(div);
+    }
+}
+
 function renderBotCard(q, prepend) {
     const empty = document.getElementById('bot-empty');
     if (empty) empty.remove();
@@ -437,6 +519,7 @@ function updateStats(stats) {
     document.getElementById('stat-readme').textContent = stats.readme_visits;
     document.getElementById('stat-tests').textContent  = stats.tests_visits;
     document.getElementById('stat-bot').textContent    = stats.bot_queries;
+    document.getElementById('stat-copy').textContent   = stats.copy_events ?? 0;
 }
 
 async function loadInitialData() {
@@ -466,6 +549,14 @@ async function loadInitialData() {
         }
         document.getElementById('bot-count').textContent =
             (data.bot_queries?.length || 0);
+
+        // Copy events
+        if (data.copy_events && data.copy_events.length > 0) {
+            document.getElementById('copy-empty')?.remove();
+            data.copy_events.forEach(c => renderCopyCard(c, false));
+        }
+        document.getElementById('copy-count').textContent =
+            (data.copy_events?.length || 0);
 
         // Stats
         if (data.stats) updateStats(data.stats);
@@ -521,6 +612,18 @@ socket.on('bot_query_new', function(q) {
 
     const bs = document.getElementById('stat-bot');
     bs.textContent = (parseInt(bs.textContent) || 0) + 1;
+});
+
+// Copy event
+socket.on('copy_event_new', function(c) {
+    console.log('[P5] copy_event_new:', c);
+    renderCopyCard(c, true);
+
+    const cc = document.getElementById('copy-count');
+    cc.textContent = (parseInt(cc.textContent) || 0) + 1;
+
+    const sc = document.getElementById('stat-copy');
+    sc.textContent = (parseInt(sc.textContent) || 0) + 1;
 });
 
 // ===== INIT =====
