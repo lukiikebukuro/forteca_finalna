@@ -112,6 +112,7 @@ def public_chat():
             'page_path': page_path,
             'timestamp': datetime.now().strftime('%H:%M'),
             'user_message': user_message,
+            'bot_reply': reply,
             'organization': organization or 'Nieznana firma',
             'city': city or '—'
         }, room='admin_dashboard')
@@ -229,9 +230,9 @@ def site_exit():
 def site_analytics_data():
     """REST endpoint for P5 initial data load"""
     return jsonify({
-        'visits': get_recent_site_visits(40),
-        'bot_queries': get_recent_bot_queries(30),
-        'copy_events': get_recent_copy_events(25),
+        'visits': get_recent_site_visits(50),
+        'bot_queries': get_recent_bot_queries(50),
+        'copy_events': get_recent_copy_events(100),
         'stats': get_site_analytics_stats()
     })
 

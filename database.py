@@ -856,7 +856,7 @@ def get_recent_site_visits(limit=40):
         return []
 
 
-def get_recent_bot_queries(limit=30):
+def get_recent_bot_queries(limit=50):
     """Get recent bot queries for P5 dashboard"""
     try:
         conn = sqlite3.connect(DATABASE_NAME)
@@ -874,7 +874,7 @@ def get_recent_bot_queries(limit=30):
             result.append({
                 'visit_id': r[0], 'page_path': r[1],
                 'timestamp': r[2], 'user_message': r[3],
-                'bot_reply': (r[4] or '')[:200],
+                'bot_reply': r[4] or '',
                 'organization': r[5] or 'Nieznana firma',
                 'city': r[6] or '—'
             })
@@ -884,7 +884,7 @@ def get_recent_bot_queries(limit=30):
         return []
 
 
-def get_recent_copy_events(limit=25):
+def get_recent_copy_events(limit=100):
     """Get recent copy events for P5 dashboard"""
     try:
         conn = sqlite3.connect(DATABASE_NAME)
@@ -933,6 +933,16 @@ def get_site_analytics_stats():
         tests_visits = cursor.fetchone()[0]
 
         cursor.execute(
+            "SELECT COUNT(*) FROM site_visits WHERE date(entry_time) = ? AND page_path = '/anima'",
+            (today,))
+        anima_visits = cursor.fetchone()[0]
+
+        cursor.execute(
+            "SELECT COUNT(*) FROM site_visits WHERE date(entry_time) = ? AND page_path = '/'",
+            (today,))
+        home_visits = cursor.fetchone()[0]
+
+        cursor.execute(
             "SELECT COUNT(*) FROM bot_queries WHERE date(timestamp) = ?", (today,))
         bot_queries = cursor.fetchone()[0]
 
@@ -946,6 +956,8 @@ def get_site_analytics_stats():
             'ldi_visits': ldi_visits,
             'readme_visits': readme_visits,
             'tests_visits': tests_visits,
+            'anima_visits': anima_visits,
+            'home_visits': home_visits,
             'bot_queries': bot_queries,
             'copy_events': copy_count
         }

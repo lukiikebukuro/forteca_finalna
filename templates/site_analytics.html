@@ -8,121 +8,81 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: #f0f4f8;
-            color: #1f2937;
-            min-height: 100vh;
-        }
+        body { font-family: 'Inter', sans-serif; background: #f0f4f8; color: #1f2937; min-height: 100vh; }
 
         /* ===== HEADER ===== */
         .header {
             background: linear-gradient(135deg, #0f2748 0%, #1e3a5f 100%);
             border-bottom: 2px solid #2d5a8e;
-            padding: 16px 32px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            padding: 16px 32px; position: sticky; top: 0; z-index: 200;
             box-shadow: 0 2px 12px rgba(0,0,0,0.3);
         }
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1600px;
-            margin: 0 auto;
-        }
+        .header-content { display: flex; justify-content: space-between; align-items: center; max-width: 1600px; margin: 0 auto; }
         .header-left { display: flex; align-items: center; gap: 16px; }
         .header-icon {
-            width: 44px; height: 44px;
-            background: rgba(59,130,246,0.2);
-            border: 1px solid rgba(59,130,246,0.4);
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 20px;
+            width: 44px; height: 44px; background: rgba(59,130,246,0.2);
+            border: 1px solid rgba(59,130,246,0.4); border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; font-size: 20px;
         }
-        .header-titles h1 {
-            font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 2px;
-        }
+        .header-titles h1 { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 2px; }
         .header-titles .subtitle { font-size: 12px; color: #93c5fd; font-weight: 500; }
         .header-right { display: flex; align-items: center; gap: 12px; }
         .live-badge {
             display: inline-flex; align-items: center; gap: 6px;
-            background: rgba(16,185,129,0.15);
-            border: 1px solid rgba(16,185,129,0.4);
-            color: #34d399;
-            padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600;
+            background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4);
+            color: #34d399; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600;
         }
-        .live-dot {
-            width: 7px; height: 7px; background: #10b981;
-            border-radius: 50%; animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.8); }
-        }
+        .live-dot { width: 7px; height: 7px; background: #10b981; border-radius: 50%; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
         .nav-btn {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
             color: #e2e8f0; padding: 7px 14px; border-radius: 6px;
-            text-decoration: none; font-size: 12px; font-weight: 500;
-            transition: all 0.2s;
+            text-decoration: none; font-size: 12px; font-weight: 500; transition: all .2s;
         }
         .nav-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
         .logout-btn {
-            background: rgba(239,68,68,0.8); border: none;
-            color: #fff; padding: 7px 14px; border-radius: 6px;
-            text-decoration: none; font-size: 12px; font-weight: 600;
+            background: rgba(239,68,68,0.8); border: none; color: #fff;
+            padding: 7px 14px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 600;
         }
         .logout-btn:hover { background: #dc2626; }
 
         /* ===== STATS ROW ===== */
         .stats-row {
             max-width: 1600px; margin: 24px auto 0; padding: 0 24px;
-            display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px;
+            display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px;
         }
         .stat-card {
-            background: #fff;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px; padding: 16px 20px;
-            border-left: 4px solid #3b82f6;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-            transition: transform 0.2s;
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px 16px;
+            border-left: 4px solid #3b82f6; box-shadow: 0 1px 4px rgba(0,0,0,0.06); transition: transform .2s;
         }
         .stat-card:hover { transform: translateY(-1px); }
-        .stat-card.ldi   { border-left-color: #6366f1; }
+        .stat-card.home   { border-left-color: #94a3b8; }
+        .stat-card.ldi    { border-left-color: #6366f1; }
         .stat-card.readme { border-left-color: #0ea5e9; }
         .stat-card.tests  { border-left-color: #8b5cf6; }
+        .stat-card.anima  { border-left-color: #ec4899; }
         .stat-card.bot    { border-left-color: #f59e0b; }
         .stat-card.copy   { border-left-color: #10b981; }
-        .stat-label { font-size: 11px; color: #6b7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
-        .stat-value { font-size: 28px; font-weight: 700; color: #1e3a5f; margin-top: 4px; }
-        .stat-sub   { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+        .stat-label { font-size: 10px; color: #6b7280; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+        .stat-value { font-size: 26px; font-weight: 700; color: #1e3a5f; margin-top: 3px; }
+        .stat-sub   { font-size: 10px; color: #9ca3af; margin-top: 1px; }
 
-        /* ===== MAIN CONTENT ===== */
-        .main-content {
-            max-width: 1600px; margin: 20px auto; padding: 0 24px 32px;
-            display: grid; grid-template-columns: 1fr 380px; gap: 20px;
+        /* ===== TOP SECTION (visits + bot) ===== */
+        .top-section {
+            max-width: 1600px; margin: 20px auto 0; padding: 0 24px;
+            display: grid; grid-template-columns: 1fr 400px; gap: 20px;
         }
-        .right-col { display: flex; flex-direction: column; gap: 16px; }
 
         /* ===== PANEL ===== */
         .panel {
-            background: #fff;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            box-shadow: 0 1px 6px rgba(0,0,0,0.06);
-            overflow: hidden;
+            background: #fff; border: 1px solid #e2e8f0;
+            border-radius: 12px; box-shadow: 0 1px 6px rgba(0,0,0,0.06); overflow: hidden;
         }
         .panel-header {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 16px 20px;
-            background: linear-gradient(135deg, #0f2748, #1e3a5f);
-            color: #fff;
+            padding: 14px 20px; background: linear-gradient(135deg, #0f2748, #1e3a5f);
         }
         .panel-title { font-size: 14px; font-weight: 700; color: #fff; }
         .panel-subtitle { font-size: 11px; color: #93c5fd; margin-top: 1px; }
@@ -132,126 +92,174 @@
         }
 
         /* ===== VISITS TABLE ===== */
-        .visits-scroll { max-height: calc(100vh - 310px); overflow-y: auto; }
+        .visits-scroll { max-height: calc(100vh - 300px); overflow-y: auto; }
         .visits-table { width: 100%; border-collapse: collapse; }
         .visits-table th {
-            background: #f8fafc; color: #6b7280;
-            font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
-            padding: 10px 16px; text-align: left; border-bottom: 1px solid #e5e7eb;
-            position: sticky; top: 0;
+            background: #f8fafc; color: #6b7280; font-size: 10px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .05em;
+            padding: 9px 14px; text-align: left; border-bottom: 1px solid #e5e7eb;
+            position: sticky; top: 0; z-index: 1;
         }
-        .visits-table td {
-            padding: 10px 16px; border-bottom: 1px solid #f3f4f6;
-            font-size: 13px; vertical-align: middle;
-        }
+        .visits-table td { padding: 9px 14px; border-bottom: 1px solid #f3f4f6; font-size: 13px; vertical-align: middle; }
         .visits-table tr:last-child td { border-bottom: none; }
         .visits-table tr:hover td { background: #f0f7ff; }
+        .new-row-flash { animation: flashRow 1.5s ease; }
+        @keyframes flashRow { 0%{background:#dbeafe} 100%{background:transparent} }
 
-        .page-badge {
-            display: inline-block; padding: 2px 8px; border-radius: 10px;
-            font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
-        }
+        /* ===== PAGE BADGES ===== */
+        .page-badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+        .page-home      { background: #f1f5f9; color: #475569; }
         .page-ldi       { background: #ede9fe; color: #5b21b6; }
         .page-ldi-readme { background: #dbeafe; color: #1d4ed8; }
         .page-ldi-tests  { background: #f3e8ff; color: #7c3aed; }
+        .page-anima     { background: #fce7f3; color: #9d174d; }
         .page-other     { background: #f1f5f9; color: #475569; }
 
         .org-name { font-weight: 600; color: #1e3a5f; }
         .org-city  { font-size: 11px; color: #9ca3af; }
-
-        .duration-chip {
-            display: inline-block; padding: 2px 8px; border-radius: 10px;
-            font-size: 11px; font-weight: 600;
-        }
+        .duration-chip { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 11px; font-weight: 600; }
         .duration-short  { background: #fee2e2; color: #b91c1c; }
         .duration-medium { background: #fef3c7; color: #92400e; }
         .duration-long   { background: #d1fae5; color: #065f46; }
+        .active-dot { display: inline-block; width: 7px; height: 7px; background: #10b981; border-radius: 50%; margin-right: 4px; animation: pulse 1.5s infinite; }
 
-        .active-dot {
-            display: inline-block; width: 7px; height: 7px;
-            background: #10b981; border-radius: 50%; margin-right: 4px;
-            animation: pulse 1.5s infinite;
-        }
-
-        .new-row-flash { animation: flashRow 1.5s ease; }
-        @keyframes flashRow {
-            0%   { background: #dbeafe; }
-            100% { background: transparent; }
-        }
-
-        /* ===== BOT QUERIES + COPY PANELS ===== */
-        .bot-scroll { max-height: 260px; overflow-y: auto; padding: 12px; }
-        .copy-scroll { max-height: 260px; overflow-y: auto; padding: 12px; }
-
-        /* Copy event cards */
-        .copy-card {
-            background: #f0fdf4; border: 1px solid #bbf7d0;
-            border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;
-            transition: all 0.2s;
-        }
-        .copy-card:hover { background: #dcfce7; border-color: #86efac; }
-        .copy-card.new-flash { animation: flashCopy 1.5s ease; }
-        @keyframes flashCopy {
-            0%   { background: #bbf7d0; border-color: #34d399; }
-            100% { background: #f0fdf4; border-color: #bbf7d0; }
-        }
-        .copy-meta {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 5px;
-        }
-        .copy-time { font-size: 11px; color: #6b7280; font-weight: 600; }
-        .copy-org  { font-size: 11px; color: #374151; font-weight: 600; margin-bottom: 4px; }
-        .copy-text {
-            font-size: 12px; color: #064e3b; background: #fff;
-            border-left: 3px solid #10b981; padding: 5px 10px;
-            border-radius: 0 6px 6px 0; font-family: monospace;
-            word-break: break-word;
-        }
+        /* ===== BOT QUERIES PANEL ===== */
+        .bot-scroll { max-height: calc(100vh - 300px); overflow-y: auto; padding: 10px; }
         .bot-card {
             background: #f8fafc; border: 1px solid #e5e7eb;
             border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;
-            transition: all 0.2s;
+            cursor: pointer; transition: all .2s;
         }
-        .bot-card:hover { background: #f0f7ff; border-color: #bfdbfe; }
+        .bot-card:hover { background: #eff6ff; border-color: #bfdbfe; transform: translateX(2px); }
         .bot-card.new-flash { animation: flashCard 1.5s ease; }
-        @keyframes flashCard {
-            0%   { background: #dbeafe; border-color: #93c5fd; }
-            100% { background: #f8fafc; border-color: #e5e7eb; }
-        }
-        .bot-meta {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 6px;
-        }
+        @keyframes flashCard { 0%{background:#dbeafe;border-color:#93c5fd} 100%{background:#f8fafc;border-color:#e5e7eb} }
+        .bot-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .bot-time { font-size: 11px; color: #6b7280; font-weight: 600; }
-        .bot-page-tag {
-            font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 6px;
-            background: #dbeafe; color: #1d4ed8; text-transform: uppercase;
-        }
         .bot-org  { font-size: 11px; color: #374151; font-weight: 600; margin-bottom: 4px; }
         .bot-question {
             font-size: 12px; color: #1e3a5f; background: #fff;
             border-left: 3px solid #3b82f6; padding: 5px 10px;
             border-radius: 0 6px 6px 0; font-style: italic;
         }
+        .bot-hint { font-size: 10px; color: #9ca3af; margin-top: 5px; text-align: right; }
+
+        /* ===== COPY EVENTS SECTION (full width, below) ===== */
+        .copy-section {
+            max-width: 1600px; margin: 20px auto 40px; padding: 0 24px;
+        }
+        .copy-panel-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 20px; background: linear-gradient(135deg, #064e3b, #065f46);
+            border-radius: 12px 12px 0 0;
+        }
+        .copy-panel-title { font-size: 14px; font-weight: 700; color: #fff; }
+        .copy-panel-subtitle { font-size: 11px; color: #6ee7b7; margin-top: 1px; }
+        .copy-panel-badge {
+            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+            color: #d1fae5; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
+        }
+
+        .copy-body {
+            background: #fff; border: 1px solid #e2e8f0; border-top: none;
+            border-radius: 0 0 12px 12px; box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+            padding: 0 20px 20px;
+        }
+
+        /* Day group */
+        .day-group { margin-top: 20px; }
+        .day-header {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 0 8px;
+            border-bottom: 2px solid #d1fae5;
+            margin-bottom: 12px;
+        }
+        .day-label { font-size: 13px; font-weight: 700; color: #065f46; }
+        .day-count {
+            background: #d1fae5; color: #065f46;
+            padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700;
+        }
+
+        /* Copy cards grid */
+        .copy-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 10px; }
+        .copy-card {
+            background: #f0fdf4; border: 1px solid #bbf7d0;
+            border-radius: 8px; padding: 10px 14px;
+            cursor: pointer; transition: all .2s;
+        }
+        .copy-card:hover { background: #dcfce7; border-color: #86efac; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(16,185,129,0.15); }
+        .copy-card.new-flash { animation: flashCopy 1.5s ease; }
+        @keyframes flashCopy { 0%{background:#bbf7d0;border-color:#34d399} 100%{background:#f0fdf4;border-color:#bbf7d0} }
+        .copy-card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .copy-card-time { font-size: 11px; color: #6b7280; font-weight: 600; }
+        .copy-card-org  { font-size: 11px; color: #374151; font-weight: 600; margin-bottom: 5px; }
+        .copy-card-text {
+            font-size: 12px; color: #064e3b; background: #fff;
+            border-left: 3px solid #10b981; padding: 5px 10px;
+            border-radius: 0 6px 6px 0; font-family: monospace;
+            word-break: break-word; white-space: pre-wrap;
+        }
+        .copy-card-hint { font-size: 10px; color: #9ca3af; margin-top: 4px; text-align: right; }
 
         /* ===== EMPTY STATE ===== */
-        .empty-state {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 48px 24px; color: #9ca3af;
-        }
-        .empty-state-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.5; }
+        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 24px; color: #9ca3af; }
+        .empty-state-icon { font-size: 36px; margin-bottom: 10px; opacity: .5; }
         .empty-state-text { font-size: 13px; }
 
-        /* ===== SCROLLBAR ===== */
-        .visits-scroll::-webkit-scrollbar,
-        .bot-scroll::-webkit-scrollbar,
-        .copy-scroll::-webkit-scrollbar { width: 4px; }
-        .visits-scroll::-webkit-scrollbar-track,
-        .bot-scroll::-webkit-scrollbar-track,
-        .copy-scroll::-webkit-scrollbar-track { background: #f8fafc; }
-        .visits-scroll::-webkit-scrollbar-thumb,
-        .bot-scroll::-webkit-scrollbar-thumb,
-        .copy-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        /* ===== SCROLLBARS ===== */
+        .visits-scroll::-webkit-scrollbar, .bot-scroll::-webkit-scrollbar { width: 4px; }
+        .visits-scroll::-webkit-scrollbar-track, .bot-scroll::-webkit-scrollbar-track { background: #f8fafc; }
+        .visits-scroll::-webkit-scrollbar-thumb, .bot-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+        /* ===== MODALS ===== */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(15,39,72,0.7); backdrop-filter: blur(3px);
+            z-index: 1000; align-items: center; justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: #fff; border-radius: 16px; width: 680px; max-width: 95vw;
+            max-height: 85vh; display: flex; flex-direction: column;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+            animation: modalIn .25s ease-out;
+        }
+        @keyframes modalIn { from{opacity:0;transform:translateY(-16px) scale(.97)} to{opacity:1;transform:none} }
+        .modal-head {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            padding: 20px 24px 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .modal-head-title { font-size: 16px; font-weight: 700; color: #1e3a5f; margin-bottom: 3px; }
+        .modal-head-meta  { font-size: 12px; color: #6b7280; }
+        .modal-close {
+            width: 32px; height: 32px; border: none; background: #f1f5f9;
+            border-radius: 8px; cursor: pointer; font-size: 16px; color: #6b7280;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-left: 12px;
+            transition: all .15s;
+        }
+        .modal-close:hover { background: #fee2e2; color: #b91c1c; }
+        .modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; }
+        .modal-body::-webkit-scrollbar { width: 5px; }
+        .modal-body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+        /* Bot modal */
+        .convo-bubble {
+            border-radius: 10px; padding: 12px 16px; margin-bottom: 14px;
+            font-size: 13px; line-height: 1.6;
+        }
+        .convo-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+        .convo-user  { background: #eff6ff; border-left: 4px solid #3b82f6; }
+        .convo-user  .convo-label { color: #1d4ed8; }
+        .convo-bot   { background: #f0fdf4; border-left: 4px solid #10b981; }
+        .convo-bot   .convo-label { color: #065f46; }
+
+        /* Copy modal */
+        .copy-full-text {
+            background: #f8fafc; border: 1px solid #e5e7eb; border-left: 4px solid #10b981;
+            border-radius: 0 8px 8px 0; padding: 16px; font-size: 13px; font-family: monospace;
+            white-space: pre-wrap; word-break: break-word; line-height: 1.7; color: #064e3b;
+        }
+        .copy-char-count { font-size: 11px; color: #9ca3af; margin-top: 8px; text-align: right; }
     </style>
 </head>
 <body>
@@ -263,14 +271,11 @@
             <div class="header-icon">📡</div>
             <div class="header-titles">
                 <h1>Site Analytics — P5</h1>
-                <div class="subtitle">Wizyty na adeptai.pl/ldi · /ldi-readme · /ldi-tests · /anima</div>
+                <div class="subtitle">adeptai.pl · /ldi · /ldi-readme · /ldi-tests · /anima</div>
             </div>
         </div>
         <div class="header-right">
-            <div class="live-badge">
-                <div class="live-dot"></div>
-                LIVE
-            </div>
+            <div class="live-badge"><div class="live-dot"></div>LIVE</div>
             <a href="/admin-dashboard" class="nav-btn">← P2 Dashboard</a>
             <a href="/logout" class="logout-btn">Wyloguj</a>
         </div>
@@ -282,27 +287,37 @@
     <div class="stat-card">
         <div class="stat-label">Wizyty dziś</div>
         <div class="stat-value" id="stat-total">—</div>
-        <div class="stat-sub">wszystkie strony LDI</div>
+        <div class="stat-sub">wszystkie strony</div>
+    </div>
+    <div class="stat-card home">
+        <div class="stat-label">adeptai.pl</div>
+        <div class="stat-value" id="stat-home">—</div>
+        <div class="stat-sub">strona główna</div>
     </div>
     <div class="stat-card ldi">
         <div class="stat-label">/ldi</div>
         <div class="stat-value" id="stat-ldi">—</div>
-        <div class="stat-sub">strona techniczna</div>
+        <div class="stat-sub">techniczna</div>
     </div>
     <div class="stat-card readme">
         <div class="stat-label">/ldi-readme</div>
         <div class="stat-value" id="stat-readme">—</div>
-        <div class="stat-sub">strona sprzedażowa + bot</div>
+        <div class="stat-sub">sprzedażowa</div>
     </div>
     <div class="stat-card tests">
         <div class="stat-label">/ldi-tests</div>
         <div class="stat-value" id="stat-tests">—</div>
-        <div class="stat-sub">wyniki testów</div>
+        <div class="stat-sub">testy</div>
+    </div>
+    <div class="stat-card anima">
+        <div class="stat-label">/anima</div>
+        <div class="stat-value" id="stat-anima">—</div>
+        <div class="stat-sub">technologia RAG</div>
     </div>
     <div class="stat-card bot">
-        <div class="stat-label">Zapytania do bota</div>
+        <div class="stat-label">Bot queries</div>
         <div class="stat-value" id="stat-bot">—</div>
-        <div class="stat-sub">dziś łącznie</div>
+        <div class="stat-sub">zapytania</div>
     </div>
     <div class="stat-card copy">
         <div class="stat-label">Kopiowania</div>
@@ -311,17 +326,17 @@
     </div>
 </div>
 
-<!-- MAIN CONTENT -->
-<div class="main-content">
+<!-- TOP SECTION: visits + bot queries -->
+<div class="top-section">
 
-    <!-- LEFT: VISITS TABLE -->
+    <!-- LEFT: Visits table -->
     <div class="panel">
         <div class="panel-header">
             <div>
-                <div class="panel-title">Wizyty na stronach LDI</div>
+                <div class="panel-title">Wizyty na stronach</div>
                 <div class="panel-subtitle">Firma · strona · czas spędzony · wejście</div>
             </div>
-            <div class="panel-badge" id="visits-count">0 wizyt</div>
+            <div class="panel-badge" id="visits-count">0</div>
         </div>
         <div class="visits-scroll">
             <table class="visits-table">
@@ -331,81 +346,119 @@
                         <th>Strona</th>
                         <th>Wejście</th>
                         <th>Czas</th>
-                        <th>Status</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody id="visits-tbody">
-                    <tr id="visits-empty">
-                        <td colspan="5">
-                            <div class="empty-state">
-                                <div class="empty-state-icon">👁️</div>
-                                <div class="empty-state-text">Ładowanie wizyt…</div>
-                            </div>
-                        </td>
-                    </tr>
+                    <tr id="visits-empty"><td colspan="5">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">👁️</div>
+                            <div class="empty-state-text">Ładowanie wizyt…</div>
+                        </div>
+                    </td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- RIGHT COLUMN: BOT QUERIES + COPY EVENTS -->
-    <div class="right-col">
-
-        <!-- Bot Queries -->
-        <div class="panel">
-            <div class="panel-header">
-                <div>
-                    <div class="panel-title">Zapytania do bota</div>
-                    <div class="panel-subtitle">Co pytają odwiedzający</div>
-                </div>
-                <div class="panel-badge" id="bot-count">0</div>
+    <!-- RIGHT: Bot queries -->
+    <div class="panel">
+        <div class="panel-header">
+            <div>
+                <div class="panel-title">Zapytania do bota</div>
+                <div class="panel-subtitle">Kliknij kartę → pytanie + odpowiedź</div>
             </div>
-            <div class="bot-scroll" id="bot-list">
-                <div class="empty-state" id="bot-empty">
-                    <div class="empty-state-icon">🤖</div>
-                    <div class="empty-state-text">Brak zapytań do bota dziś</div>
-                </div>
+            <div class="panel-badge" id="bot-count">0</div>
+        </div>
+        <div class="bot-scroll" id="bot-list">
+            <div class="empty-state" id="bot-empty">
+                <div class="empty-state-icon">🤖</div>
+                <div class="empty-state-text">Brak zapytań do bota dziś</div>
             </div>
         </div>
-
-        <!-- Copy Events -->
-        <div class="panel">
-            <div class="panel-header">
-                <div>
-                    <div class="panel-title">Kopiowania tekstu</div>
-                    <div class="panel-subtitle">Co kopiują ze stron LDI · /anima</div>
-                </div>
-                <div class="panel-badge" id="copy-count">0</div>
-            </div>
-            <div class="copy-scroll" id="copy-list">
-                <div class="empty-state" id="copy-empty">
-                    <div class="empty-state-icon">📋</div>
-                    <div class="empty-state-text">Nikt nic nie skopiował dziś</div>
-                </div>
-            </div>
-        </div>
-
     </div>
 
 </div>
 
-<script>
-// ===== HELPERS =====
+<!-- COPY EVENTS SECTION (full width) -->
+<div class="copy-section">
+    <div class="copy-panel-header">
+        <div>
+            <div class="copy-panel-title">📋 Kopiowania tekstu — historia</div>
+            <div class="copy-panel-subtitle">Co kopiują ze stron · pogrupowane po dniach · kliknij kartę → pełny tekst</div>
+        </div>
+        <div class="copy-panel-badge" id="copy-count">0</div>
+    </div>
+    <div class="copy-body" id="copy-body">
+        <div class="empty-state" id="copy-empty">
+            <div class="empty-state-icon">📭</div>
+            <div class="empty-state-text">Nikt jeszcze nic nie skopiował</div>
+        </div>
+    </div>
+</div>
 
+<!-- MODAL: Bot conversation -->
+<div class="modal-overlay" id="bot-modal" onclick="closeModal('bot-modal')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-head">
+            <div>
+                <div class="modal-head-title">🤖 Rozmowa z botem</div>
+                <div class="modal-head-meta" id="bot-modal-meta">—</div>
+            </div>
+            <button class="modal-close" onclick="closeModal('bot-modal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="convo-bubble convo-user">
+                <div class="convo-label">Pytanie użytkownika</div>
+                <div id="bot-modal-question"></div>
+            </div>
+            <div class="convo-bubble convo-bot">
+                <div class="convo-label">Odpowiedź bota LDI</div>
+                <div id="bot-modal-reply"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Copy full text -->
+<div class="modal-overlay" id="copy-modal" onclick="closeModal('copy-modal')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-head">
+            <div>
+                <div class="modal-head-title">📋 Skopiowany tekst</div>
+                <div class="modal-head-meta" id="copy-modal-meta">—</div>
+            </div>
+            <button class="modal-close" onclick="closeModal('copy-modal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="copy-full-text" id="copy-modal-text"></div>
+            <div class="copy-char-count" id="copy-modal-count"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ===== DATA STORES =====
+const allBotQueries  = [];
+const allCopyEvents  = [];
+
+// ===== HELPERS =====
 function pageBadge(path) {
     const map = {
-        '/ldi': ['page-ldi', '/ldi'],
-        '/ldi-readme': ['page-ldi-readme', '/ldi-readme'],
-        '/ldi-tests': ['page-ldi-tests', '/ldi-tests']
+        '/':           ['page-home',      'adeptai.pl'],
+        '/ldi':        ['page-ldi',       '/ldi'],
+        '/ldi-readme': ['page-ldi-readme','/ldi-readme'],
+        '/ldi-tests':  ['page-ldi-tests', '/ldi-tests'],
+        '/anima':      ['page-anima',     '/anima'],
     };
-    const [cls, label] = map[path] || ['page-other', path];
+    const [cls, label] = map[path] || ['page-other', path || '?'];
     return `<span class="page-badge ${cls}">${label}</span>`;
 }
 
 function durationChip(sec, isActive) {
-    if (isActive) return `<span class="active-dot"></span><span style="font-size:11px;color:#10b981;font-weight:600;">aktywny</span>`;
+    if (isActive) return `<span class="active-dot"></span><span style="font-size:11px;color:#10b981;font-weight:600">aktywny</span>`;
     if (!sec || sec < 5) return `<span class="duration-chip duration-short">&lt;5s</span>`;
-    if (sec < 60) return `<span class="duration-chip duration-short">${sec}s</span>`;
+    if (sec < 60)  return `<span class="duration-chip duration-short">${sec}s</span>`;
     if (sec < 300) return `<span class="duration-chip duration-medium">${Math.round(sec/60)}min</span>`;
     return `<span class="duration-chip duration-long">${Math.round(sec/60)}min</span>`;
 }
@@ -413,9 +466,35 @@ function durationChip(sec, isActive) {
 function formatTime(ts) {
     if (!ts) return '—';
     try {
-        const d = new Date(ts.replace(' ', 'T') + 'Z');
+        // SQLite returns UTC without timezone — treat as UTC
+        const s = ts.includes('T') ? ts : ts.replace(' ', 'T') + 'Z';
+        const d = new Date(s);
         return d.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Warsaw' });
-    } catch(e) { return ts.slice(11,16) || '—'; }
+    } catch(e) { return (ts || '').slice(11,16) || '—'; }
+}
+
+function formatDatePL(ts) {
+    if (!ts) return '—';
+    try {
+        const s = ts.includes('T') ? ts : ts.replace(' ', 'T') + 'Z';
+        const d = new Date(s);
+        return d.toLocaleDateString('pl-PL', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'Europe/Warsaw' });
+    } catch(e) { return (ts || '').slice(0,10); }
+}
+
+function dateKey(ts) {
+    if (!ts) return '?';
+    try {
+        const s = ts.includes('T') ? ts : ts.replace(' ', 'T') + 'Z';
+        const d = new Date(s);
+        // Return YYYY-MM-DD in Warsaw time
+        return d.toLocaleDateString('sv-SE', { timeZone: 'Europe/Warsaw' });
+    } catch(e) { return (ts || '').slice(0,10); }
+}
+
+function esc(s) {
+    if (!s) return '';
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 function truncate(s, n) {
@@ -423,207 +502,211 @@ function truncate(s, n) {
     return s.length > n ? s.slice(0, n) + '…' : s;
 }
 
+// ===== MODALS =====
+function openBotModal(idx) {
+    const q = allBotQueries[idx];
+    if (!q) return;
+    document.getElementById('bot-modal-meta').textContent =
+        `${q.organization || 'Nieznana firma'} · ${q.city || '—'} · ${formatTime(q.timestamp)}`;
+    document.getElementById('bot-modal-question').textContent = q.user_message || '—';
+    document.getElementById('bot-modal-reply').textContent   = q.bot_reply    || '(brak odpowiedzi)';
+    document.getElementById('bot-modal').classList.add('active');
+}
+
+function openCopyModal(idx) {
+    const c = allCopyEvents[idx];
+    if (!c) return;
+    document.getElementById('copy-modal-meta').innerHTML =
+        `${esc(c.organization || 'Nieznana firma')} · ${esc(c.city || '—')} · ${pageBadge(c.page_path)} · ${formatTime(c.timestamp)}`;
+    document.getElementById('copy-modal-text').textContent  = c.copy_text || '';
+    document.getElementById('copy-modal-count').textContent = `${(c.copy_text || '').length} znaków`;
+    document.getElementById('copy-modal').classList.add('active');
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        closeModal('bot-modal');
+        closeModal('copy-modal');
+    }
+});
+
 // ===== VISITS TABLE =====
-
-let visitsData = [];
-let botData = [];
-
 function renderVisitRow(v, prepend) {
-    const empty = document.getElementById('visits-empty');
-    if (empty) empty.remove();
-
+    document.getElementById('visits-empty')?.remove();
     const tbody = document.getElementById('visits-tbody');
     const tr = document.createElement('tr');
     tr.id = 'visit-' + v.visit_id;
     if (prepend) tr.classList.add('new-row-flash');
-
     tr.innerHTML = `
-        <td>
-            <div class="org-name">${v.organization || 'Nieznana firma'}</div>
-            <div class="org-city">${v.city || '—'} · ${v.country || ''}</div>
-        </td>
+        <td><div class="org-name">${esc(v.organization||'Nieznana firma')}</div>
+            <div class="org-city">${esc(v.city||'—')} · ${esc(v.country||'')}</div></td>
         <td>${pageBadge(v.page_path)}</td>
-        <td style="font-size:12px;color:#6b7280;">${formatTime(v.entry_time) || v.timestamp || '—'}</td>
+        <td style="font-size:12px;color:#6b7280">${formatTime(v.entry_time||v.timestamp)}</td>
         <td>${durationChip(v.session_duration, v.is_active)}</td>
-        <td style="font-size:11px;color:#9ca3af;">${v.is_active ? '🟢' : '⬜'}</td>
-    `;
-
-    if (prepend) {
-        tbody.insertBefore(tr, tbody.firstChild);
-    } else {
-        tbody.appendChild(tr);
-    }
+        <td style="font-size:11px">${v.is_active ? '🟢' : '⬜'}</td>`;
+    prepend ? tbody.insertBefore(tr, tbody.firstChild) : tbody.appendChild(tr);
 }
 
-function updateVisitRow(visitId, duration) {
-    const tr = document.getElementById('visit-' + visitId);
-    if (!tr) return;
-    const cells = tr.querySelectorAll('td');
-    if (cells[3]) cells[3].innerHTML = durationChip(duration, false);
-    if (cells[4]) cells[4].innerHTML = '⬜';
+// ===== BOT CARDS =====
+function renderBotCard(q, prepend) {
+    document.getElementById('bot-empty')?.remove();
+    const idx = allBotQueries.push(q) - 1;
+    const list = document.getElementById('bot-list');
+    const div  = document.createElement('div');
+    div.className = 'bot-card' + (prepend ? ' new-flash' : '');
+    div.setAttribute('data-idx', idx);
+    div.onclick = () => openBotModal(idx);
+    div.innerHTML = `
+        <div class="bot-meta">
+            <span class="bot-time">${formatTime(q.timestamp)}</span>
+            ${pageBadge(q.page_path||'/ldi-readme')}
+        </div>
+        <div class="bot-org">${esc(q.organization||'Nieznana firma')} · ${esc(q.city||'—')}</div>
+        <div class="bot-question">${esc(truncate(q.user_message, 120))}</div>
+        <div class="bot-hint">kliknij → pełna rozmowa</div>`;
+    prepend ? list.insertBefore(div, list.firstChild) : list.appendChild(div);
+}
+
+// ===== COPY EVENTS (grouped by day) =====
+// dayGroups: { 'YYYY-MM-DD': [idx, idx, ...] }
+const dayGroups = {};
+const dayOrder  = [];
+
+function ensureDayGroup(dk, labelTs) {
+    if (dayGroups[dk]) return;
+    dayGroups[dk] = [];
+    // Insert in reverse chronological order
+    dayOrder.unshift(dk);
+
+    const body = document.getElementById('copy-body');
+    document.getElementById('copy-empty')?.remove();
+
+    const section = document.createElement('div');
+    section.className = 'day-group';
+    section.id = 'day-' + dk;
+    section.innerHTML = `
+        <div class="day-header">
+            <span class="day-label">📅 ${formatDatePL(labelTs)}</span>
+            <span class="day-count" id="day-count-${dk}">0</span>
+        </div>
+        <div class="copy-grid" id="day-grid-${dk}"></div>`;
+
+    // Insert before existing sections so newest day is on top
+    body.insertBefore(section, body.firstChild);
 }
 
 function renderCopyCard(c, prepend) {
-    const empty = document.getElementById('copy-empty');
-    if (empty) empty.remove();
+    const idx = allCopyEvents.push(c) - 1;
+    const dk  = dateKey(c.timestamp);
 
-    const list = document.getElementById('copy-list');
-    const div = document.createElement('div');
+    ensureDayGroup(dk, c.timestamp);
+    dayGroups[dk].push(idx);
+
+    // Update day count badge
+    const countEl = document.getElementById('day-count-' + dk);
+    if (countEl) countEl.textContent = dayGroups[dk].length + (dayGroups[dk].length === 1 ? ' kopiowanie' : ' kopiowania');
+
+    const grid = document.getElementById('day-grid-' + dk);
+    const div  = document.createElement('div');
     div.className = 'copy-card' + (prepend ? ' new-flash' : '');
+    div.setAttribute('data-idx', idx);
+    div.onclick = () => openCopyModal(idx);
 
+    const preview = truncate(c.copy_text || '', 120);
+    const needsModal = (c.copy_text || '').length > 120;
     div.innerHTML = `
-        <div class="copy-meta">
-            <span class="copy-time">${c.timestamp ? formatTime(c.timestamp) : (c.time || '—')}</span>
-            ${pageBadge(c.page_path || '/ldi')}
+        <div class="copy-card-meta">
+            <span class="copy-card-time">${formatTime(c.timestamp)}</span>
+            ${pageBadge(c.page_path||'/ldi')}
         </div>
-        <div class="copy-org">${c.organization || 'Nieznana firma'} · ${c.city || '—'}</div>
-        <div class="copy-text">${truncate(c.copy_text, 180)}</div>
-    `;
+        <div class="copy-card-org">${esc(c.organization||'Nieznana firma')} · ${esc(c.city||'—')}</div>
+        <div class="copy-card-text">${esc(preview)}</div>
+        ${needsModal ? '<div class="copy-card-hint">kliknij → pełny tekst</div>' : ''}`;
 
-    if (prepend) {
-        list.insertBefore(div, list.firstChild);
-    } else {
-        list.appendChild(div);
-    }
+    prepend ? grid.insertBefore(div, grid.firstChild) : grid.appendChild(div);
 }
 
-function renderBotCard(q, prepend) {
-    const empty = document.getElementById('bot-empty');
-    if (empty) empty.remove();
-
-    const list = document.getElementById('bot-list');
-    const div = document.createElement('div');
-    div.className = 'bot-card' + (prepend ? ' new-flash' : '');
-
-    div.innerHTML = `
-        <div class="bot-meta">
-            <span class="bot-time">${q.timestamp ? formatTime(q.timestamp) : (q.time || '—')}</span>
-            ${pageBadge(q.page_path || '/ldi-readme')}
-        </div>
-        <div class="bot-org">${q.organization || 'Nieznana firma'} · ${q.city || '—'}</div>
-        <div class="bot-question">${truncate(q.user_message, 160)}</div>
-    `;
-
-    if (prepend) {
-        list.insertBefore(div, list.firstChild);
-    } else {
-        list.appendChild(div);
-    }
-}
-
-// ===== INITIAL DATA LOAD =====
-
+// ===== STATS =====
 function updateStats(stats) {
-    document.getElementById('stat-total').textContent  = stats.total_visits;
-    document.getElementById('stat-ldi').textContent    = stats.ldi_visits;
-    document.getElementById('stat-readme').textContent = stats.readme_visits;
-    document.getElementById('stat-tests').textContent  = stats.tests_visits;
-    document.getElementById('stat-bot').textContent    = stats.bot_queries;
-    document.getElementById('stat-copy').textContent   = stats.copy_events ?? 0;
+    document.getElementById('stat-total').textContent  = stats.total_visits  ?? 0;
+    document.getElementById('stat-home').textContent   = stats.home_visits   ?? 0;
+    document.getElementById('stat-ldi').textContent    = stats.ldi_visits    ?? 0;
+    document.getElementById('stat-readme').textContent = stats.readme_visits ?? 0;
+    document.getElementById('stat-tests').textContent  = stats.tests_visits  ?? 0;
+    document.getElementById('stat-anima').textContent  = stats.anima_visits  ?? 0;
+    document.getElementById('stat-bot').textContent    = stats.bot_queries   ?? 0;
+    document.getElementById('stat-copy').textContent   = stats.copy_events   ?? 0;
 }
 
+// ===== INITIAL LOAD =====
 async function loadInitialData() {
     try {
-        const res = await fetch('/api/site-analytics-data');
+        const res  = await fetch('/api/site-analytics-data');
         if (!res.ok) return;
         const data = await res.json();
 
-        // Visits
-        if (data.visits && data.visits.length > 0) {
+        // Visits (newest first from API)
+        if (data.visits?.length) {
             document.getElementById('visits-empty')?.remove();
+            // API returns DESC, render in order (so newest ends up at top after insertBefore calls won't work — just append and they're newest first)
             data.visits.forEach(v => renderVisitRow(v, false));
         } else {
-            const tbody = document.getElementById('visits-tbody');
-            tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state">
-                <div class="empty-state-icon">📭</div>
-                <div class="empty-state-text">Brak wizyt — strony są właśnie wdrażane</div>
-            </div></td></tr>`;
+            document.getElementById('visits-tbody').innerHTML =
+                `<tr><td colspan="5"><div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <div class="empty-state-text">Brak wizyt — tracker właśnie wdrożony</div>
+                </div></td></tr>`;
         }
-        document.getElementById('visits-count').textContent =
-            (data.visits?.length || 0) + ' wizyt';
+        document.getElementById('visits-count').textContent = (data.visits?.length||0);
 
-        // Bot queries
-        if (data.bot_queries && data.bot_queries.length > 0) {
+        // Bot queries (newest first)
+        if (data.bot_queries?.length) {
             document.getElementById('bot-empty')?.remove();
             data.bot_queries.forEach(q => renderBotCard(q, false));
         }
-        document.getElementById('bot-count').textContent =
-            (data.bot_queries?.length || 0);
+        document.getElementById('bot-count').textContent = (data.bot_queries?.length||0);
 
-        // Copy events
-        if (data.copy_events && data.copy_events.length > 0) {
-            document.getElementById('copy-empty')?.remove();
-            data.copy_events.forEach(c => renderCopyCard(c, false));
+        // Copy events — sorted oldest→newest per day group
+        // API returns DESC; reverse so oldest are inserted first (day groups form correctly)
+        if (data.copy_events?.length) {
+            [...data.copy_events].reverse().forEach(c => renderCopyCard(c, false));
         }
-        document.getElementById('copy-count').textContent =
-            (data.copy_events?.length || 0);
+        document.getElementById('copy-count').textContent = (data.copy_events?.length||0);
 
-        // Stats
         if (data.stats) updateStats(data.stats);
-    } catch (e) {
+    } catch(e) {
         console.error('[P5] loadInitialData error:', e);
     }
 }
 
 // ===== WEBSOCKET =====
-
 const socket = io({ transports: ['websocket', 'polling'] });
 
-socket.on('connect', function() {
-    console.log('[P5] WebSocket connected');
-});
+socket.on('connection_confirmed', d => console.log('[P5] room:', d.room));
 
-socket.on('connection_confirmed', function(data) {
-    console.log('[P5] Confirmed in room:', data.room);
-});
-
-// New page visit
-socket.on('site_visit_new', function(v) {
-    console.log('[P5] site_visit_new:', v);
+socket.on('site_visit_new', v => {
     renderVisitRow(v, true);
-
-    // Update stat counter
-    const el = document.getElementById('stat-total');
-    el.textContent = (parseInt(el.textContent) || 0) + 1;
-
-    const map = {
-        '/ldi': 'stat-ldi',
-        '/ldi-readme': 'stat-readme',
-        '/ldi-tests': 'stat-tests'
-    };
-    const sid = map[v.page_path];
-    if (sid) {
-        const s = document.getElementById(sid);
-        s.textContent = (parseInt(s.textContent) || 0) + 1;
-    }
-
-    const vc = document.getElementById('visits-count');
-    const cur = parseInt(vc.textContent) || 0;
-    vc.textContent = (cur + 1) + ' wizyt';
+    const pageStatMap = { '/': 'stat-home', '/ldi': 'stat-ldi', '/ldi-readme': 'stat-readme', '/ldi-tests': 'stat-tests', '/anima': 'stat-anima' };
+    const sid = pageStatMap[v.page_path];
+    if (sid) { const el = document.getElementById(sid); el.textContent = (parseInt(el.textContent)||0)+1; }
+    const tot = document.getElementById('stat-total'); tot.textContent = (parseInt(tot.textContent)||0)+1;
+    const vc  = document.getElementById('visits-count'); vc.textContent = (parseInt(vc.textContent)||0)+1;
 });
 
-// New bot query
-socket.on('bot_query_new', function(q) {
-    console.log('[P5] bot_query_new:', q);
+socket.on('bot_query_new', q => {
     renderBotCard(q, true);
-
-    const bc = document.getElementById('bot-count');
-    bc.textContent = (parseInt(bc.textContent) || 0) + 1;
-
-    const bs = document.getElementById('stat-bot');
-    bs.textContent = (parseInt(bs.textContent) || 0) + 1;
+    const bc = document.getElementById('bot-count'); bc.textContent = (parseInt(bc.textContent)||0)+1;
+    const bs = document.getElementById('stat-bot');  bs.textContent = (parseInt(bs.textContent)||0)+1;
 });
 
-// Copy event
-socket.on('copy_event_new', function(c) {
-    console.log('[P5] copy_event_new:', c);
+socket.on('copy_event_new', c => {
     renderCopyCard(c, true);
-
-    const cc = document.getElementById('copy-count');
-    cc.textContent = (parseInt(cc.textContent) || 0) + 1;
-
-    const sc = document.getElementById('stat-copy');
-    sc.textContent = (parseInt(sc.textContent) || 0) + 1;
+    const cc = document.getElementById('copy-count'); cc.textContent = (parseInt(cc.textContent)||0)+1;
+    const sc = document.getElementById('stat-copy');  sc.textContent = (parseInt(sc.textContent)||0)+1;
 });
 
 // ===== INIT =====
