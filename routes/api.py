@@ -142,7 +142,7 @@ def site_track():
 
     # ── COPY EVENT ──
     if event_type == 'copy':
-        copy_text = (data.get('copy_text') or '').strip()[:300]
+        copy_text = (data.get('copy_text') or '').strip()[:50000]
         if not copy_text:
             return jsonify({'ok': True})
         try:
