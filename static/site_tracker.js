@@ -71,7 +71,7 @@
                 event_type: 'copy',
                 visit_id: visitId,
                 page_path: pagePath,
-                copy_text: selected.slice(0, 300),
+                copy_text: selected.slice(0, 50000),
                 organization: geoData.organization,
                 city: geoData.city
             })
