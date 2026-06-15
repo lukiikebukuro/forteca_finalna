@@ -763,6 +763,157 @@ def get_client_info(client_id):
         return None
 
 
+# ========================================
+# P5 — SITE ANALYTICS TABLES
+# ========================================
+
+def ensure_site_tracking_tables():
+    """Create site_visits and bot_queries tables for P5 Site Analytics"""
+    conn = sqlite3.connect(DATABASE_NAME)
+    cursor = conn.cursor()
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS site_visits (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            visit_id TEXT UNIQUE NOT NULL,
+            page_path TEXT NOT NULL,
+            ip_hash TEXT,
+            organization TEXT,
+            city TEXT,
+            country TEXT,
+            referrer TEXT,
+            user_agent TEXT,
+            entry_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            exit_time TIMESTAMP,
+            session_duration INTEGER DEFAULT 0,
+            is_active BOOLEAN DEFAULT TRUE
+        )
+    ''')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_site_visits_entry ON site_visits(entry_time)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_site_visits_page ON site_visits(page_path)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_site_visits_org ON site_visits(organization)')
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS bot_queries (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            visit_id TEXT,
+            page_path TEXT DEFAULT "/ldi-readme",
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            user_message TEXT NOT NULL,
+            bot_reply TEXT,
+            ip_hash TEXT,
+            organization TEXT,
+            city TEXT
+        )
+    ''')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_bot_queries_ts ON bot_queries(timestamp)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_bot_queries_visit ON bot_queries(visit_id)')
+
+    conn.commit()
+    conn.close()
+    print("[DATABASE] P5 site tracking tables initialized")
+
+
+def get_recent_site_visits(limit=40):
+    """Get recent page visits for P5 dashboard"""
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT visit_id, page_path, organization, city, country,
+                   entry_time, session_duration, is_active
+            FROM site_visits
+            ORDER BY entry_time DESC LIMIT ?
+        ''', (limit,))
+        rows = cursor.fetchall()
+        conn.close()
+        result = []
+        for r in rows:
+            result.append({
+                'visit_id': r[0], 'page_path': r[1],
+                'organization': r[2] or 'Nieznana firma',
+                'city': r[3] or '—', 'country': r[4] or '—',
+                'entry_time': r[5], 'session_duration': r[6] or 0,
+                'is_active': bool(r[7])
+            })
+        return result
+    except Exception as e:
+        print(f"[P5] get_recent_site_visits error: {e}")
+        return []
+
+
+def get_recent_bot_queries(limit=30):
+    """Get recent bot queries for P5 dashboard"""
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT visit_id, page_path, timestamp, user_message, bot_reply,
+                   organization, city
+            FROM bot_queries
+            ORDER BY timestamp DESC LIMIT ?
+        ''', (limit,))
+        rows = cursor.fetchall()
+        conn.close()
+        result = []
+        for r in rows:
+            result.append({
+                'visit_id': r[0], 'page_path': r[1],
+                'timestamp': r[2], 'user_message': r[3],
+                'bot_reply': (r[4] or '')[:200],
+                'organization': r[5] or 'Nieznana firma',
+                'city': r[6] or '—'
+            })
+        return result
+    except Exception as e:
+        print(f"[P5] get_recent_bot_queries error: {e}")
+        return []
+
+
+def get_site_analytics_stats():
+    """Get today's stats for P5 dashboard"""
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        cursor = conn.cursor()
+        today = datetime.now().strftime('%Y-%m-%d')
+
+        cursor.execute(
+            "SELECT COUNT(*) FROM site_visits WHERE date(entry_time) = ?", (today,))
+        total_visits = cursor.fetchone()[0]
+
+        cursor.execute(
+            "SELECT COUNT(*) FROM site_visits WHERE date(entry_time) = ? AND page_path = '/ldi'",
+            (today,))
+        ldi_visits = cursor.fetchone()[0]
+
+        cursor.execute(
+            "SELECT COUNT(*) FROM site_visits WHERE date(entry_time) = ? AND page_path = '/ldi-readme'",
+            (today,))
+        readme_visits = cursor.fetchone()[0]
+
+        cursor.execute(
+            "SELECT COUNT(*) FROM site_visits WHERE date(entry_time) = ? AND page_path = '/ldi-tests'",
+            (today,))
+        tests_visits = cursor.fetchone()[0]
+
+        cursor.execute(
+            "SELECT COUNT(*) FROM bot_queries WHERE date(timestamp) = ?", (today,))
+        bot_queries = cursor.fetchone()[0]
+
+        conn.close()
+        return {
+            'total_visits': total_visits,
+            'ldi_visits': ldi_visits,
+            'readme_visits': readme_visits,
+            'tests_visits': tests_visits,
+            'bot_queries': bot_queries
+        }
+    except Exception as e:
+        print(f"[P5] get_site_analytics_stats error: {e}")
+        return {'total_visits': 0, 'ldi_visits': 0, 'readme_visits': 0,
+                'tests_visits': 0, 'bot_queries': 0}
+
+
 def init_database():
     """Initialize database integrity on startup"""
     print("[STARTUP] Checking database integrity...")
@@ -771,6 +922,7 @@ def init_database():
     try:
         AdminDashboardStateManager.init_table()
         init_persistent_storage_tables()
+        ensure_site_tracking_tables()
         print("[STARTUP] Admin state & persistent storage tables OK")
     except Exception as e:
         print(f"[STARTUP] Warning verifying admin tables: {e}")

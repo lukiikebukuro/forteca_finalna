@@ -13,7 +13,8 @@ from config import (
 from database import (
     DatabaseManager, AdminDashboardStateManager, QueryIntentManager,
     get_all_companies, get_hot_leads, get_log_history, get_client_info,
-    ensure_visitor_tables_exist, init_persistent_storage_tables
+    ensure_visitor_tables_exist, init_persistent_storage_tables,
+    get_recent_site_visits, get_recent_bot_queries, get_site_analytics_stats
 )
 from privacy import scrub_pii, hash_ip_address, mask_ip_address
 from utils import calculate_lost_value_internal, log_firehose
@@ -72,6 +73,12 @@ def public_chat():
         role = 'user' if turn.get('role') == 'user' else 'model'
         gemini_history.append({'role': role, 'parts': [turn.get('content', '')]})
 
+    visit_id = (data.get('visit_id') or '').strip() or None
+    page_path = (data.get('page_path') or '/ldi-readme').strip()
+    organization = (data.get('organization') or '').strip() or None
+    city = (data.get('city') or '').strip() or None
+
+    reply = ''
     try:
         model_with_system = genai.GenerativeModel(
             'gemini-2.5-flash',
@@ -83,9 +90,118 @@ def public_chat():
         reply = response.text.strip()
     except Exception as e:
         app.logger.error(f'[public_chat] Gemini error: {type(e).__name__}: {e}')
-        reply = f'Bot chwilowo niedostępny. Napisz bezpośrednio: adeptai.pl'
+        reply = 'Bot chwilowo niedostępny. Napisz bezpośrednio: adeptai.pl'
+
+    # Log query to bot_queries table
+    try:
+        ip_raw = request.remote_addr or ''
+        ip_hash = hash_ip_address(ip_raw) if ip_raw else None
+        conn = sqlite3.connect(DATABASE_NAME)
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO bot_queries (visit_id, page_path, user_message, bot_reply, ip_hash, organization, city)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (visit_id, page_path, user_message, reply[:500], ip_hash, organization, city))
+        conn.commit()
+        conn.close()
+
+        # Broadcast to admin dashboards
+        socketio.emit('bot_query_new', {
+            'visit_id': visit_id,
+            'page_path': page_path,
+            'timestamp': datetime.now().strftime('%H:%M'),
+            'user_message': user_message,
+            'organization': organization or 'Nieznana firma',
+            'city': city or '—'
+        }, room='admin_dashboard')
+    except Exception as log_err:
+        app.logger.warning(f'[public_chat] bot_queries log error: {log_err}')
 
     return jsonify({'reply': reply})
+
+
+# ========================================
+# P5 — SITE ANALYTICS ENDPOINTS
+# ========================================
+
+@api_bp.route('/api/site-track', methods=['POST'])
+@limiter.limit("60/minute")
+def site_track():
+    """Log a page visit for P5 analytics"""
+    data = request.get_json(silent=True) or {}
+    visit_id = (data.get('visit_id') or '').strip()
+    page_path = (data.get('page_path') or '/').strip()
+    referrer = (data.get('referrer') or 'direct')[:300]
+    organization = (data.get('organization') or '').strip() or None
+    city = (data.get('city') or '').strip() or None
+    country = (data.get('country') or '').strip() or None
+
+    if not visit_id:
+        return jsonify({'error': 'missing visit_id'}), 400
+
+    ip_raw = request.remote_addr or ''
+    ip_hash = hash_ip_address(ip_raw) if ip_raw else None
+
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT OR IGNORE INTO site_visits
+                (visit_id, page_path, ip_hash, organization, city, country, referrer)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (visit_id, page_path, ip_hash, organization, city, country, referrer))
+        conn.commit()
+        conn.close()
+
+        socketio.emit('site_visit_new', {
+            'visit_id': visit_id,
+            'page_path': page_path,
+            'organization': organization or 'Nieznana firma',
+            'city': city or '—',
+            'country': country or '—',
+            'timestamp': datetime.now().strftime('%H:%M'),
+            'is_active': True
+        }, room='admin_dashboard')
+    except Exception as e:
+        app.logger.warning(f'[site_track] DB error: {e}')
+
+    return jsonify({'ok': True})
+
+
+@api_bp.route('/api/site-exit', methods=['POST'])
+def site_exit():
+    """Update session duration on page exit (sendBeacon)"""
+    try:
+        raw = request.get_data(as_text=True)
+        data = json.loads(raw) if raw else {}
+        visit_id = (data.get('visit_id') or '').strip()
+        duration = int(data.get('duration') or 0)
+
+        if visit_id:
+            conn = sqlite3.connect(DATABASE_NAME)
+            cursor = conn.cursor()
+            cursor.execute('''
+                UPDATE site_visits
+                SET exit_time = CURRENT_TIMESTAMP, session_duration = ?, is_active = 0
+                WHERE visit_id = ?
+            ''', (duration, visit_id))
+            conn.commit()
+            conn.close()
+    except Exception as e:
+        app.logger.warning(f'[site_exit] error: {e}')
+
+    return '', 204
+
+
+@api_bp.route('/api/site-analytics-data')
+@require_admin_access
+def site_analytics_data():
+    """REST endpoint for P5 initial data load"""
+    return jsonify({
+        'visits': get_recent_site_visits(40),
+        'bot_queries': get_recent_bot_queries(30),
+        'stats': get_site_analytics_stats()
+    })
 
 
 # ========================================

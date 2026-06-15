@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site Analytics — LDI P5</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #f0f4f8;
+            color: #1f2937;
+            min-height: 100vh;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: linear-gradient(135deg, #0f2748 0%, #1e3a5f 100%);
+            border-bottom: 2px solid #2d5a8e;
+            padding: 16px 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .header-icon {
+            width: 44px; height: 44px;
+            background: rgba(59,130,246,0.2);
+            border: 1px solid rgba(59,130,246,0.4);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+        }
+        .header-titles h1 {
+            font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 2px;
+        }
+        .header-titles .subtitle { font-size: 12px; color: #93c5fd; font-weight: 500; }
+        .header-right { display: flex; align-items: center; gap: 12px; }
+        .live-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(16,185,129,0.15);
+            border: 1px solid rgba(16,185,129,0.4);
+            color: #34d399;
+            padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600;
+        }
+        .live-dot {
+            width: 7px; height: 7px; background: #10b981;
+            border-radius: 50%; animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+        .nav-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #e2e8f0; padding: 7px 14px; border-radius: 6px;
+            text-decoration: none; font-size: 12px; font-weight: 500;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+        .logout-btn {
+            background: rgba(239,68,68,0.8); border: none;
+            color: #fff; padding: 7px 14px; border-radius: 6px;
+            text-decoration: none; font-size: 12px; font-weight: 600;
+        }
+        .logout-btn:hover { background: #dc2626; }
+
+        /* ===== STATS ROW ===== */
+        .stats-row {
+            max-width: 1600px; margin: 24px auto 0; padding: 0 24px;
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
+        }
+        .stat-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px; padding: 16px 20px;
+            border-left: 4px solid #3b82f6;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-1px); }
+        .stat-card.ldi   { border-left-color: #6366f1; }
+        .stat-card.readme { border-left-color: #0ea5e9; }
+        .stat-card.tests  { border-left-color: #8b5cf6; }
+        .stat-card.bot    { border-left-color: #f59e0b; }
+        .stat-label { font-size: 11px; color: #6b7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+        .stat-value { font-size: 28px; font-weight: 700; color: #1e3a5f; margin-top: 4px; }
+        .stat-sub   { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            max-width: 1600px; margin: 20px auto; padding: 0 24px 32px;
+            display: grid; grid-template-columns: 1fr 380px; gap: 20px;
+        }
+
+        /* ===== PANEL ===== */
+        .panel {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+        .panel-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #0f2748, #1e3a5f);
+            color: #fff;
+        }
+        .panel-title { font-size: 14px; font-weight: 700; color: #fff; }
+        .panel-subtitle { font-size: 11px; color: #93c5fd; margin-top: 1px; }
+        .panel-badge {
+            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+            color: #e2e8f0; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
+        }
+
+        /* ===== VISITS TABLE ===== */
+        .visits-scroll { max-height: calc(100vh - 320px); overflow-y: auto; }
+        .visits-table { width: 100%; border-collapse: collapse; }
+        .visits-table th {
+            background: #f8fafc; color: #6b7280;
+            font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+            padding: 10px 16px; text-align: left; border-bottom: 1px solid #e5e7eb;
+            position: sticky; top: 0;
+        }
+        .visits-table td {
+            padding: 10px 16px; border-bottom: 1px solid #f3f4f6;
+            font-size: 13px; vertical-align: middle;
+        }
+        .visits-table tr:last-child td { border-bottom: none; }
+        .visits-table tr:hover td { background: #f0f7ff; }
+
+        .page-badge {
+            display: inline-block; padding: 2px 8px; border-radius: 10px;
+            font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+        }
+        .page-ldi       { background: #ede9fe; color: #5b21b6; }
+        .page-ldi-readme { background: #dbeafe; color: #1d4ed8; }
+        .page-ldi-tests  { background: #f3e8ff; color: #7c3aed; }
+        .page-other     { background: #f1f5f9; color: #475569; }
+
+        .org-name { font-weight: 600; color: #1e3a5f; }
+        .org-city  { font-size: 11px; color: #9ca3af; }
+
+        .duration-chip {
+            display: inline-block; padding: 2px 8px; border-radius: 10px;
+            font-size: 11px; font-weight: 600;
+        }
+        .duration-short  { background: #fee2e2; color: #b91c1c; }
+        .duration-medium { background: #fef3c7; color: #92400e; }
+        .duration-long   { background: #d1fae5; color: #065f46; }
+
+        .active-dot {
+            display: inline-block; width: 7px; height: 7px;
+            background: #10b981; border-radius: 50%; margin-right: 4px;
+            animation: pulse 1.5s infinite;
+        }
+
+        .new-row-flash { animation: flashRow 1.5s ease; }
+        @keyframes flashRow {
+            0%   { background: #dbeafe; }
+            100% { background: transparent; }
+        }
+
+        /* ===== BOT QUERIES PANEL ===== */
+        .bot-scroll { max-height: calc(100vh - 320px); overflow-y: auto; padding: 12px; }
+        .bot-card {
+            background: #f8fafc; border: 1px solid #e5e7eb;
+            border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+        .bot-card:hover { background: #f0f7ff; border-color: #bfdbfe; }
+        .bot-card.new-flash { animation: flashCard 1.5s ease; }
+        @keyframes flashCard {
+            0%   { background: #dbeafe; border-color: #93c5fd; }
+            100% { background: #f8fafc; border-color: #e5e7eb; }
+        }
+        .bot-meta {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 6px;
+        }
+        .bot-time { font-size: 11px; color: #6b7280; font-weight: 600; }
+        .bot-page-tag {
+            font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 6px;
+            background: #dbeafe; color: #1d4ed8; text-transform: uppercase;
+        }
+        .bot-org  { font-size: 11px; color: #374151; font-weight: 600; margin-bottom: 4px; }
+        .bot-question {
+            font-size: 12px; color: #1e3a5f; background: #fff;
+            border-left: 3px solid #3b82f6; padding: 5px 10px;
+            border-radius: 0 6px 6px 0; font-style: italic;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 48px 24px; color: #9ca3af;
+        }
+        .empty-state-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.5; }
+        .empty-state-text { font-size: 13px; }
+
+        /* ===== SCROLLBAR ===== */
+        .visits-scroll::-webkit-scrollbar,
+        .bot-scroll::-webkit-scrollbar { width: 4px; }
+        .visits-scroll::-webkit-scrollbar-track,
+        .bot-scroll::-webkit-scrollbar-track { background: #f8fafc; }
+        .visits-scroll::-webkit-scrollbar-thumb,
+        .bot-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="header-content">
+        <div class="header-left">
+            <div class="header-icon">📡</div>
+            <div class="header-titles">
+                <h1>Site Analytics — P5</h1>
+                <div class="subtitle">Wizyty na adeptai.pl/ldi · /ldi-readme · /ldi-tests</div>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="live-badge">
+                <div class="live-dot"></div>
+                LIVE
+            </div>
+            <a href="/admin-dashboard" class="nav-btn">← P2 Dashboard</a>
+            <a href="/logout" class="logout-btn">Wyloguj</a>
+        </div>
+    </div>
+</header>
+
+<!-- STATS ROW -->
+<div class="stats-row">
+    <div class="stat-card">
+        <div class="stat-label">Wizyty dziś</div>
+        <div class="stat-value" id="stat-total">—</div>
+        <div class="stat-sub">wszystkie strony LDI</div>
+    </div>
+    <div class="stat-card ldi">
+        <div class="stat-label">/ldi</div>
+        <div class="stat-value" id="stat-ldi">—</div>
+        <div class="stat-sub">strona techniczna</div>
+    </div>
+    <div class="stat-card readme">
+        <div class="stat-label">/ldi-readme</div>
+        <div class="stat-value" id="stat-readme">—</div>
+        <div class="stat-sub">strona sprzedażowa + bot</div>
+    </div>
+    <div class="stat-card tests">
+        <div class="stat-label">/ldi-tests</div>
+        <div class="stat-value" id="stat-tests">—</div>
+        <div class="stat-sub">wyniki testów</div>
+    </div>
+    <div class="stat-card bot">
+        <div class="stat-label">Zapytania do bota</div>
+        <div class="stat-value" id="stat-bot">—</div>
+        <div class="stat-sub">dziś łącznie</div>
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+
+    <!-- LEFT: VISITS TABLE -->
+    <div class="panel">
+        <div class="panel-header">
+            <div>
+                <div class="panel-title">Wizyty na stronach LDI</div>
+                <div class="panel-subtitle">Firma · strona · czas spędzony · wejście</div>
+            </div>
+            <div class="panel-badge" id="visits-count">0 wizyt</div>
+        </div>
+        <div class="visits-scroll">
+            <table class="visits-table">
+                <thead>
+                    <tr>
+                        <th>Firma / Miasto</th>
+                        <th>Strona</th>
+                        <th>Wejście</th>
+                        <th>Czas</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="visits-tbody">
+                    <tr id="visits-empty">
+                        <td colspan="5">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">👁️</div>
+                                <div class="empty-state-text">Ładowanie wizyt…</div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- RIGHT: BOT QUERIES -->
+    <div class="panel">
+        <div class="panel-header">
+            <div>
+                <div class="panel-title">Zapytania do bota</div>
+                <div class="panel-subtitle">Co pytają odwiedzający</div>
+            </div>
+            <div class="panel-badge" id="bot-count">0</div>
+        </div>
+        <div class="bot-scroll" id="bot-list">
+            <div class="empty-state" id="bot-empty">
+                <div class="empty-state-icon">🤖</div>
+                <div class="empty-state-text">Brak zapytań do bota dziś</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ===== HELPERS =====
+
+function pageBadge(path) {
+    const map = {
+        '/ldi': ['page-ldi', '/ldi'],
+        '/ldi-readme': ['page-ldi-readme', '/ldi-readme'],
+        '/ldi-tests': ['page-ldi-tests', '/ldi-tests']
+    };
+    const [cls, label] = map[path] || ['page-other', path];
+    return `<span class="page-badge ${cls}">${label}</span>`;
+}
+
+function durationChip(sec, isActive) {
+    if (isActive) return `<span class="active-dot"></span><span style="font-size:11px;color:#10b981;font-weight:600;">aktywny</span>`;
+    if (!sec || sec < 5) return `<span class="duration-chip duration-short">&lt;5s</span>`;
+    if (sec < 60) return `<span class="duration-chip duration-short">${sec}s</span>`;
+    if (sec < 300) return `<span class="duration-chip duration-medium">${Math.round(sec/60)}min</span>`;
+    return `<span class="duration-chip duration-long">${Math.round(sec/60)}min</span>`;
+}
+
+function formatTime(ts) {
+    if (!ts) return '—';
+    try {
+        const d = new Date(ts.replace(' ', 'T') + 'Z');
+        return d.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Warsaw' });
+    } catch(e) { return ts.slice(11,16) || '—'; }
+}
+
+function truncate(s, n) {
+    if (!s) return '';
+    return s.length > n ? s.slice(0, n) + '…' : s;
+}
+
+// ===== VISITS TABLE =====
+
+let visitsData = [];
+let botData = [];
+
+function renderVisitRow(v, prepend) {
+    const empty = document.getElementById('visits-empty');
+    if (empty) empty.remove();
+
+    const tbody = document.getElementById('visits-tbody');
+    const tr = document.createElement('tr');
+    tr.id = 'visit-' + v.visit_id;
+    if (prepend) tr.classList.add('new-row-flash');
+
+    tr.innerHTML = `
+        <td>
+            <div class="org-name">${v.organization || 'Nieznana firma'}</div>
+            <div class="org-city">${v.city || '—'} · ${v.country || ''}</div>
+        </td>
+        <td>${pageBadge(v.page_path)}</td>
+        <td style="font-size:12px;color:#6b7280;">${formatTime(v.entry_time) || v.timestamp || '—'}</td>
+        <td>${durationChip(v.session_duration, v.is_active)}</td>
+        <td style="font-size:11px;color:#9ca3af;">${v.is_active ? '🟢' : '⬜'}</td>
+    `;
+
+    if (prepend) {
+        tbody.insertBefore(tr, tbody.firstChild);
+    } else {
+        tbody.appendChild(tr);
+    }
+}
+
+function updateVisitRow(visitId, duration) {
+    const tr = document.getElementById('visit-' + visitId);
+    if (!tr) return;
+    const cells = tr.querySelectorAll('td');
+    if (cells[3]) cells[3].innerHTML = durationChip(duration, false);
+    if (cells[4]) cells[4].innerHTML = '⬜';
+}
+
+function renderBotCard(q, prepend) {
+    const empty = document.getElementById('bot-empty');
+    if (empty) empty.remove();
+
+    const list = document.getElementById('bot-list');
+    const div = document.createElement('div');
+    div.className = 'bot-card' + (prepend ? ' new-flash' : '');
+
+    div.innerHTML = `
+        <div class="bot-meta">
+            <span class="bot-time">${q.timestamp ? formatTime(q.timestamp) : (q.time || '—')}</span>
+            ${pageBadge(q.page_path || '/ldi-readme')}
+        </div>
+        <div class="bot-org">${q.organization || 'Nieznana firma'} · ${q.city || '—'}</div>
+        <div class="bot-question">${truncate(q.user_message, 160)}</div>
+    `;
+
+    if (prepend) {
+        list.insertBefore(div, list.firstChild);
+    } else {
+        list.appendChild(div);
+    }
+}
+
+// ===== INITIAL DATA LOAD =====
+
+function updateStats(stats) {
+    document.getElementById('stat-total').textContent  = stats.total_visits;
+    document.getElementById('stat-ldi').textContent    = stats.ldi_visits;
+    document.getElementById('stat-readme').textContent = stats.readme_visits;
+    document.getElementById('stat-tests').textContent  = stats.tests_visits;
+    document.getElementById('stat-bot').textContent    = stats.bot_queries;
+}
+
+async function loadInitialData() {
+    try {
+        const res = await fetch('/api/site-analytics-data');
+        if (!res.ok) return;
+        const data = await res.json();
+
+        // Visits
+        if (data.visits && data.visits.length > 0) {
+            document.getElementById('visits-empty')?.remove();
+            data.visits.forEach(v => renderVisitRow(v, false));
+        } else {
+            const tbody = document.getElementById('visits-tbody');
+            tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <div class="empty-state-text">Brak wizyt — strony są właśnie wdrażane</div>
+            </div></td></tr>`;
+        }
+        document.getElementById('visits-count').textContent =
+            (data.visits?.length || 0) + ' wizyt';
+
+        // Bot queries
+        if (data.bot_queries && data.bot_queries.length > 0) {
+            document.getElementById('bot-empty')?.remove();
+            data.bot_queries.forEach(q => renderBotCard(q, false));
+        }
+        document.getElementById('bot-count').textContent =
+            (data.bot_queries?.length || 0);
+
+        // Stats
+        if (data.stats) updateStats(data.stats);
+    } catch (e) {
+        console.error('[P5] loadInitialData error:', e);
+    }
+}
+
+// ===== WEBSOCKET =====
+
+const socket = io({ transports: ['websocket', 'polling'] });
+
+socket.on('connect', function() {
+    console.log('[P5] WebSocket connected');
+});
+
+socket.on('connection_confirmed', function(data) {
+    console.log('[P5] Confirmed in room:', data.room);
+});
+
+// New page visit
+socket.on('site_visit_new', function(v) {
+    console.log('[P5] site_visit_new:', v);
+    renderVisitRow(v, true);
+
+    // Update stat counter
+    const el = document.getElementById('stat-total');
+    el.textContent = (parseInt(el.textContent) || 0) + 1;
+
+    const map = {
+        '/ldi': 'stat-ldi',
+        '/ldi-readme': 'stat-readme',
+        '/ldi-tests': 'stat-tests'
+    };
+    const sid = map[v.page_path];
+    if (sid) {
+        const s = document.getElementById(sid);
+        s.textContent = (parseInt(s.textContent) || 0) + 1;
+    }
+
+    const vc = document.getElementById('visits-count');
+    const cur = parseInt(vc.textContent) || 0;
+    vc.textContent = (cur + 1) + ' wizyt';
+});
+
+// New bot query
+socket.on('bot_query_new', function(q) {
+    console.log('[P5] bot_query_new:', q);
+    renderBotCard(q, true);
+
+    const bc = document.getElementById('bot-count');
+    bc.textContent = (parseInt(bc.textContent) || 0) + 1;
+
+    const bs = document.getElementById('stat-bot');
+    bs.textContent = (parseInt(bs.textContent) || 0) + 1;
+});
+
+// ===== INIT =====
+loadInitialData();
+</script>
+</body>
+</html>

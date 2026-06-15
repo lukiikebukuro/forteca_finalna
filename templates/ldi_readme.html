@@ -563,7 +563,13 @@ async function sendMessage() {
         const res = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: text, history, system: SYSTEM })
+            body: JSON.stringify({
+                message: text, history, system: SYSTEM,
+                visit_id: window.__ldi_visit_id || null,
+                page_path: '/ldi-readme',
+                organization: (window.__ldi_geo || {}).organization || null,
+                city: (window.__ldi_geo || {}).city || null
+            })
         });
         const data = await res.json();
         const reply = data.reply || 'Przepraszam, błąd. Napisz bezpośrednio: adeptai.pl';
@@ -578,5 +584,6 @@ async function sendMessage() {
     }
 }
 </script>
+<script src="/static/site_tracker.js" defer></script>
 </body>
 </html>

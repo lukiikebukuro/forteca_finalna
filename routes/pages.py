@@ -97,6 +97,13 @@ def ldi_readme_page():
     return render_template('ldi_readme.html')
 
 
+@pages_bp.route('/site-analytics')
+@require_admin_access
+def site_analytics():
+    """P5 — Site Analytics Panel (admin only)"""
+    return render_template('site_analytics.html', user=current_user)
+
+
 @pages_bp.route('/tech')
 def tech_docs():
     """Technical documentation page"""
