@@ -253,20 +253,24 @@ class QueryIntentManager:
                 reward_score REAL,
                 missing_attributes TEXT,
                 matched_product_id TEXT,
-                ai_ready INTEGER DEFAULT 0
+                ai_ready INTEGER DEFAULT 0,
+                alternative_clicked_id TEXT
             )
         ''')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_qi_session ON query_intents(session_id)')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_qi_timestamp ON query_intents(timestamp)')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_qi_reward ON query_intents(reward_score)')
 
-        # Migration: Add ai_ready column if missing (for existing databases)
+        # Migrations: add missing columns for existing databases
         try:
             cursor.execute("PRAGMA table_info(query_intents)")
             columns = [col[1] for col in cursor.fetchall()]
             if 'ai_ready' not in columns:
                 cursor.execute('ALTER TABLE query_intents ADD COLUMN ai_ready INTEGER DEFAULT 0')
-                print("[P3] Added ai_ready column to query_intents")
+                print("[P3] Migration: added ai_ready column")
+            if 'alternative_clicked_id' not in columns:
+                cursor.execute('ALTER TABLE query_intents ADD COLUMN alternative_clicked_id TEXT')
+                print("[P3] Migration: added alternative_clicked_id column")
         except Exception as e:
             print(f"[P3] Migration check: {e}")
 
@@ -325,7 +329,8 @@ class QueryIntentManager:
                     reward_score = ?,
                     missing_attributes = ?,
                     matched_product_id = ?,
-                    ai_ready = ?
+                    ai_ready = ?,
+                    alternative_clicked_id = ?
                 WHERE id = ?
             ''', (
                 data.get('query_text', ''),
@@ -344,6 +349,7 @@ class QueryIntentManager:
                 missing_attrs,
                 data.get('matched_product_id'),
                 1 if data.get('ai_ready') else 0,
+                data.get('alternative_clicked_id'),
                 existing_id
             ))
             conn.commit()
@@ -358,8 +364,9 @@ class QueryIntentManager:
                 best_match_score, clicked_alternative, query_refinement_count,
                 time_to_first_click, session_duration, bounce,
                 added_to_cart, purchased, cart_value, reward_score,
-                missing_attributes, matched_product_id, ai_ready
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                missing_attributes, matched_product_id, ai_ready,
+                alternative_clicked_id
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             session_id, data.get('query_text', ''),
             data.get('confidence_level'), data.get('suggestion_type'),
@@ -372,7 +379,8 @@ class QueryIntentManager:
             1 if data.get('purchased') else 0,
             data.get('cart_value', 0.0), data.get('reward_score'),
             missing_attrs, data.get('matched_product_id'),
-            1 if data.get('ai_ready') else 0
+            1 if data.get('ai_ready') else 0,
+            data.get('alternative_clicked_id')
         ))
         record_id = cursor.lastrowid
         conn.commit()
@@ -397,7 +405,7 @@ class QueryIntentManager:
                 SELECT session_id, query_text, confidence_level, suggestion_type,
                     clicked_alternative, purchased, bounce, reward_score,
                     missing_attributes, matched_product_id, timestamp, ai_ready,
-                    query_refinement_count
+                    query_refinement_count, alternative_clicked_id
                 FROM query_intents WHERE ai_ready = 1 ORDER BY timestamp DESC LIMIT ?
             ''', (limit,))
         else:
@@ -405,7 +413,7 @@ class QueryIntentManager:
                 SELECT session_id, query_text, confidence_level, suggestion_type,
                     clicked_alternative, purchased, bounce, reward_score,
                     missing_attributes, matched_product_id, timestamp, ai_ready,
-                    query_refinement_count
+                    query_refinement_count, alternative_clicked_id
                 FROM query_intents ORDER BY timestamp DESC LIMIT ?
             ''', (limit,))
 
@@ -429,7 +437,8 @@ class QueryIntentManager:
                 'missing_features': missing_attrs or [],
                 'matched_product_id': row[9], 'timestamp': row[10],
                 'ai_ready': bool(row[11]) if row[11] is not None else False,
-                'query_refinement_count': row[12] or 0
+                'query_refinement_count': row[12] or 0,
+                'alternative_clicked_id': row[13] if len(row) > 13 else None
             })
         return results
 

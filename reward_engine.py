@@ -9,6 +9,68 @@ logger = logging.getLogger(__name__)
 
 
 # ========================================
+# MISSING FEATURE EXTRACTOR (JSONL training data)
+# ========================================
+
+class MissingFeatureExtractor:
+    """
+    Extracts missing product attributes from NO_MATCH queries.
+    Used to populate missing_features in JSONL training data.
+    """
+
+    _COLORS = {
+        # English
+        'pink': 'color:pink', 'red': 'color:red', 'blue': 'color:blue',
+        'black': 'color:black', 'white': 'color:white', 'green': 'color:green',
+        'yellow': 'color:yellow', 'purple': 'color:purple', 'gold': 'color:gold',
+        'golden': 'color:gold', 'silver': 'color:silver', 'gray': 'color:gray',
+        'grey': 'color:gray', 'orange': 'color:orange', 'brown': 'color:brown',
+        'rose': 'color:rose',
+        # Polish
+        'różowy': 'color:pink', 'różowa': 'color:pink', 'różowego': 'color:pink',
+        'czerwony': 'color:red', 'czerwona': 'color:red',
+        'niebieski': 'color:blue', 'niebieska': 'color:blue',
+        'czarny': 'color:black', 'czarna': 'color:black',
+        'biały': 'color:white', 'biała': 'color:white',
+        'zielony': 'color:green', 'zielona': 'color:green',
+        'żółty': 'color:yellow', 'żółta': 'color:yellow',
+        'fioletowy': 'color:purple', 'fioletowa': 'color:purple',
+        'złoty': 'color:gold', 'złota': 'color:gold',
+        'srebrny': 'color:silver', 'srebrna': 'color:silver',
+        'szary': 'color:gray', 'szara': 'color:gray',
+        'pomarańczowy': 'color:orange', 'brązowy': 'color:brown',
+    }
+
+    _CAPACITY_RE = re.compile(
+        r'\b(\d+)\s*(gb|tb|mb)\b', re.IGNORECASE
+    )
+
+    @classmethod
+    def extract(cls, query: str) -> list:
+        """Return list of missing feature strings, e.g. ['color:pink', 'capacity:128gb']."""
+        q = query.lower()
+        features = []
+        seen = set()
+
+        # Tokens for color matching
+        tokens = re.findall(r'\b\w+\b', q)
+        for token in tokens:
+            label = cls._COLORS.get(token)
+            if label and label not in seen:
+                features.append(label)
+                seen.add(label)
+
+        # Capacity: match e.g. "128gb", "1 tb", "256 GB"
+        for m in cls._CAPACITY_RE.finditer(q):
+            label = f'capacity:{m.group(1)}{m.group(2).lower()}'
+            if label not in seen:
+                features.append(label)
+                seen.add(label)
+
+        return features
+
+
+# ========================================
 # SEMANTIC VALIDATOR (AI Data Quality)
 # ========================================
 

@@ -2336,16 +2336,17 @@ Jeśli wiele osób szuka tego produktu, dodamy go do naszej oferty."""
                 conn = sqlite3.connect('dashboard.db')
                 cur = conn.cursor()
                 cur.execute('''
-                    UPDATE query_intents SET clicked_alternative = 1
+                    UPDATE query_intents
+                    SET clicked_alternative = 1, alternative_clicked_id = ?
                     WHERE id = (
                         SELECT id FROM query_intents
                         WHERE session_id = ? AND confidence_level = 'NO_MATCH'
                         ORDER BY id DESC LIMIT 1
                     )
-                ''', (last_no_match_session,))
+                ''', (product_id, last_no_match_session))
                 conn.commit()
                 conn.close()
-                print(f"[P3][GOLD] clicked_alternative=True for session {last_no_match_session}")
+                print(f"[P3][GOLD] clicked_alternative=True, product={product_id}, session={last_no_match_session}")
                 session.pop('last_no_match_qi_session', None)
                 session.modified = True
             except Exception as e:

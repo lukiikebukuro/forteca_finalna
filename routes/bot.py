@@ -20,7 +20,7 @@ from config import (
     DATABASE_NAME,
     ldi_reward_calc  # P3: LDI Reward Calculator
 )
-from reward_engine import semantic_validator  # P3: Semantic validation for AI_READY flag
+from reward_engine import semantic_validator, MissingFeatureExtractor
 from database import (
     DatabaseManager, QueryIntentManager,
     save_company_data, save_hot_lead, save_log_entry,
@@ -495,6 +495,8 @@ def analyze_query():
         if not is_valid:
             print(f"[SEMANTIC][MOTO] Query rejected: '{sanitized_query}' -> {validation_reason}")
 
+        missing_attrs = MissingFeatureExtractor.extract(sanitized_query) if confidence_level == 'NO_MATCH' else []
+
         try:
             QueryIntentManager.add_query_intent({
                 'session_id': session_id or f'moto_{request_id}',
@@ -511,11 +513,11 @@ def analyze_query():
                 'purchased': False,
                 'cart_value': 0.0,
                 'reward_score': reward_score,
-                'missing_attributes': [],
+                'missing_attributes': missing_attrs,
                 'matched_product_id': matched_product_id,
                 'ai_ready': ai_ready
             })
-            print(f"[P3][MOTO] QueryIntent saved: reward={reward_score:.4f}, confidence={confidence_level}, ai_ready={ai_ready}")
+            print(f"[P3][MOTO] QueryIntent saved: reward={reward_score:.4f}, confidence={confidence_level}, missing={missing_attrs}, ai_ready={ai_ready}")
         except Exception as p3_error:
             print(f"[P3][MOTO] Failed to save QueryIntent: {p3_error}")
             app.logger.error(f"[P3] QueryIntent save failed: {p3_error}")
@@ -720,6 +722,8 @@ def elektro_analyze_query():
         if not is_valid:
             print(f"[SEMANTIC][ELEKTRO] Query rejected: '{sanitized_query}' -> {validation_reason}")
 
+        missing_attrs_e = MissingFeatureExtractor.extract(sanitized_query) if confidence_level == 'NO_MATCH' else []
+
         try:
             QueryIntentManager.add_query_intent({
                 'session_id': session_id or f'elektro_{request_id}',
@@ -736,11 +740,11 @@ def elektro_analyze_query():
                 'purchased': False,
                 'cart_value': 0.0,
                 'reward_score': reward_score,
-                'missing_attributes': [],
+                'missing_attributes': missing_attrs_e,
                 'matched_product_id': matched_product_id,
                 'ai_ready': ai_ready
             })
-            print(f"[P3][ELEKTRO] QueryIntent saved: reward={reward_score:.4f}, confidence={confidence_level}, ai_ready={ai_ready}")
+            print(f"[P3][ELEKTRO] QueryIntent saved: reward={reward_score:.4f}, confidence={confidence_level}, missing={missing_attrs_e}, ai_ready={ai_ready}")
             # Zapamiętaj ostatni NO_MATCH session_id dla Gold signal
             if confidence_level == 'NO_MATCH':
                 session['last_no_match_qi_session'] = session_id or f'elektro_{request_id}'
