@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 
 from config import app, DATABASE_NAME
 from privacy import scrub_pii
+from reward_engine import LDIRewardCalculator
 
 
 # ========================================
@@ -421,7 +422,8 @@ class QueryIntentManager:
             results.append({
                 'query': row[1], 'intent_label': row[3], 'confidence': row[2],
                 'reward_signal': {
-                    'score': row[7], 'clicked_alternative': bool(row[4]),
+                    'score': LDIRewardCalculator.score_for_export(row[2], bool(row[4]), row[7] or 0.0),
+                    'clicked_alternative': bool(row[4]),
                     'purchased': bool(row[5]), 'bounce': bool(row[6])
                 },
                 'missing_features': missing_attrs or [],

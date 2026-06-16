@@ -461,3 +461,19 @@ class LDIRewardCalculator:
             cart_value=data.get('cart_value', 0.0),
         )
         return self.calculate_reward(session)
+
+    @staticmethod
+    def score_for_export(confidence_level: str, clicked_alternative: bool, stored_score: float = 0.0) -> float:
+        """
+        Score used in JSONL training data export.
+
+        NO_MATCH + clicked  → 0.8  (Gold Signal: user searched X, clicked Y)
+        NO_MATCH no click   → 0.0
+        HIGH/MEDIUM + click → 0.1  (match was good, user confirmed)
+        Everything else     → stored_score (from DB, calculated at query time)
+        """
+        if confidence_level == 'NO_MATCH':
+            return 0.8 if clicked_alternative else 0.0
+        if confidence_level in ('HIGH', 'MEDIUM') and clicked_alternative:
+            return 0.1
+        return stored_score if stored_score is not None else 0.0
