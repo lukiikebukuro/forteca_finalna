@@ -352,15 +352,15 @@
     <div class="stats-bar">
         <div class="stat-item">
             <div class="stat-value">91%</div>
-            <div class="stat-label">Classification accuracy<br>91/100 test scenarios</div>
+            <div class="stat-label">Automotive accuracy<br>91/100 test scenarios</div>
         </div>
         <div class="stat-item">
-            <div class="stat-value">&lt;60ms</div>
-            <div class="stat-label">Intent classification<br>latency (p95)</div>
+            <div class="stat-value">92.3%</div>
+            <div class="stat-label">Electronics accuracy<br>169/183 — no retraining</div>
         </div>
         <div class="stat-item">
-            <div class="stat-value gold">+15</div>
-            <div class="stat-label">Gold Signal reward<br>clicked_despite_no_match</div>
+            <div class="stat-value gold">1.0 / 0.8</div>
+            <div class="stat-label">Platinum / Gold<br>reward labels</div>
         </div>
     </div>
 
@@ -395,32 +395,47 @@
         </ul>
 
         <div class="callout gold">
-            <p><strong>Gold Signal:</strong> clicked_despite_no_match = +15 reward points (highest weight in the system).</p>
+            <p><strong>Gold Signal:</strong> NO_MATCH → user clicked an alternative product. Exported reward score <code>0.8</code> — high weight in training.</p>
+        </div>
+
+        <h3>Platinum Signal: when discovery converts to purchase</h3>
+        <p>
+            Gold Signal captures intent (user clicked the alternative). When that click leads to
+            a purchase, the record is upgraded to <strong>Platinum Signal</strong> — the strongest
+            training label in the system.
+        </p>
+        <div class="callout gold">
+            <p>
+                <strong>Platinum Signal:</strong> NO_MATCH → clicked alternative → purchased.
+                Exported reward score <code>1.0</code> (ceiling of the normalized range).
+            </p>
         </div>
 
         <h3>The reward formula</h3>
-        <p>LDI uses a multi-signal reward calculator with anti-bait penalties:</p>
-
-<pre><code>class LDIRewardCalculator:
-    weights = {
-        'high_confidence_match': 10.0,
-        'clicked_despite_no_match': 15.0,  # 🏆 GOLD SIGNAL
-        'clicked_alternative': 20.0,
-        'quick_click_bonus': 10.0,         # &lt;10s to click
-        'cart_add': 35.0,
-        'purchase': 50.0,
-    }
-    
-    penalties = {
-        'bounce': -100.0,                  # Instant normalization to -1.0
-        'multiple_refinements': -15.0,     # >=3 query changes = frustration
-        'long_session_no_action': -10.0,   # >3min without click
-    }</code></pre>
+        <p>
+            LDI uses a <strong>weighted ensemble of behavioral signals with anti-bait penalties</strong>.
+            Three signal categories drive the score:
+        </p>
+        <ul>
+            <li><strong>Match quality</strong> — high-confidence matches earn baseline reward;
+                NO_MATCH with downstream click earns the Gold/Platinum premium</li>
+            <li><strong>Behavioral commitment</strong> — cart additions, purchases, and fast clicks
+                compound the score upward</li>
+            <li><strong>Frustration penalties</strong> — multiple query refinements, long sessions
+                without action, and bounces drag the score toward <code>-1.0</code></li>
+        </ul>
+        <p>
+            Exact weights are tuned hyperparameters refined against the test suite.
+            All scores normalize to <code>[-1.0, +1.0]</code> — directly consumable by reward-modeled
+            fine-tuning pipelines.
+        </p>
 
         <p>
-            <strong>Key design:</strong> bounce detection is instant penalty. A user who leaves in &lt;5s
-            without any action is normalized to -1.0 regardless of other signals. This prevents
-            clickbait patterns from polluting the training data.
+            <strong>Bounce detection</strong> runs as a batch sweep at JSONL export time, not on the
+            hot path. Records older than 5 minutes with no click, cart-add, or purchase are flagged
+            <code>bounce: true</code> in a single UPDATE. This keeps query classification free of
+            background bookkeeping, at the cost of bounce labels being eventually consistent
+            (not real-time).
         </p>
     </section>
 
@@ -442,40 +457,33 @@
             that rejects low-quality queries <em>before</em> they enter the reward pipeline.
         </p>
 
-        <h3>Validation layers</h3>
-
-<pre><code>class SemanticValidator:
-    def validate(self, query: str) -> Tuple[bool, str]:
-        # 1. Keyboard patterns
-        if re.match(r'^[asdfghjkl]+$', query):
-            return False, "KEYBOARD_PATTERN"
-        
-        # 2. Unrealistic models (iPhone 30, Galaxy S99)
-        for prefix, (min_num, max_num) in unrealistic_model_patterns.items():
-            if model_num > max_num:
-                return False, f"UNREALISTIC_MODEL:{prefix}_{model_num}"
-        
-        # 3. Food/wrong domain
-        if has_food_words and not has_domain_context:
-            return False, "FOOD_DOMAIN"
-        
-        # 4. NO_MATCH without domain context = noise
-        if confidence_level == 'NO_MATCH' and not has_domain_context:
-            return False, "NO_MATCH_NO_CONTEXT"
-        
-        return True, "OK"</code></pre>
-
+        <h3>The 5-layer rejection pipeline</h3>
+        <p>Every query passes through five sequential filters before it touches the reward engine:</p>
+        <ol>
+            <li><strong>Format checks</strong> — minimum length, keyboard mashing patterns,
+                nonsense word lists</li>
+            <li><strong>Domain heuristics</strong> — wrong-domain detection (e.g. food queries
+                on an auto parts store)</li>
+            <li><strong>Realism check</strong> — model number sanity catches hallucinations like
+                <code>iPhone 30</code> or <code>Galaxy S99</code></li>
+            <li><strong>Lost-demand qualification</strong> — NO_MATCH queries must carry
+                <em>both</em> domain context (recognized brand or category) <em>and</em> at least
+                one extractable feature; otherwise they are uninformative noise</li>
+            <li><strong>Feature extraction</strong> — a per-domain attribute extractor (color,
+                capacity, chassis code, fuel type, body type, etc.) populates
+                <code>missing_features</code> for downstream training labels</li>
+        </ol>
         <p>
-            The <code>unrealistic_model_patterns</code> dictionary knows that iPhone goes 1-16,
-            Galaxy S goes 1-25, BMW series go 1-8. <strong>"iPhone 30" is rejected as hallucination</strong>,
-            not counted as lost demand.
+            Records that fail any layer are persisted with <code>ai_ready: false</code> and
+            excluded from training exports by default.
         </p>
 
-        <h3>Why NO_MATCH with domain context is valid</h3>
+        <h3>Why NO_MATCH with features is valid</h3>
         <p>
             If a user searches "BMW E46 klocki Brembo" and we get NO_MATCH, that's not noise — that's
-            <strong>genuine lost demand</strong>. The query has domain context (car brand + part brand).
-            These queries are flagged <code>VALID_LOST_DEMAND</code> and routed to the Gold Signal pipeline.
+            <strong>genuine lost demand</strong>. The query has domain context (car brand + part term)
+            and the feature extractor pulls out <code>gen:e46</code>. These records are flagged
+            <code>VALID_LOST_DEMAND</code> and routed to the Gold/Platinum Signal pipeline.
         </p>
     </section>
 
@@ -484,20 +492,25 @@
     <!-- SECTION III -->
     <section class="doc-section">
         <p class="section-num">III.</p>
-        <h2>Universal Automotive Knowledge: 300+ brands, zero hallucinations</h2>
+        <h2>Universal Automotive Knowledge: ~980 entities, zero hallucinations</h2>
 
         <h3>The domain knowledge layer</h3>
         <p>
-            LDI was built for automotive e-commerce. The <code>UNIVERSAL_AUTOMOTIVE_KNOWLEDGE</code>
-            dictionary contains:
+            LDI was built first for automotive e-commerce. The <code>UNIVERSAL_AUTOMOTIVE_KNOWLEDGE</code>
+            dictionary ships with:
         </p>
         <ul>
-            <li><strong>300+ car brands</strong> — from BMW to BYD, including Chinese EV brands</li>
-            <li><strong>150+ motorcycle brands</strong> — Yamaha, Ducati, Royal Enfield</li>
-            <li><strong>500+ car models</strong> — E46, W124, A4 B8, etc.</li>
-            <li><strong>200+ part categories</strong> — klocki, amortyzator, filtr oleju</li>
-            <li><strong>OEM suppliers</strong> — Bosch, Brembo, Mann, NGK</li>
+            <li><strong>185 brands</strong> — 107 car brands (from BMW to BYD, including Chinese EV), 54 motorcycle, 24 luxury</li>
+            <li><strong>512 models</strong> — 370 car models (E46, W124, A4 B8, ...) plus 142 motorcycle models</li>
+            <li><strong>190 part categories</strong> — klocki, amortyzator, filtr oleju, świece</li>
+            <li><strong>84 technical terms</strong> — chassis codes, fuel types, body styles</li>
+            <li><strong>9 product-code regex patterns</strong> — VW/Audi OEM, NGK plug codes, Bosch part numbers</li>
         </ul>
+        <p>
+            Total: <strong>~980 domain entities across 8 categories</strong>, all hot-loaded into
+            memory at boot. The electronics adaptation swaps this dictionary for an equivalent
+            <code>UNIVERSAL_ELECTRONICS_KNOWLEDGE</code> structure — same shape, different content.
+        </p>
 
         <h3>Why this matters</h3>
         <p>
@@ -524,45 +537,50 @@
 
         <h3>Architecture flow</h3>
 
-<pre><code>User query ("BMW E46 klocki")
+<pre><code>User query ("BMW E46 klocki Brembo")
     ↓
-SemanticValidator → reject noise
+[1] source dispatcher (moto vs elektro)
     ↓
-UNIVERSAL_AUTOMOTIVE_KNOWLEDGE → entity extraction
+[2] per-domain MissingFeatureExtractor
+       moto   → MotoFeatureExtractor    (chassis, engine, fuel, body, color)
+       elektro → ElektroFeatureExtractor (capacity, ram, screen, variant, gen)
     ↓
-FuzzyWuzzy matcher (products.json) → confidence_level
+    extracts: ["gen:e46"]
     ↓
-             ┌─────────────┐
-             │ HIGH/MEDIUM │ → standard results
-             └─────────────┘
-                    │
-             ┌─────────────┐
-             │  NO_MATCH   │ → Lost Demand flag
-             └─────────────┘
-                    │
-                    ↓
-       Alternative suggestions (fuzzy)
-                    │
-                    ↓
-         ┌───────────────────────┐
-         │ clicked_alternative?  │
-         └───────────────────────┘
-                    │
-         YES        │          NO
-          ↓         │           ↓
-      GOLD SIGNAL   │      LOST DEMAND LOG
-      (+15 reward)  │      (for inventory team)</code></pre>
+[3] SemanticValidator (5-layer pipeline)
+    rejects: keyboard | wrong-domain | unrealistic | NO_MATCH-without-features
+    ↓
+[4] Fuzzy matcher against in-memory product catalog → confidence_level
+    ↓
+    ┌──────────────────────────────┬──────────────────────────────┐
+    │ HIGH / MEDIUM                │ NO_MATCH                     │
+    │ standard product results     │ alternative suggestions      │
+    └──────────────────────────────┴───────────────┬──────────────┘
+                                                   │
+                                                   ↓
+                                       User clicks "Add to cart"?
+                                                   │
+                                       ┌───────────┴───────────┐
+                                      YES                     NO
+                                       │                       │
+                                       ↓                       ↓
+                              GOLD SIGNAL (0.8)        Lost-demand log
+                                       │                (inventory team)
+                            purchase webhook fires?
+                                       │
+                                       ↓ YES
+                              PLATINUM SIGNAL (1.0)</code></pre>
 
-        <h3>Latency budget</h3>
+        <h3>Hot-path design</h3>
         <p>
-            Classification happens <strong>while the user types</strong>. The &lt;60ms p95 latency
-            comes from:
+            Classification runs <strong>on the keystroke debounce</strong> — there are no external
+            API calls in the request path. Three things make this work:
         </p>
         <ul>
-            <li>Pre-loaded product database (in-memory)</li>
-            <li>Pre-compiled regex patterns for validation</li>
-            <li>FuzzyWuzzy process.extractBests() with score_cutoff</li>
-            <li>No external API calls in the hot path</li>
+            <li>Product catalog and domain knowledge are hot-loaded into memory at boot</li>
+            <li>Validator patterns are pre-compiled <code>re.Pattern</code> objects, not strings</li>
+            <li>Fuzzy matching uses score_cutoff to short-circuit low-quality matches early</li>
+            <li>All bookkeeping (bounce labelling, session consolidation) is deferred to batch sweeps at JSONL export time, not the hot path</li>
         </ul>
     </section>
 
@@ -580,40 +598,63 @@ FuzzyWuzzy matcher (products.json) → confidence_level
         </p>
 
 <pre><code>{
-  "session_id": "abc123",
-  "original_query": "BMW E46 klocki Brembo",
-  "confidence_level": "NO_MATCH",
-  "clicked_alternative": true,
-  "alternative_clicked": "ATE klocki hamulcowe E46 przód",
-  "reward_score": 0.35,
+  "query": "BMW E46 klocki Brembo",
+  "intent_label": "hamulce",
+  "confidence": "NO_MATCH",
+  "source": "moto",
+  "reward_signal": {
+    "score": 0.8,
+    "clicked_alternative": true,
+    "purchased": false,
+    "bounce": false
+  },
+  "missing_features": ["gen:e46"],
+  "matched_product_id": null,
+  "alternative_clicked_id": "ate-klocki-e46-przod",
   "ai_ready": true,
-  "timestamp": "2026-04-18T10:30:00Z"
+  "query_refinement_count": 0,
+  "timestamp": "2026-06-17 10:30:00"
 }</code></pre>
 
         <h3>Data quality guarantees</h3>
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Flag</th>
+                    <th>Field</th>
                     <th>Meaning</th>
-                    <th>Export</th>
+                    <th>Export behavior</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>ai_ready: true</td>
-                    <td>Passed SemanticValidator, has domain context</td>
-                    <td>Include in training</td>
+                    <td>Passed all 5 validator layers, has extractable features</td>
+                    <td>Default export (clean training data)</td>
                 </tr>
                 <tr>
                     <td>ai_ready: false</td>
-                    <td>Keyboard pattern, food domain, unrealistic model</td>
-                    <td>Exclude from training</td>
+                    <td>Keyboard pattern, wrong domain, unrealistic model, NO_MATCH without features</td>
+                    <td>Excluded unless <code>?ai_ready=0</code></td>
+                </tr>
+                <tr>
+                    <td>source</td>
+                    <td>Bot domain (<code>moto</code> / <code>elektro</code>)</td>
+                    <td>Use for per-domain partitioning</td>
+                </tr>
+                <tr>
+                    <td>missing_features</td>
+                    <td>Per-domain attribute extraction (color, capacity, gen, fuel, ...)</td>
+                    <td>The "what was the user looking for" training label</td>
                 </tr>
                 <tr class="gold-row">
-                    <td>is_gold_signal: true</td>
-                    <td>clicked_despite_no_match = genuine discovery</td>
+                    <td>score: 0.8</td>
+                    <td>Gold Signal — NO_MATCH + clicked alternative (no purchase yet)</td>
                     <td>Prioritize in training</td>
+                </tr>
+                <tr class="gold-row">
+                    <td>score: 1.0</td>
+                    <td>Platinum Signal — NO_MATCH + click + purchase</td>
+                    <td>Highest training weight</td>
                 </tr>
             </tbody>
         </table>
@@ -621,12 +662,68 @@ FuzzyWuzzy matcher (products.json) → confidence_level
 
     <hr>
 
-    <!-- SECTION VI: TEST RESULTS -->
+    <!-- SECTION VI: PRIVACY -->
     <section class="doc-section">
         <p class="section-num">VI.</p>
-        <h2>Test results: 100 scenarios, 91% accuracy</h2>
+        <h2>Privacy by design: GDPR-compliant from the first byte</h2>
 
-        <h3>Test methodology</h3>
+        <p>
+            LDI is deployed in the EU. Privacy is enforced at the data layer, not bolted on later.
+        </p>
+
+        <h3>What is scrubbed before logging</h3>
+        <ul>
+            <li><strong>PII patterns</strong> — emails, phone numbers, and identifiable fragments
+                are stripped from queries before any DB write (<code>scrub_pii</code> runs at the
+                edge of the request handler, not after the fact)</li>
+            <li><strong>IP addresses</strong> — stored as salted hashes plus a masked octet
+                representation, never the raw IP</li>
+            <li><strong>Session IDs</strong> — used internally for query consolidation but
+                <strong>never exported</strong> in JSONL training data</li>
+            <li><strong>Organization context</strong> — derived from ASN (Autonomous System Number)
+                lookups, not from cookies, fingerprinting, or third-party trackers</li>
+        </ul>
+
+        <h3>What the JSONL training export contains — and what it doesn't</h3>
+        <p>
+            The export ships query text, classification metadata, behavioral flags, and the reward
+            score. It does <strong>not</strong> ship session IDs, IP hashes, organization names,
+            or any user identifier. Two records from the same session are linked only by the
+            surrounding behavioral signal, never by an identifier.
+        </p>
+
+        <h3>Right to erasure</h3>
+        <p>
+            All visitor data is keyed by salted session hash in a single relational store.
+            Deletion requests resolve to a single DB query, not a multi-system reconciliation.
+            No analytics warehouse, no third-party CDN cookies, no off-platform reporting.
+        </p>
+    </section>
+
+    <hr>
+
+    <!-- SECTION VII: TEST RESULTS -->
+    <section class="doc-section">
+        <p class="section-num">VII.</p>
+        <h2>Test results &amp; cross-domain generalization</h2>
+
+        <h3>Cross-domain generalization</h3>
+        <p>
+            The same architecture was retargeted from automotive to consumer electronics
+            (smartphones, laptops, audio) <strong>without retraining or hyperparameter changes</strong>.
+            Only the domain knowledge layer — brands, categories, and the attribute extractor —
+            was swapped.
+        </p>
+        <div class="callout">
+            <p>
+                <strong>Electronics test suite: 169/183 scenarios passed (92.3%)</strong> —
+                marginally <em>higher</em> than the automotive benchmark, on a domain the system
+                had never seen before. Evidence that the validator, reward engine, session
+                consolidation, and feature-extraction core are genuinely domain-agnostic.
+            </p>
+        </div>
+
+        <h3>Automotive test methodology</h3>
         <p>
             The test suite covers edge cases that break naive matchers:
         </p>
@@ -700,31 +797,38 @@ FuzzyWuzzy matcher (products.json) → confidence_level
 
     <hr>
 
-    <!-- SECTION VII: INDUSTRY PERSPECTIVE -->
+    <!-- SECTION VIII: INDUSTRY PERSPECTIVE -->
     <section class="doc-section">
-        <p class="section-num">VII.</p>
-        <h2>The gap in standard analytics</h2>
+        <p class="section-num">VIII.</p>
+        <h2>Where LDI fits next to standard analytics</h2>
 
+        <h3>What standard analytics already do</h3>
         <p>
-            To understand why LDI matters, consider what standard tools see:
+            GA4, Mixpanel, and most internal warehouses <em>can</em> log search terms, no-result
+            events, and custom "lost demand" dimensions. The question is what comes out the other
+            end — and what shape the data is in by the time an ML engineer or merchandiser sees it.
         </p>
 
-        <div style="background: #1e293b; border-radius: 8px; padding: 24px 28px; margin: 24px 0; border-left: 3px solid var(--gold);">
-            <p style="color: #94a3b8; font-size: 13px; margin-bottom: 12px; font-style: italic;">
-                From an internal analysis comparing LDI methodology to enterprise analytics:
-            </p>
-            <p style="color: #e2e8f0; font-size: 15px; line-height: 1.7; margin: 0;">
-                "Google Analytics 4 and internal logs only see <strong style="color: #fbbf24;">Events</strong> (clicks, page views).<br>
-                LDI sees <strong style="color: #fbbf24;">Intents that never became events</strong>.<br><br>
-                When a user enters a query and gets 0 results, standard systems treat this as a 'Bounce'.
-                LDI does something different: in under 200ms, it runs a 5-stage analysis to determine
-                whether this is noise — or genuine demand for a product the catalog doesn't carry."
-            </p>
-        </div>
-
+        <h3>Where LDI is structurally different</h3>
+        <ul>
+            <li><strong>Classification at query time, not at analysis time.</strong>
+                LDI labels every query as noise or valid lost demand <em>before</em> it lands in
+                storage. General analytics log everything and push the filtering problem downstream
+                to the analyst</li>
+            <li><strong>Reward-shaped output.</strong> Every record is a self-contained training
+                example with a normalized reward score in <code>[-1, +1]</code>. General analytics
+                ship events; LDI ships labels</li>
+            <li><strong>Domain-aware extractors.</strong> LDI knows <code>E46</code> is a chassis
+                code, <code>2.0 TDI</code> is an engine spec, and <code>iPhone 13 pro max</code>
+                decomposes into model + variant. General analytics see opaque strings</li>
+            <li><strong>Session consolidation.</strong> Three refinements of one intent collapse
+                into a single labeled record with a refinement count. Standard event streams keep
+                them as three separate rows the analyst has to stitch back together</li>
+        </ul>
         <p>
-            The difference is brutal. A bounce is a dead metric. A classified intent is actionable data:
-            inventory gaps, pricing signals, product associations, training labels.
+            None of this replaces GA4 — they solve different problems. LDI is a specialized layer
+            that produces something general analytics cannot: <strong>training-ready labels for
+            the queries that didn't convert</strong>.
         </p>
     </section>
 
