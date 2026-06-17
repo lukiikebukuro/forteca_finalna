@@ -12,21 +12,154 @@ logger = logging.getLogger(__name__)
 # MISSING FEATURE EXTRACTOR (JSONL training data)
 # ========================================
 
-class MissingFeatureExtractor:
+# Shared color dictionary (reused by Moto + Elektro extractors)
+_SHARED_COLORS = {
+    'pink': 'color:pink', 'red': 'color:red', 'blue': 'color:blue',
+    'black': 'color:black', 'white': 'color:white', 'green': 'color:green',
+    'yellow': 'color:yellow', 'purple': 'color:purple', 'gold': 'color:gold',
+    'golden': 'color:gold', 'silver': 'color:silver', 'gray': 'color:gray',
+    'grey': 'color:gray', 'orange': 'color:orange', 'brown': 'color:brown',
+    'rose': 'color:rose',
+    'różowy': 'color:pink', 'różowa': 'color:pink', 'różowego': 'color:pink',
+    'czerwony': 'color:red', 'czerwona': 'color:red',
+    'niebieski': 'color:blue', 'niebieska': 'color:blue',
+    'czarny': 'color:black', 'czarna': 'color:black',
+    'biały': 'color:white', 'biała': 'color:white',
+    'zielony': 'color:green', 'zielona': 'color:green',
+    'żółty': 'color:yellow', 'żółta': 'color:yellow',
+    'fioletowy': 'color:purple', 'fioletowa': 'color:purple',
+    'złoty': 'color:gold', 'złota': 'color:gold',
+    'srebrny': 'color:silver', 'srebrna': 'color:silver',
+    'szary': 'color:gray', 'szara': 'color:gray',
+    'pomarańczowy': 'color:orange', 'brązowy': 'color:brown',
+}
+
+
+class MotoFeatureExtractor:
     """
-    Extracts missing product attributes from NO_MATCH queries.
-    Used to populate missing_features in JSONL training data.
+    Extracts automotive features from NO_MATCH queries.
+    Targets: car generation/chassis codes, engine specs, fuel type, body type, color, year.
     """
 
+    _COLORS = _SHARED_COLORS
+
+    # Years for cars: 1980-2039 (older cars are common in MOTO catalogs)
+    _YEAR_RE = re.compile(r'\b(19[89]\d|20[0-3]\d)\b')
+
+    # Chassis/generation codes
+    # BMW E/F/G-codes: e30..e99, f20..f99, g20..g99
+    # Audi platforms: b5-b9 (A4), c5-c8 (A6), d3-d5 (A8)
+    # Mercedes W-codes: w201..w299
+    # VW Golf Mk: mk1-mk8
+    _GEN_RE = re.compile(
+        r'\b(e\d{2,3}|f\d{2,3}|g\d{2,3}|b[3-9]|c[5-8]|d[3-5]|w\d{3}|mk[1-8])\b',
+        re.IGNORECASE
+    )
+
+    # Engine: capacity + engine code (1.6 tdi, 2.0 hdi, 1.4 tsi, 3.0 v6)
+    _ENGINE_RE = re.compile(
+        r'(\d\.\d)\s*(tdi|hdi|tsi|tfsi|fsi|tdci|cdti|dci|crdi|jtd|sdi|cdi'
+        r'|kompressor|v6|v8|v12|i4|i6)\b',
+        re.IGNORECASE
+    )
+
+    # Fuel type (Polish + English)
+    _FUEL_KEYWORDS = {
+        'diesel': 'fuel:diesel',
+        'benzyna': 'fuel:gasoline',
+        'gasoline': 'fuel:gasoline',
+        'petrol': 'fuel:gasoline',
+        'hybryda': 'fuel:hybrid',
+        'hybrid': 'fuel:hybrid',
+        'phev': 'fuel:phev',
+        'lpg': 'fuel:lpg',
+        'gaz': 'fuel:lpg',
+        'elektryczny': 'fuel:electric',
+        'electric': 'fuel:electric',
+        'ev': 'fuel:electric',
+        'cng': 'fuel:cng',
+    }
+
+    # Body type (Polish + English, normalized to English labels)
+    _BODY_KEYWORDS = {
+        'sedan': 'body:sedan',
+        'kombi': 'body:wagon',
+        'combi': 'body:wagon',
+        'wagon': 'body:wagon',
+        'estate': 'body:wagon',
+        'suv': 'body:suv',
+        'hatchback': 'body:hatchback',
+        'hatch': 'body:hatchback',
+        'coupe': 'body:coupe',
+        'coupé': 'body:coupe',
+        'liftback': 'body:liftback',
+        'pickup': 'body:pickup',
+        'van': 'body:van',
+        'minivan': 'body:minivan',
+        'cabrio': 'body:cabrio',
+        'cabriolet': 'body:cabrio',
+        'convertible': 'body:cabrio',
+        'roadster': 'body:roadster',
+    }
+
+    @classmethod
+    def extract(cls, query: str) -> list:
+        q = query.lower()
+        features = []
+        seen = set()
+
+        def add(label):
+            if label not in seen:
+                features.append(label)
+                seen.add(label)
+
+        tokens = re.findall(r'\b\w+\b', q)
+
+        # 1. COLOR
+        for token in tokens:
+            label = cls._COLORS.get(token)
+            if label:
+                add(label)
+
+        # 2. YEAR (1980-2039 for cars)
+        for m in cls._YEAR_RE.finditer(q):
+            yr = int(m.group(1))
+            if 1980 <= yr <= 2039:
+                add(f'year:{yr}')
+
+        # 3. GENERATION / CHASSIS CODE
+        for m in cls._GEN_RE.finditer(q):
+            add(f'gen:{m.group(1).lower()}')
+
+        # 4. ENGINE (capacity + type combined)
+        for m in cls._ENGINE_RE.finditer(q):
+            cap = m.group(1)
+            etype = m.group(2).lower()
+            add(f'engine:{cap}_{etype}')
+
+        # 5. FUEL
+        for token in tokens:
+            label = cls._FUEL_KEYWORDS.get(token)
+            if label:
+                add(label)
+
+        # 6. BODY
+        for token in tokens:
+            label = cls._BODY_KEYWORDS.get(token)
+            if label:
+                add(label)
+
+        return features
+
+
+class MissingFeatureExtractor:
     _COLORS = {
-        # English
         'pink': 'color:pink', 'red': 'color:red', 'blue': 'color:blue',
         'black': 'color:black', 'white': 'color:white', 'green': 'color:green',
         'yellow': 'color:yellow', 'purple': 'color:purple', 'gold': 'color:gold',
         'golden': 'color:gold', 'silver': 'color:silver', 'gray': 'color:gray',
         'grey': 'color:gray', 'orange': 'color:orange', 'brown': 'color:brown',
         'rose': 'color:rose',
-        # Polish
         'różowy': 'color:pink', 'różowa': 'color:pink', 'różowego': 'color:pink',
         'czerwony': 'color:red', 'czerwona': 'color:red',
         'niebieski': 'color:blue', 'niebieska': 'color:blue',
@@ -41,31 +174,137 @@ class MissingFeatureExtractor:
         'pomarańczowy': 'color:orange', 'brązowy': 'color:brown',
     }
 
-    _CAPACITY_RE = re.compile(
-        r'\b(\d+)\s*(gb|tb|mb)\b', re.IGNORECASE
+    # Storage: 64gb, 128gb, 512gb, 1tb, 2tb
+    _CAPACITY_RE = re.compile(r'\b(\d+)\s*(gb|tb|mb)\b', re.IGNORECASE)
+
+    # RAM context: "16gb ram", "ram 16gb", "16 gb pamięci"
+    _RAM_CONTEXT_RE = re.compile(
+        r'(?:(\d+)\s*(?:gb|mb)\s+(?:ram|pami[eę][ćc]i?|memory)'
+        r'|(?:ram|pami[eę][ćc]i?|memory)\s+(\d+)\s*(?:gb|mb))',
+        re.IGNORECASE
     )
 
+    # Screen: 15.6 cali, 17", 13.3 inches
+    _SCREEN_RE = re.compile(
+        r'\b(\d+(?:[.,]\d+)?)\s*(?:cal(?:a|e|i)?|["″]|inches?)',
+        re.IGNORECASE
+    )
+
+    # Year: 2020-2030
+    _YEAR_RE = re.compile(r'\b(20[2-3]\d)\b')
+
+    # CPU/SoC generation: m1/m2, i7, ryzen 5, snapdragon 888
+    _GEN_RE = re.compile(
+        r'\b(m[1-4]|i[3579](?:-\d{3,5})?|ryzen\s*[3579]'
+        r'|snapdragon\s*(?:\d+|[89]\s*gen\s*\d)'
+        r'|dimensity\s*\d+|exynos\s*\d+|helio\s*[a-z]\d+)\b',
+        re.IGNORECASE
+    )
+
+    # Standalone 1-3 digit integer (word boundary, not part of longer number)
+    _MODEL_RE = re.compile(r'\b(\d{1,3})\b')
+
+    # Compound variants first so their parts aren't matched individually
+    _VARIANT_PATTERNS = [
+        (re.compile(r'\bpro[\s_]?max\b'),   'variant:pro_max'),
+        (re.compile(r'\bpro[\s_]?plus\b'),  'variant:pro_plus'),
+        (re.compile(r'\bultra[\s_]?max\b'), 'variant:ultra_max'),
+        (re.compile(r'\bpro\b'),             'variant:pro'),
+        (re.compile(r'\bmax\b'),             'variant:max'),
+        (re.compile(r'\bplus\b'),            'variant:plus'),
+        (re.compile(r'\bultra\b'),           'variant:ultra'),
+        (re.compile(r'\bmini\b'),            'variant:mini'),
+        (re.compile(r'\blite\b'),            'variant:lite'),
+        (re.compile(r'\bse\b'),              'variant:se'),
+    ]
+
     @classmethod
-    def extract(cls, query: str) -> list:
-        """Return list of missing feature strings, e.g. ['color:pink', 'capacity:128gb']."""
+    def extract(cls, query: str, source: str = 'elektro') -> list:
+        """
+        Return list of missing feature strings, e.g. ['color:pink', 'capacity:128gb', 'model:13'].
+
+        Dispatches to domain-specific extractor based on `source`:
+            source='moto'    → MotoFeatureExtractor (chassis codes, engine, fuel, body)
+            source='elektro' → this class (default — color, capacity, ram, screen,
+                                            year, gen, variant, model)
+        """
+        if source == 'moto':
+            return MotoFeatureExtractor.extract(query)
+
+        # Default: electronics extraction
         q = query.lower()
         features = []
         seen = set()
 
-        # Tokens for color matching
-        tokens = re.findall(r'\b\w+\b', q)
-        for token in tokens:
-            label = cls._COLORS.get(token)
-            if label and label not in seen:
-                features.append(label)
-                seen.add(label)
-
-        # Capacity: match e.g. "128gb", "1 tb", "256 GB"
-        for m in cls._CAPACITY_RE.finditer(q):
-            label = f'capacity:{m.group(1)}{m.group(2).lower()}'
+        def add(label):
             if label not in seen:
                 features.append(label)
                 seen.add(label)
+
+        # 1. COLOR
+        for token in re.findall(r'\b\w+\b', q):
+            label = cls._COLORS.get(token)
+            if label:
+                add(label)
+
+        # 2. YEAR (before model to prevent matching last 2 digits)
+        for m in cls._YEAR_RE.finditer(q):
+            yr = int(m.group(1))
+            if 2020 <= yr <= 2030:
+                add(f'year:{yr}')
+
+        # 3. SCREEN SIZE
+        for m in cls._SCREEN_RE.finditer(q):
+            add(f'screen:{m.group(1).replace(",", ".")}')
+
+        # 4. RAM (context-aware, must run before general capacity)
+        ram_numbers = set()
+        for m in cls._RAM_CONTEXT_RE.finditer(q):
+            val = m.group(1) or m.group(2)
+            if val:
+                add(f'ram:{val}gb')
+                ram_numbers.add(val)
+
+        # 5. CAPACITY (storage — skip numbers already tagged as ram)
+        capacity_numbers = set()
+        for m in cls._CAPACITY_RE.finditer(q):
+            val = m.group(1)
+            unit = m.group(2).lower()
+            capacity_numbers.add(val)
+            if val not in ram_numbers:
+                add(f'capacity:{val}{unit}')
+
+        # 6. GENERATION (CPU/SoC)
+        gen_numbers = set()
+        for m in cls._GEN_RE.finditer(q):
+            add(f'gen:{m.group(1).lower().replace(" ", "")}')
+            for dm in re.finditer(r'\d+', m.group(0)):
+                gen_numbers.add(dm.group())
+
+        # 7. VARIANT (compound patterns first; consume matched text so parts aren't re-matched)
+        q_variants = q
+        for pattern, label in cls._VARIANT_PATTERNS:
+            if pattern.search(q_variants):
+                add(label)
+                q_variants = pattern.sub('', q_variants)
+
+        # 8. MODEL NUMBER (residual standalone 1-3 digit integers)
+        excluded = (
+            {m.group(1) for m in cls._YEAR_RE.finditer(q)}
+            | capacity_numbers
+            | ram_numbers
+            | gen_numbers
+            | {m.group(1).replace(',', '.').split('.')[0] for m in cls._SCREEN_RE.finditer(q)}
+        )
+        for m in cls._MODEL_RE.finditer(q):
+            val = m.group(1)
+            # Skip if this is the integer part of a decimal (e.g. "15" in "15.6 cali")
+            if m.end() < len(q) and q[m.end()] == '.':
+                continue
+            if m.start() > 0 and q[m.start() - 1] == '.':
+                continue
+            if val not in excluded and int(val) >= 5:
+                add(f'model:{val}')
 
         return features
 
@@ -151,7 +390,8 @@ class SemanticValidator:
 
         logger.info("[SEMANTIC] SemanticValidator initialized")
 
-    def validate(self, query: str, confidence_level: str = None) -> Tuple[bool, str]:
+    def validate(self, query: str, confidence_level: str = None,
+                 missing_features: list = None) -> Tuple[bool, str]:
         """
         Sprawdza czy zapytanie jest sensowne semantycznie.
 
@@ -159,6 +399,9 @@ class SemanticValidator:
             Tuple[bool, str]: (is_valid, reason)
             - True, "OK" - zapytanie czyste, warte zapisania
             - False, reason - zapytanie odrzucone z podanym powodem
+
+        missing_features: required for NO_MATCH to be valid. NO_MATCH with empty
+        features = uninformative lost demand (no signal what to learn).
         """
         if not query:
             return False, "EMPTY_QUERY"
@@ -189,13 +432,14 @@ class SemanticValidator:
         if unrealistic:
             return False, f"UNREALISTIC_MODEL:{unrealistic}"
 
-        # 6. Jeśli NO_MATCH ale ma kontekst domenowy - to jest Lost Demand (OK!)
+        # 6. NO_MATCH: wymaga domain context ORAZ przynajmniej jednej extractable feature
         if confidence_level == 'NO_MATCH':
-            if self._has_domain_context(tokens):
-                return True, "VALID_LOST_DEMAND"
-            else:
-                # NO_MATCH bez kontekstu domenowego = prawdopodobnie śmieć
+            if not self._has_domain_context(tokens):
                 return False, "NO_MATCH_NO_CONTEXT"
+            if not missing_features:
+                # Brand recognized ale nic do wyciągnięcia = nieinformatywny lost demand
+                return False, "NO_MATCH_NO_FEATURES"
+            return True, "VALID_LOST_DEMAND"
 
         return True, "OK"
 
@@ -241,13 +485,14 @@ class SemanticValidator:
 
         return None
 
-    def get_ai_ready_flag(self, query: str, confidence_level: str) -> bool:
+    def get_ai_ready_flag(self, query: str, confidence_level: str,
+                          missing_features: list = None) -> bool:
         """
         Zwraca flagę AI_READY dla zapytania.
         True = można użyć do trenowania AI
         False = śmieć, nie używać
         """
-        is_valid, _ = self.validate(query, confidence_level)
+        is_valid, _ = self.validate(query, confidence_level, missing_features)
         return is_valid
 
 
@@ -525,17 +770,30 @@ class LDIRewardCalculator:
         return self.calculate_reward(session)
 
     @staticmethod
-    def score_for_export(confidence_level: str, clicked_alternative: bool, stored_score: float = 0.0) -> float:
+    def score_for_export(confidence_level: str, clicked_alternative: bool,
+                         purchased: bool = False, stored_score: float = 0.0) -> float:
         """
         Score used in JSONL training data export.
 
-        NO_MATCH + clicked  → 0.8  (Gold Signal: user searched X, clicked Y)
+        PLATINUM SIGNAL: NO_MATCH + clicked + purchased → 1.0
+          User searched X, clicked alternative Y, bought it. Strongest training signal.
+
+        GOLD SIGNAL: NO_MATCH + clicked (not yet purchased) → 0.8
+          User searched X, clicked alternative Y. High-value signal.
+          In demo mode this path is unreachable (purchased=True set on add_to_cart).
+          In production: add_to_cart fires first (0.8), webhook fires later (→ 1.0).
+
+        HIGH/MEDIUM + click → 0.1  (confirmed match)
+        MEDIUM no click     → 0.3  (soft match: product found, not confirmed)
         NO_MATCH no click   → 0.0
-        HIGH/MEDIUM + click → 0.1  (match was good, user confirmed)
-        Everything else     → stored_score (from DB, calculated at query time)
+        Everything else     → stored_score
         """
+        if purchased:
+            return 1.0  # PLATINUM SIGNAL
         if confidence_level == 'NO_MATCH':
-            return 0.8 if clicked_alternative else 0.0
+            return 0.8 if clicked_alternative else 0.0  # GOLD SIGNAL or nothing
         if confidence_level in ('HIGH', 'MEDIUM') and clicked_alternative:
             return 0.1
+        if confidence_level == 'MEDIUM':
+            return 0.3
         return stored_score if stored_score is not None else 0.0

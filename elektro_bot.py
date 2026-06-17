@@ -2328,16 +2328,19 @@ Jeśli wiele osób szuka tego produktu, dodamy go do naszej oferty."""
         session['cart'].append(product_id)
         session.modified = True
 
-        # Gold signal: jeśli poprzednie zapytanie było NO_MATCH → clicked_alternative=True
+        # Platinum/Gold Signal: jeśli ostatnie NO_MATCH było w ciągu 15 minut
         last_no_match_session = session.get('last_no_match_qi_session')
-        if last_no_match_session:
+        last_no_match_ts = session.get('last_no_match_ts', 0)
+        signal_valid = last_no_match_session and (time.time() - last_no_match_ts) < 900
+        if signal_valid:
             try:
                 import sqlite3
                 conn = sqlite3.connect('dashboard.db')
                 cur = conn.cursor()
                 cur.execute('''
                     UPDATE query_intents
-                    SET clicked_alternative = 1, alternative_clicked_id = ?
+                    SET clicked_alternative = 1, alternative_clicked_id = ?,
+                        purchased = 1, added_to_cart = 1
                     WHERE id = (
                         SELECT id FROM query_intents
                         WHERE session_id = ? AND confidence_level = 'NO_MATCH'
@@ -2346,7 +2349,7 @@ Jeśli wiele osób szuka tego produktu, dodamy go do naszej oferty."""
                 ''', (product_id, last_no_match_session))
                 conn.commit()
                 conn.close()
-                print(f"[P3][GOLD] clicked_alternative=True, product={product_id}, session={last_no_match_session}")
+                print(f"[P3][PLATINUM] clicked_alternative=True, purchased=True (demo), product={product_id}, session={last_no_match_session}")
                 session.pop('last_no_match_qi_session', None)
                 session.modified = True
             except Exception as e:

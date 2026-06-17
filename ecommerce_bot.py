@@ -2565,10 +2565,37 @@ Jeśli wiele osób szuka tego produktu, dodamy go do naszej oferty."""
         """Dodanie do koszyka"""
         if 'cart' not in session:
             session['cart'] = []
-        
+
         session['cart'].append(product_id)
         session.modified = True
-        
+
+        # Platinum/Gold Signal: jeśli ostatnie NO_MATCH było w ciągu 15 minut
+        last_no_match_session = session.get('last_no_match_qi_session')
+        last_no_match_ts = session.get('last_no_match_ts', 0)
+        signal_valid = last_no_match_session and (time.time() - last_no_match_ts) < 900
+        if signal_valid:
+            try:
+                import sqlite3
+                conn = sqlite3.connect('dashboard.db')
+                cur = conn.cursor()
+                cur.execute('''
+                    UPDATE query_intents
+                    SET clicked_alternative = 1, alternative_clicked_id = ?,
+                        purchased = 1, added_to_cart = 1
+                    WHERE id = (
+                        SELECT id FROM query_intents
+                        WHERE session_id = ? AND confidence_level = 'NO_MATCH'
+                        ORDER BY id DESC LIMIT 1
+                    )
+                ''', (product_id, last_no_match_session))
+                conn.commit()
+                conn.close()
+                print(f"[P3][PLATINUM][MOTO] clicked_alternative=True, purchased=True (demo), product={product_id}, session={last_no_match_session}")
+                session.pop('last_no_match_qi_session', None)
+                session.modified = True
+            except Exception as e:
+                print(f"[P3][GOLD][MOTO] Failed to update clicked_alternative: {e}")
+
         return {
             'text_message': f"""[OK] **Dodano do koszyka!**""",
             'cart_updated': True,

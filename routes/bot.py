@@ -489,13 +489,16 @@ def analyze_query():
         }
         reward_score = ldi_reward_calc.calculate_from_dict(reward_data)
 
+        # === EXTRACT FEATURES FIRST (validator needs them for NO_MATCH) ===
+        missing_attrs = MissingFeatureExtractor.extract(sanitized_query, source='moto') if confidence_level == 'NO_MATCH' else []
+
         # === SEMANTIC VALIDATION: Check if query is AI_READY ===
-        is_valid, validation_reason = semantic_validator.validate(sanitized_query, confidence_level)
+        is_valid, validation_reason = semantic_validator.validate(
+            sanitized_query, confidence_level, missing_features=missing_attrs
+        )
         ai_ready = is_valid
         if not is_valid:
             print(f"[SEMANTIC][MOTO] Query rejected: '{sanitized_query}' -> {validation_reason}")
-
-        missing_attrs = MissingFeatureExtractor.extract(sanitized_query) if confidence_level == 'NO_MATCH' else []
 
         try:
             QueryIntentManager.add_query_intent({
@@ -515,9 +518,20 @@ def analyze_query():
                 'reward_score': reward_score,
                 'missing_attributes': missing_attrs,
                 'matched_product_id': matched_product_id,
-                'ai_ready': ai_ready
+                'ai_ready': ai_ready,
+                'source': 'moto'
             })
             print(f"[P3][MOTO] QueryIntent saved: reward={reward_score:.4f}, confidence={confidence_level}, missing={missing_attrs}, ai_ready={ai_ready}")
+            if confidence_level == 'NO_MATCH':
+                session['last_no_match_qi_session'] = session_id or f'moto_{request_id}'
+                session['last_no_match_query'] = sanitized_query
+                session['last_no_match_ts'] = time.time()
+                session.modified = True
+            else:
+                # Non-NO_MATCH query means user moved on — clear stale Gold Signal window
+                session.pop('last_no_match_qi_session', None)
+                session.pop('last_no_match_ts', None)
+                session.modified = True
         except Exception as p3_error:
             print(f"[P3][MOTO] Failed to save QueryIntent: {p3_error}")
             app.logger.error(f"[P3] QueryIntent save failed: {p3_error}")
@@ -716,13 +730,16 @@ def elektro_analyze_query():
         }
         reward_score = ldi_reward_calc.calculate_from_dict(reward_data)
 
+        # === EXTRACT FEATURES FIRST (validator needs them for NO_MATCH) ===
+        missing_attrs_e = MissingFeatureExtractor.extract(sanitized_query, source='elektro') if confidence_level == 'NO_MATCH' else []
+
         # === SEMANTIC VALIDATION: Check if query is AI_READY ===
-        is_valid, validation_reason = semantic_validator.validate(sanitized_query, confidence_level)
+        is_valid, validation_reason = semantic_validator.validate(
+            sanitized_query, confidence_level, missing_features=missing_attrs_e
+        )
         ai_ready = is_valid
         if not is_valid:
             print(f"[SEMANTIC][ELEKTRO] Query rejected: '{sanitized_query}' -> {validation_reason}")
-
-        missing_attrs_e = MissingFeatureExtractor.extract(sanitized_query) if confidence_level == 'NO_MATCH' else []
 
         try:
             QueryIntentManager.add_query_intent({
@@ -742,13 +759,19 @@ def elektro_analyze_query():
                 'reward_score': reward_score,
                 'missing_attributes': missing_attrs_e,
                 'matched_product_id': matched_product_id,
-                'ai_ready': ai_ready
+                'ai_ready': ai_ready,
+                'source': 'elektro'
             })
             print(f"[P3][ELEKTRO] QueryIntent saved: reward={reward_score:.4f}, confidence={confidence_level}, missing={missing_attrs_e}, ai_ready={ai_ready}")
-            # Zapamiętaj ostatni NO_MATCH session_id dla Gold signal
             if confidence_level == 'NO_MATCH':
                 session['last_no_match_qi_session'] = session_id or f'elektro_{request_id}'
                 session['last_no_match_query'] = sanitized_query
+                session['last_no_match_ts'] = time.time()
+                session.modified = True
+            else:
+                # Non-NO_MATCH query means user moved on — clear stale Gold Signal window
+                session.pop('last_no_match_qi_session', None)
+                session.pop('last_no_match_ts', None)
                 session.modified = True
         except Exception as p3_error:
             print(f"[P3][ELEKTRO] Failed to save QueryIntent: {p3_error}")

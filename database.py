@@ -254,7 +254,8 @@ class QueryIntentManager:
                 missing_attributes TEXT,
                 matched_product_id TEXT,
                 ai_ready INTEGER DEFAULT 0,
-                alternative_clicked_id TEXT
+                alternative_clicked_id TEXT,
+                source TEXT DEFAULT 'unknown'
             )
         ''')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_qi_session ON query_intents(session_id)')
@@ -271,6 +272,9 @@ class QueryIntentManager:
             if 'alternative_clicked_id' not in columns:
                 cursor.execute('ALTER TABLE query_intents ADD COLUMN alternative_clicked_id TEXT')
                 print("[P3] Migration: added alternative_clicked_id column")
+            if 'source' not in columns:
+                cursor.execute("ALTER TABLE query_intents ADD COLUMN source TEXT DEFAULT 'unknown'")
+                print("[P3] Migration: added source column")
         except Exception as e:
             print(f"[P3] Migration check: {e}")
 
@@ -299,7 +303,7 @@ class QueryIntentManager:
 
         # === SESSION CONSOLIDATION: Check for existing record ===
         cursor.execute('''
-            SELECT id, query_refinement_count FROM query_intents
+            SELECT id, query_refinement_count, ai_ready FROM query_intents
             WHERE session_id = ?
             AND timestamp >= datetime('now', '-60 seconds')
             ORDER BY timestamp DESC LIMIT 1
@@ -309,7 +313,23 @@ class QueryIntentManager:
         if existing:
             # UPDATE existing record (this is a query refinement, not a new session)
             existing_id = existing[0]
-            refinement_count = (existing[1] or 0) + 1
+            old_refinement_count = existing[1]
+            old_ai_ready = existing[2] or 0  # NULL legacy → 0
+            new_ai_ready = 1 if data.get('ai_ready') else 0
+            refinement_count = (old_refinement_count or 0) + 1
+
+            # PRESERVE: gdy old=valid i new=invalid, nie nadpisuj dobrego rekordu złym
+            if old_ai_ready == 1 and new_ai_ready == 0:
+                cursor.execute('''
+                    UPDATE query_intents SET
+                        query_refinement_count = ?,
+                        timestamp = CURRENT_TIMESTAMP
+                    WHERE id = ?
+                ''', (refinement_count, existing_id))
+                conn.commit()
+                conn.close()
+                print(f"[P3] PRESERVED valid record: id={existing_id} (good→bad refinement #{refinement_count})")
+                return existing_id
 
             cursor.execute('''
                 UPDATE query_intents SET
@@ -330,7 +350,8 @@ class QueryIntentManager:
                     missing_attributes = ?,
                     matched_product_id = ?,
                     ai_ready = ?,
-                    alternative_clicked_id = ?
+                    alternative_clicked_id = ?,
+                    source = ?
                 WHERE id = ?
             ''', (
                 data.get('query_text', ''),
@@ -350,6 +371,7 @@ class QueryIntentManager:
                 data.get('matched_product_id'),
                 1 if data.get('ai_ready') else 0,
                 data.get('alternative_clicked_id'),
+                data.get('source', 'unknown'),
                 existing_id
             ))
             conn.commit()
@@ -365,8 +387,8 @@ class QueryIntentManager:
                 time_to_first_click, session_duration, bounce,
                 added_to_cart, purchased, cart_value, reward_score,
                 missing_attributes, matched_product_id, ai_ready,
-                alternative_clicked_id
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                alternative_clicked_id, source
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             session_id, data.get('query_text', ''),
             data.get('confidence_level'), data.get('suggestion_type'),
@@ -380,13 +402,23 @@ class QueryIntentManager:
             data.get('cart_value', 0.0), data.get('reward_score'),
             missing_attrs, data.get('matched_product_id'),
             1 if data.get('ai_ready') else 0,
-            data.get('alternative_clicked_id')
+            data.get('alternative_clicked_id'),
+            data.get('source', 'unknown')
         ))
         record_id = cursor.lastrowid
         conn.commit()
         conn.close()
         print(f"[P3] QueryIntent NEW: id={record_id}, reward={data.get('reward_score')}, ai_ready={data.get('ai_ready')}")
         return record_id
+
+    @staticmethod
+    def _mark_stale_bounces(cursor) -> None:
+        """Mark old unconverted records as bounce=1 (best server-side proxy, no frontend signal needed)."""
+        cursor.execute('''
+            UPDATE query_intents SET bounce = 1
+            WHERE clicked_alternative = 0 AND purchased = 0 AND bounce = 0
+            AND timestamp < datetime('now', '-5 minutes')
+        ''')
 
     @staticmethod
     def get_training_data(limit: int = 1000, ai_ready_only: bool = False) -> list:
@@ -400,12 +432,16 @@ class QueryIntentManager:
         conn = sqlite3.connect(DATABASE_NAME)
         cursor = conn.cursor()
 
+        # Retroactively mark stale unconverted records as bounce before export
+        QueryIntentManager._mark_stale_bounces(cursor)
+        conn.commit()
+
         if ai_ready_only:
             cursor.execute('''
                 SELECT session_id, query_text, confidence_level, suggestion_type,
                     clicked_alternative, purchased, bounce, reward_score,
                     missing_attributes, matched_product_id, timestamp, ai_ready,
-                    query_refinement_count, alternative_clicked_id
+                    query_refinement_count, alternative_clicked_id, source
                 FROM query_intents WHERE ai_ready = 1 ORDER BY timestamp DESC LIMIT ?
             ''', (limit,))
         else:
@@ -413,7 +449,7 @@ class QueryIntentManager:
                 SELECT session_id, query_text, confidence_level, suggestion_type,
                     clicked_alternative, purchased, bounce, reward_score,
                     missing_attributes, matched_product_id, timestamp, ai_ready,
-                    query_refinement_count, alternative_clicked_id
+                    query_refinement_count, alternative_clicked_id, source
                 FROM query_intents ORDER BY timestamp DESC LIMIT ?
             ''', (limit,))
 
@@ -427,15 +463,26 @@ class QueryIntentManager:
                     missing_attrs = json.loads(missing_attrs)
                 except:
                     missing_attrs = []
+            source = row[14] if len(row) > 14 and row[14] else 'unknown'
+            # intent_label = product category (suggestion_type). Domain-agnostic.
+            # source = bot domain (moto/elektro/unknown). Separate semantic field.
+            # Treat empty string as null — don't pollute JSONL with "".
+            raw_intent = row[3]
+            intent_label = raw_intent if (raw_intent and raw_intent.strip()) else None
             results.append({
-                'query': row[1], 'intent_label': row[3], 'confidence': row[2],
+                'query': row[1],
+                'intent_label': intent_label,
+                'confidence': row[2],
+                'source': source,
                 'reward_signal': {
-                    'score': LDIRewardCalculator.score_for_export(row[2], bool(row[4]), row[7] or 0.0),
+                    'score': LDIRewardCalculator.score_for_export(row[2], bool(row[4]), bool(row[5]), row[7] or 0.0),
                     'clicked_alternative': bool(row[4]),
-                    'purchased': bool(row[5]), 'bounce': bool(row[6])
+                    'purchased': bool(row[5]),
+                    'bounce': bool(row[6])
                 },
                 'missing_features': missing_attrs or [],
-                'matched_product_id': row[9], 'timestamp': row[10],
+                'matched_product_id': row[9],
+                'timestamp': row[10],
                 'ai_ready': bool(row[11]) if row[11] is not None else False,
                 'query_refinement_count': row[12] or 0,
                 'alternative_clicked_id': row[13] if len(row) > 13 else None

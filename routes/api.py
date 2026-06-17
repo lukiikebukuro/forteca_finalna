@@ -1058,18 +1058,19 @@ def export_training_data():
         return jsonify({'error': 'Unauthorized'}), 403
 
     try:
-        limit = request.args.get('limit', 1000, type=int)
-        training_data = QueryIntentManager.get_training_data(limit)
+        limit = request.args.get('limit', 5000, type=int)
+        ai_ready_only = request.args.get('ai_ready', '1') != '0'  # default: only clean data
+        training_data = QueryIntentManager.get_training_data(limit, ai_ready_only=ai_ready_only)
 
-        # Convert to JSONL format
         jsonl_lines = [json.dumps(entry, ensure_ascii=False) for entry in training_data]
         jsonl_content = '\n'.join(jsonl_lines)
 
+        suffix = f'_{limit}' + ('_all' if not ai_ready_only else '')
         return Response(
             jsonl_content,
             mimetype='application/x-ndjson',
             headers={
-                'Content-Disposition': f'attachment; filename=ldi_training_data_{limit}.jsonl',
+                'Content-Disposition': f'attachment; filename=ldi_training_data{suffix}.jsonl',
                 'Content-Type': 'application/x-ndjson; charset=utf-8'
             }
         )
