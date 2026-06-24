@@ -527,11 +527,10 @@ def analyze_query():
                 session['last_no_match_query'] = sanitized_query
                 session['last_no_match_ts'] = time.time()
                 session.modified = True
-            else:
-                # Non-NO_MATCH query means user moved on — clear stale Gold Signal window
-                session.pop('last_no_match_qi_session', None)
-                session.pop('last_no_match_ts', None)
-                session.modified = True
+                print(f"[P3][MOTO] Gold Signal armed: session={session['last_no_match_qi_session']}, ts={session['last_no_match_ts']}")
+            # NOTE: do NOT clear session on non-NO_MATCH. User clicking an alternative
+            # generates a HIGH confidence query (the alternative's name) — clearing here
+            # kills the Gold Signal path. 15-min timeout in add_to_cart() is sufficient guard.
         except Exception as p3_error:
             print(f"[P3][MOTO] Failed to save QueryIntent: {p3_error}")
             app.logger.error(f"[P3] QueryIntent save failed: {p3_error}")
@@ -768,11 +767,10 @@ def elektro_analyze_query():
                 session['last_no_match_query'] = sanitized_query
                 session['last_no_match_ts'] = time.time()
                 session.modified = True
-            else:
-                # Non-NO_MATCH query means user moved on — clear stale Gold Signal window
-                session.pop('last_no_match_qi_session', None)
-                session.pop('last_no_match_ts', None)
-                session.modified = True
+                print(f"[P3][ELEKTRO] Gold Signal armed: session={session['last_no_match_qi_session']}, ts={session['last_no_match_ts']}")
+            # NOTE: do NOT clear session on non-NO_MATCH. User clicking an alternative
+            # generates a HIGH confidence query (the alternative's name) — clearing here
+            # kills the Gold Signal path. 15-min timeout in add_to_cart() is sufficient guard.
         except Exception as p3_error:
             print(f"[P3][ELEKTRO] Failed to save QueryIntent: {p3_error}")
             app.logger.error(f"[P3] QueryIntent save failed: {p3_error}")

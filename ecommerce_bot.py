@@ -2572,7 +2572,9 @@ Jeśli wiele osób szuka tego produktu, dodamy go do naszej oferty."""
         # Platinum/Gold Signal: jeśli ostatnie NO_MATCH było w ciągu 15 minut
         last_no_match_session = session.get('last_no_match_qi_session')
         last_no_match_ts = session.get('last_no_match_ts', 0)
-        signal_valid = last_no_match_session and (time.time() - last_no_match_ts) < 900
+        age = (time.time() - last_no_match_ts) if last_no_match_ts else None
+        signal_valid = last_no_match_session and last_no_match_ts and age < 900
+        print(f"[P3][GOLD-CHECK][MOTO] product={product_id} session_in_flask={last_no_match_session} age={age}s valid={signal_valid}")
         if signal_valid:
             try:
                 import sqlite3
