@@ -205,14 +205,14 @@ miesiącu pilotażu LDI to naturalny upsell — wtedy znamy realne zapytania Pa�
 klientów, więc bot trenuje się na prawdziwych danych z dnia pierwszego. Konkretną
 wycenę robi Łukasz po 15-minutowej rozmowie o zakresie.
 
-17. CENA LDI — KONKRETNE WIDEŁKI
+17. CENA LDI — DLACZEGO NIE MA SZTYWNEGO CENNIKA
 Zarzut: powiedz mi widełki cenowe, nie ogólniki.
-Odp: Po darmowym miesiącu pilotażu cena jest ułamkiem udowodnionego odzyskanego
-zysku — typowo 500-2000 PLN miesięcznie w zależności od skali sklepu (ruch,
-katalog, liczba zapytań). Enterprise z większym wolumenem osobno. Konkretną
-kwotę dla Państwa sklepu Łukasz wycenia po pierwszych 30 dniach kiedy znamy
-realne dane. Zasada nieprzekraczalna: LDI zawsze zarabia na siebie (ROI > 1),
-inaczej nie podpisujemy.
+Odp: Cena LDI to zawsze ułamek udowodnionego odzyskanego zysku — czyli zanim nie
+wiemy ile system Państwu odzyska, sztywna kwota byłaby strzałem w ciemno. Po
+darmowym miesiącu pilotażu mamy realne dane: ile zapytań traciliście, jaka kategoria
+generowała największe straty, ile z tego dało się odzyskać. Wtedy Łukasz wycenia
+indywidualnie — uczciwie wobec Państwa i wobec siebie. Zasada nieprzekraczalna:
+LDI zawsze zarabia na siebie (ROI > 1), inaczej nie podpisujemy umowy.
 
 18. INTEGRACJE — CRM, EMAIL, SLACK
 Zarzut: alerty muszą trafiać do mojego CRM/Slacka/maila.
