@@ -664,20 +664,25 @@
 
             <!-- RAG DEBUGGER (NEW) -->
             <div class="project-card">
-                <p class="project-tag">New · Debug tooling</p>
+                <p class="project-tag">New · Memory observability</p>
                 <h3>Amnezja — RAG Debugger</h3>
                 <p>
-                    A step-by-step inspector for the ANIMA retrieval pipeline. Type any query and watch
-                    <strong>every stage</strong> — candidate pool, exclusion, reranking, temporal filter,
-                    milestone channel, MMR diversity, final prompt — exactly as the production model sees it.
-                    Built after an adversarial audit and <strong>verified bit-identical</strong> to the live path.
-                    It turns "why did it remember that?" into a traceable answer.
+                    An X-ray for AI memory. Type a query and watch <strong>every stage of retrieval</strong> —
+                    candidate pool, reranking, temporal filter, MMR, final prompt — exactly as the production
+                    model sees it. Plus a <strong>sandbox</strong>: how the model actually responds to that
+                    context, dry-run, without touching the live system. And <strong>time-travel</strong> —
+                    scrub the date forward to see what your agent will remember in 30 days.
+                    <br><br>
+                    First run on my own production system caught what <strong>no metric showed: the RAG had
+                    been dead for 3.5 months</strong> — zero memory reaching the model. Diagnosed, fixed,
+                    <strong>prompt −68%</strong>.
                 </p>
                 <div class="project-meta">
-                    <span class="meta-chip">Read-only trace</span>
+                    <span class="meta-chip">Memory observability</span>
+                    <span class="meta-chip">Sandbox generation</span>
+                    <span class="meta-chip">Time-travel</span>
                     <span class="meta-chip">Bit-identical</span>
                     <span class="meta-chip">FastAPI</span>
-                    <span class="meta-chip">Date simulation</span>
                 </div>
                 <div class="project-links">
                     <a href="#contact" class="project-link">Ask me about it</a>
