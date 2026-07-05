@@ -286,6 +286,32 @@
             height: 100px;
         }
 
+        /* ── PROJECT GROUPS ── */
+        .group-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: -0.01em;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+        .projects-grid + .group-title { margin-top: 56px; }
+        .group-count {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--muted);
+            letter-spacing: 0.04em;
+        }
+        .group-sub {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 24px;
+        }
+        .projects-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
         /* ── VISION ── */
         .vision-grid {
             display: grid;
@@ -474,7 +500,7 @@
             .hero { padding: 0 24px; }
             .hero-stats { gap: 32px; flex-wrap: wrap; }
             section { padding: 64px 24px; }
-            .projects-grid { grid-template-columns: 1fr; }
+            .projects-grid, .projects-grid.cols-3 { grid-template-columns: 1fr; }
             .about-grid { grid-template-columns: 1fr; gap: 40px; }
             .contact-inner { grid-template-columns: 1fr; padding: 36px 24px; gap: 40px; }
             footer { flex-direction: column; gap: 12px; padding: 24px; }
@@ -528,9 +554,12 @@
     <!-- WORK -->
     <section id="work">
         <p class="section-label">Work</p>
-        <h2 class="section-title">Four systems. One engineer.</h2>
+        <h2 class="section-title">Five systems. One engineer.</h2>
         <p class="section-sub">Each project started as a problem no off-the-shelf tool could solve.</p>
 
+        <!-- GROUP 1: PRODUCTS -->
+        <h3 class="group-title">Products <span class="group-count">// shipped &amp; running</span></h3>
+        <p class="group-sub">Systems solving a concrete business problem, live in production.</p>
         <div class="projects-grid">
 
             <!-- LDI -->
@@ -558,29 +587,6 @@
                 </div>
             </div>
 
-            <!-- ANIMA -->
-            <div class="project-card">
-                <p class="project-tag">Innovation · Production VPS</p>
-                <h3>ANIMA — RAG Memory Engine</h3>
-                <p>
-                    A long-term memory system for AI companions. Three-channel RAG architecture:
-                    episodic memories, behavioral character core, external knowledge — all re-ranked by
-                    <strong>recency decay, semantic similarity, and keyword boost</strong>.
-                    Supersede logic rotates stale facts without losing history.
-                    Powers a personal AI companion running 24/7 on a private VPS with scheduled emotional insights.
-                </p>
-                <div class="project-meta">
-                    <span class="meta-chip">ChromaDB</span>
-                    <span class="meta-chip">Gemini 2.5</span>
-                    <span class="meta-chip">Vector reranker</span>
-                    <span class="meta-chip">Flask + WebSocket</span>
-                    <span class="meta-chip">systemd</span>
-                </div>
-                <div class="project-links">
-                    <a href="/anima" class="project-link">Architecture</a>
-                </div>
-            </div>
-
             <!-- SKANKRAN -->
             <div class="project-card" style="position:relative;">
                 <img src="{{ url_for('static', filename='skankran.svg') }}" alt="Skankran" class="project-logo large">
@@ -605,6 +611,36 @@
                 </div>
             </div>
 
+        </div>
+
+        <!-- GROUP 2: MEMORY & RETRIEVAL -->
+        <h3 class="group-title">Memory &amp; retrieval <span class="group-count">// the RAG research line</span></h3>
+        <p class="group-sub">One thread: giving AI a memory that doesn't reset — and the tools to see inside it.</p>
+        <div class="projects-grid cols-3">
+
+            <!-- ANIMA -->
+            <div class="project-card">
+                <p class="project-tag">Innovation · Production VPS</p>
+                <h3>ANIMA — RAG Memory Engine</h3>
+                <p>
+                    A long-term memory system for AI companions. Three-channel RAG architecture:
+                    episodic memories, behavioral character core, external knowledge — all re-ranked by
+                    <strong>recency decay, semantic similarity, and keyword boost</strong>.
+                    Supersede logic rotates stale facts without losing history.
+                    Powers a personal AI companion running 24/7 on a private VPS with scheduled emotional insights.
+                </p>
+                <div class="project-meta">
+                    <span class="meta-chip">ChromaDB</span>
+                    <span class="meta-chip">Gemini 2.5</span>
+                    <span class="meta-chip">Vector reranker</span>
+                    <span class="meta-chip">Flask + WebSocket</span>
+                    <span class="meta-chip">systemd</span>
+                </div>
+                <div class="project-links">
+                    <a href="/anima" class="project-link">Architecture</a>
+                </div>
+            </div>
+
             <!-- GEMINI XHR HACK -->
             <div class="project-card">
                 <p class="project-tag">Hacker Card · Research</p>
@@ -620,6 +656,28 @@
                     <span class="meta-chip">XHR reverse engineering</span>
                     <span class="meta-chip">Stream parsing</span>
                     <span class="meta-chip">RAG prototyping</span>
+                </div>
+                <div class="project-links">
+                    <a href="#contact" class="project-link">Ask me about it</a>
+                </div>
+            </div>
+
+            <!-- RAG DEBUGGER (NEW) -->
+            <div class="project-card">
+                <p class="project-tag">New · Debug tooling</p>
+                <h3>Amnezja — RAG Debugger</h3>
+                <p>
+                    A step-by-step inspector for the ANIMA retrieval pipeline. Type any query and watch
+                    <strong>every stage</strong> — candidate pool, exclusion, reranking, temporal filter,
+                    milestone channel, MMR diversity, final prompt — exactly as the production model sees it.
+                    Built after an adversarial audit and <strong>verified bit-identical</strong> to the live path.
+                    It turns "why did it remember that?" into a traceable answer.
+                </p>
+                <div class="project-meta">
+                    <span class="meta-chip">Read-only trace</span>
+                    <span class="meta-chip">Bit-identical</span>
+                    <span class="meta-chip">FastAPI</span>
+                    <span class="meta-chip">Date simulation</span>
                 </div>
                 <div class="project-links">
                     <a href="#contact" class="project-link">Ask me about it</a>
