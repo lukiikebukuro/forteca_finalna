@@ -210,7 +210,6 @@
             font-size: 14px;
             color: var(--muted);
             line-height: 1.7;
-            flex: 1;
         }
         .project-card p strong {
             color: var(--text);
@@ -237,7 +236,7 @@
             display: flex;
             align-items: center;
             gap: 16px;
-            margin-top: 12px;
+            margin-top: auto;
             padding-top: 16px;
             border-top: 1px solid var(--border);
         }
@@ -672,7 +671,8 @@
                     model sees it. Plus a <strong>sandbox</strong>: how the model actually responds to that
                     context, dry-run, without touching the live system. And <strong>time-travel</strong> —
                     scrub the date forward to see what your agent will remember in 30 days.
-                    <br><br>
+                </p>
+                <p>
                     First run on my own production system caught what <strong>no metric showed: the RAG had
                     been dead for 3.5 months</strong> — zero memory reaching the model. Diagnosed, fixed,
                     <strong>prompt −68%</strong>.
