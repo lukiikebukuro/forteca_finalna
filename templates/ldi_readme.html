@@ -80,10 +80,15 @@
         <p class="text-xl text-slate-300 mb-3 max-w-2xl mx-auto">
             Widzimy czego klient chciał — zanim nacisnął Enter.
         </p>
-        <p class="text-slate-400 mb-12 max-w-xl mx-auto">
-            Google Analytics widzi <span class="text-red-400 font-semibold">bounce</span>. 
+        <p class="text-slate-400 mb-6 max-w-xl mx-auto">
+            Google Analytics widzi <span class="text-red-400 font-semibold">bounce</span>.
             LDI widzi <span class="text-yellow-400 font-semibold">intencję zakupową</span> — i ile kosztuje jej brak w złotówkach.
         </p>
+        <a href="#wdrozenie" class="inline-flex items-center gap-2 mb-12 text-sm font-medium text-slate-300 hover:text-yellow-400 bg-white/5 border border-white/10 hover:border-yellow-400/40 rounded-full px-5 py-2 transition-colors">
+            <i class="fas fa-code text-yellow-400"></i>
+            Wdrożenie = wklejenie <span class="text-white font-semibold">jednego skryptu</span>, jak Google Analytics
+            <span class="text-slate-500 hidden sm:inline">— szczegóły niżej ↓</span>
+        </a>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
             <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
@@ -302,7 +307,7 @@
 </section>
 
 <!-- WDROŻENIE + BEZPIECZEŃSTWO -->
-<section class="py-20 px-6 bg-slate-50">
+<section id="wdrozenie" class="py-20 px-6 bg-slate-50 scroll-mt-20">
     <div class="max-w-6xl mx-auto">
         <div class="grid md:grid-cols-2 gap-12">
             <div>
@@ -363,7 +368,7 @@
     <div id="chat-window" class="chat-window closed">
         <div class="bg-slate-900 rounded-t-2xl px-4 py-3 flex items-center justify-between flex-shrink-0">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-yellow-400 rounded-xl flex items-center justify-center text-base">🤖</div>
+                <div class="w-8 h-8 bg-yellow-400 rounded-xl flex items-center justify-center text-base text-slate-900"><i class="fas fa-robot"></i></div>
                 <div>
                     <div class="text-white font-bold text-sm">LDI Expert</div>
                     <div class="flex items-center gap-1 text-green-400 text-xs">
@@ -377,11 +382,11 @@
 
         <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3 bg-white">
             <div class="flex gap-2">
-                <div class="w-6 h-6 bg-yellow-100 rounded-lg flex items-center justify-center text-xs flex-shrink-0 mt-1">🤖</div>
+                <div class="w-6 h-6 bg-yellow-100 rounded-lg flex items-center justify-center text-xs flex-shrink-0 mt-1"><i class="fas fa-robot text-yellow-700"></i></div>
                 <div class="chat-bubble-bot p-3 text-sm text-slate-700">Cześć! Zapytaj mnie o LDI — RODO, wdrożenie, ceny, Gold Signal, dane AI.</div>
             </div>
             <div class="flex gap-2">
-                <div class="w-6 h-6 bg-yellow-100 rounded-lg flex items-center justify-center text-xs flex-shrink-0 mt-1">🤖</div>
+                <div class="w-6 h-6 bg-yellow-100 rounded-lg flex items-center justify-center text-xs flex-shrink-0 mt-1"><i class="fas fa-robot text-yellow-700"></i></div>
                 <div class="chat-bubble-bot p-3 text-sm text-slate-600">
                     <span class="text-blue-600 cursor-pointer hover:underline block" onclick="quickAsk('Czy to nie keylogger?')">💬 Czy to nie keylogger?</span>
                     <span class="text-blue-600 cursor-pointer hover:underline block mt-1" onclick="quickAsk('Ile kosztuje?')">💬 Ile kosztuje?</span>
@@ -401,7 +406,7 @@
     </div>
 
     <div class="chat-toggle" onclick="toggleChat()">
-        <span id="chat-icon" class="text-slate-900 text-xl">🤖</span>
+        <span id="chat-icon" class="text-slate-900 text-xl"><i class="fas fa-robot"></i></span>
     </div>
 </div>
 
@@ -412,7 +417,7 @@ const history = [];
 function toggleChat() {
     chatOpen = !chatOpen;
     document.getElementById('chat-window').classList.toggle('closed', !chatOpen);
-    document.getElementById('chat-icon').textContent = chatOpen ? '✕' : '🤖';
+    document.getElementById('chat-icon').innerHTML = chatOpen ? '<i class="fas fa-xmark"></i>' : '<i class="fas fa-robot"></i>';
     if (chatOpen) document.getElementById('chat-input').focus();
 }
 
@@ -435,7 +440,7 @@ async function sendMessage() {
     msgs.scrollTop = msgs.scrollHeight;
 
     const lid = 'l' + Date.now();
-    msgs.innerHTML += `<div id="${lid}" class="flex gap-2"><div class="w-6 h-6 bg-yellow-100 rounded-lg flex items-center justify-center text-xs flex-shrink-0 mt-1">🤖</div><div class="chat-bubble-bot p-3 text-sm text-slate-400 animate-pulse">Pisze...</div></div>`;
+    msgs.innerHTML += `<div id="${lid}" class="flex gap-2"><div class="w-6 h-6 bg-yellow-100 rounded-lg flex items-center justify-center text-xs flex-shrink-0 mt-1"><i class="fas fa-robot text-yellow-700"></i></div><div class="chat-bubble-bot p-3 text-sm text-slate-400 animate-pulse">Pisze...</div></div>`;
     msgs.scrollTop = msgs.scrollHeight;
 
     try {
@@ -454,11 +459,11 @@ async function sendMessage() {
         const reply = data.reply || 'Przepraszam, błąd. Napisz bezpośrednio: adeptai.pl';
         history.push({ role: 'assistant', content: reply });
         document.getElementById(lid)?.remove();
-        msgs.innerHTML += `<div class="flex gap-2"><div class="w-6 h-6 bg-yellow-100 rounded-lg flex items-center justify-center text-xs flex-shrink-0 mt-1">🤖</div><div class="chat-bubble-bot p-3 text-sm text-slate-700 max-w-xs">${reply}</div></div>`;
+        msgs.innerHTML += `<div class="flex gap-2"><div class="w-6 h-6 bg-yellow-100 rounded-lg flex items-center justify-center text-xs flex-shrink-0 mt-1"><i class="fas fa-robot text-yellow-700"></i></div><div class="chat-bubble-bot p-3 text-sm text-slate-700 max-w-xs">${reply}</div></div>`;
         msgs.scrollTop = msgs.scrollHeight;
     } catch(e) {
         document.getElementById(lid)?.remove();
-        msgs.innerHTML += `<div class="flex gap-2"><div class="w-6 h-6 bg-yellow-100 rounded-lg flex items-center justify-center text-xs flex-shrink-0 mt-1">🤖</div><div class="chat-bubble-bot p-3 text-sm text-red-500 max-w-xs">Błąd. Napisz: adeptai.pl</div></div>`;
+        msgs.innerHTML += `<div class="flex gap-2"><div class="w-6 h-6 bg-yellow-100 rounded-lg flex items-center justify-center text-xs flex-shrink-0 mt-1"><i class="fas fa-robot text-yellow-700"></i></div><div class="chat-bubble-bot p-3 text-sm text-red-500 max-w-xs">Błąd. Napisz: adeptai.pl</div></div>`;
         msgs.scrollTop = msgs.scrollHeight;
     }
 }
