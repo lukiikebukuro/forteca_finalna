@@ -294,7 +294,7 @@
 <div class="page-wrap">
 
     <header class="doc-header">
-        <p class="doc-tag">Technical Manifest · ANIMA v3.1 · Updated June 2026</p>
+        <p class="doc-tag">Technical Manifest · ANIMA v3.1 · Updated July 2026</p>
         <h1 class="doc-title">Reverse-engineering consciousness:<br>Sovereign AI memory architecture</h1>
         <p class="doc-subtitle">
             ANIMA (Autonomous Neural Intelligence Memory Architecture) is a RAG-based long-term memory system
@@ -443,6 +443,15 @@ ChromaDB (with metadata: importance, entity_subtype, source, timestamp)</code></
             that trust declarations and key moments always reach the model regardless of the query.
             Weights are parameterized — adjustable per query type without restart.
         </p>
+        <p>
+            <strong>The guarantee has a failure mode — and we hit it.</strong> Left unbounded, the milestone
+            channel turned into a monoculture: a July 2026 audit found "love / trust" declarations flooding the
+            prompt at <strong>2.0 forced milestones per prompt</strong> on average, drowning genuinely relevant
+            anchors. This is the real mechanism behind the "altanka" miss in Section III. The fix was a triage
+            pass, not a bigger boost — the milestone population was cut <strong>1,296 &rarr; 312 active vectors</strong>
+            and forced milestones dropped to <strong>0.65 per prompt</strong>. A guaranteed channel is only an
+            asset while it stays scarce.
+        </p>
 
         <p><strong>3. MMR (Maximum Marginal Relevance)</strong></p>
         <p>
@@ -544,9 +553,71 @@ Next production session</code></pre>
 
     <hr>
 
-    <!-- SECTION IV -->
+    <!-- SECTION IV: AMNEZJA -->
     <section class="doc-section">
         <p class="section-num">IV.</p>
+        <h2>Amnezja: We stopped guessing what the model remembers</h2>
+
+        <h3>From reading logs to seeing the pipeline</h3>
+        <p>
+            Sections I&ndash;III describe a system tuned by reverse-engineering raw logs &mdash; <code>.jsonl</code> files,
+            terminal reranker scores, inference about what actually reached the model. It works, but it is
+            archaeology: slow, manual, and blind to anything the logs don't happen to print.
+        </p>
+        <p>
+            <strong>Amnezja</strong> replaces that with direct observation. It is a read-only debugger that traces
+            a single query through every stage of the retrieval pipeline and renders exactly what the model would
+            receive &mdash; before a single token is generated. It writes nothing; the live system is never touched.
+        </p>
+
+        <h3>Every stage, made visible</h3>
+        <p>
+            You type a phrase as the user would. Amnezja runs the full compose pipeline and lays out all eleven
+            stages, each with the vectors that survived it and the scores that decided it:
+        </p>
+
+<pre><code>Query + simulated date
+    |
+ 1  Raw pool         ChromaDB top ~30 by similarity
+ 2  After exclusion  raw self-echoes and short loops removed
+ 3  After rerank     score = 0.60*similarity + 0.25*importance + 0.15*recency (+boost)
+ 4  After temporal   hard cutoffs: emotion 48h, date/financial 168h
+ 5  Milestones       guaranteed channel &mdash; the one July's detox retuned
+ 6  After MMR        diversity gate on facts &mdash; where the "altanka" bug lived
+ 7  Memory channel   facts + milestones merged
+ 8  Astra channel    character_core + memory, before shared-room mix
+ 9a Shared mix       Wspolny Pokoj vectors &mdash; invisible in stages 1-8
+ 9b Final prompt     what Astra actually receives this turn
+ 9c After budget     what physically lands in [WSPOMNIENIA] after fit_to_budget</code></pre>
+
+        <h3>Grounding, sandbox, and time travel</h3>
+        <p>Beyond the funnel, Amnezja surfaces three things a log dump never could:</p>
+        <ul>
+            <li><strong>Grounding directive</strong> &mdash; the exact <code>GROUNDED</code> / <code>LOW_CONFIDENCE</code> /
+                <code>NO_DATA</code> verdict and confidence injected into the prompt, so you see the moment the system
+                is about to speak without support.</li>
+            <li><strong>Response sandbox</strong> &mdash; one click composes the identical prompt <code>/api/chat</code>
+                would build and asks Gemini how Astra <em>would</em> answer. It calls the model but writes nothing &mdash;
+                the live Astra stays untouched.</li>
+            <li><strong>Date simulation</strong> &mdash; shift the clock forward and watch recency decay and the 48h RAW
+                window drain: "will Astra still remember this in three weeks?" &mdash; answered without waiting three weeks.</li>
+        </ul>
+
+        <div class="callout">
+            <p>
+                This is the difference between a memory system you <em>hope</em> works and one you can
+                <strong>audit per query</strong>. Every fix in Sections II&ndash;III was found this way &mdash; by reading
+                the pipeline, not inferring it. The full walkthrough, built around a real degradation case, is
+                documented here: <a href="https://myastra.pl/casestudy">myastra.pl/casestudy</a>.
+            </p>
+        </div>
+    </section>
+
+    <hr>
+
+    <!-- SECTION V -->
+    <section class="doc-section">
+        <p class="section-num">V.</p>
         <h2>Why we're not building a bot</h2>
 
         <h3>Retrieval-augmented identity, not personalization</h3>
@@ -582,10 +653,10 @@ Next production session</code></pre>
 
     <hr>
 
-    <!-- SECTION V: STATUS TABLE -->
+    <!-- SECTION VI: STATUS TABLE -->
     <section class="doc-section">
-        <p class="section-num">V.</p>
-        <h2>System status (June 2026)</h2>
+        <p class="section-num">VI.</p>
+        <h2>System status (July 2026)</h2>
 
         <table class="data-table">
             <thead>
@@ -601,7 +672,7 @@ Next production session</code></pre>
                 </tr>
                 <tr>
                     <td>Vector DB</td>
-                    <td>ChromaDB — ~1,988 memory vectors, per-persona + shared collections</td>
+                    <td>ChromaDB, per-persona + shared collections. Milestone population triaged 1,296 &rarr; 312 active (July detox) — the store contracts via supersede, it does not grow linearly.</td>
                 </tr>
                 <tr>
                     <td>FactStore</td>
@@ -648,8 +719,24 @@ Next production session</code></pre>
                     <td>n=30 (15 exchanges), history survives restart via ChromaDB</td>
                 </tr>
                 <tr>
-                    <td>RAG score</td>
-                    <td>~83/100 after June 2026 audit (up from 7/10 in April)</td>
+                    <td>Junk-milestone rate</td>
+                    <td>6.5/day &rarr; 0.5/day (&minus;92%), verified over a week of live traffic</td>
+                </tr>
+                <tr>
+                    <td>Forced-memory load</td>
+                    <td>2.0 &rarr; 0.65 milestones injected per prompt (avg over 23 probes) — monoculture removed</td>
+                </tr>
+                <tr>
+                    <td>July detox audit</td>
+                    <td>1,751 milestone entries reviewed (FactStore 455 + Chroma 1,296)</td>
+                </tr>
+                <tr>
+                    <td>Extractor precision</td>
+                    <td>0 multi-label errors across 56 messages after the classifier fix</td>
+                </tr>
+                <tr>
+                    <td>Full walkthrough</td>
+                    <td><a href="https://myastra.pl/casestudy">myastra.pl/casestudy</a> — the detox as a documented case study</td>
                 </tr>
             </tbody>
         </table>
@@ -657,9 +744,9 @@ Next production session</code></pre>
 
     <hr>
 
-    <!-- SECTION VI: CONTINUOUS R&D -->
+    <!-- SECTION VII: CONTINUOUS R&D -->
     <section class="doc-section">
-        <p class="section-num">VI.</p>
+        <p class="section-num">VII.</p>
         <h2>Continuous R&D: The system improves itself</h2>
 
         <h3>External audits drive architecture changes</h3>
@@ -700,9 +787,9 @@ Next production session</code></pre>
 
     <hr>
 
-    <!-- SECTION VII -->
+    <!-- SECTION VIII -->
     <section class="doc-section">
-        <p class="section-num">VII.</p>
+        <p class="section-num">VIII.</p>
         <h2>Architecture Extensions: What changed since April 2026</h2>
 
         <h3>Temporal Filter — hard cutoffs before reranking</h3>
@@ -761,32 +848,16 @@ Turn ordering: signal-based — persona whose character profile
 
     <hr>
 
-    <!-- SECTION VIII -->
+    <!-- SECTION IX -->
     <section class="doc-section">
-        <p class="section-num">VIII.</p>
+        <p class="section-num">IX.</p>
         <h2>Roadmap: What's being built next</h2>
 
-        <h3>RAG Debugger</h3>
+        <h3>RAG Debugger — ✓ shipped</h3>
         <p>
-            The primary bottleneck to faster iteration is observability. Every change to reranker weights,
-            decay curves, or filter thresholds is currently evaluated by reading journal logs and
-            inferring what the model saw. The RAG Debugger is a frontend tool that exposes
-            every pipeline stage in real time:
-        </p>
-
-<pre><code>Input: query phrase + simulated date
-    ↓
-Layer 1 — ChromaDB raw pool (n=30, pre-filter)
-Layer 2 — Post-temporal-filter candidates
-Layer 3 — Reranker scores, broken down per component
-           (similarity / recency / importance / keyword_boost)
-Layer 4 — MMR selection
-Layer 5 — Final prompt block — exactly what the model sees</code></pre>
-
-        <p>
-            Simulating a future date allows testing recency decay without waiting for real time to pass:
-            "will Astra remember this appointment in three weeks?"
-            Expected iteration speedup: <strong>5–10×.</strong>
+            The observability tool this roadmap once promised is now live as <strong>Amnezja</strong> (Section IV):
+            full pipeline trace, per-component reranker scores, grounding verdict, response sandbox, and date
+            simulation. What remains below is what having Amnezja finally unlocks.
         </p>
 
         <h3>BM25 Hybrid Retrieval</h3>
@@ -799,143 +870,108 @@ Layer 5 — Final prompt block — exactly what the model sees</code></pre>
             BM25 adds a keyword-frequency score alongside semantic similarity. The combined signal
             is more robust for named entities (medications, people, product names) without
             sacrificing recall for natural language queries.
-            <strong>Prerequisite: RAG Debugger</strong> — to verify the improvement is real,
-            not noise redistribution.
+            <strong>Prerequisite: the RAG Debugger</strong> — now available (Amnezja), so a BM25 gain can be
+            verified as real signal rather than noise redistribution.
         </p>
 
         <h3>Evaluation Methodology — how we measure progress</h3>
         <p>
             On April 22, 2026, ANIMA received an independent full-stack audit against a five-dimension rubric.
-            Baseline score: <strong>34/100</strong>.
-            The same rubric applied to the June 2026 state shows where fixes landed and what remains.
+            Baseline: <strong>34/100</strong> — a system that spoke with false confidence, with DB corruption and a
+            milestone boost consuming every retrieval slot. That number is the honest starting point.
+        </p>
+        <p>
+            We deliberately do <strong>not</strong> publish a re-estimated "current score." A manually guessed number
+            was the exact weakness the April audit flagged — no evaluation framework. Progress is now tracked by
+            <strong>verified operational metrics</strong> from the July 2026 detox, measured on live traffic:
         </p>
 
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Dimension</th>
-                    <th>Weight</th>
-                    <th>April 22</th>
-                    <th>June 2026</th>
-                    <th>Δ pts</th>
+                    <th>Metric</th>
+                    <th>Before</th>
+                    <th>After</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>Core architecture</td>
-                    <td>20%</td>
-                    <td>75 → 15 pts</td>
-                    <td>~90 → 18 pts</td>
-                    <td>+3</td>
+                    <td>Junk-milestone creation rate</td>
+                    <td>6.5 / day</td>
+                    <td>0.5 / day &mdash; &minus;92%, over one week live</td>
                 </tr>
                 <tr>
-                    <td>RAG quality (facts return correctly)</td>
-                    <td>25%</td>
-                    <td>15 → 3.75 pts</td>
-                    <td><strong>~83 → 20.75 pts</strong></td>
-                    <td><strong>+17</strong></td>
+                    <td>Forced milestones per prompt</td>
+                    <td>2.0</td>
+                    <td>0.65 &mdash; monoculture removed</td>
                 </tr>
                 <tr>
-                    <td>Character consistency</td>
-                    <td>20%</td>
-                    <td>35 → 7 pts</td>
-                    <td>~78 → 15.6 pts</td>
-                    <td>+8.6</td>
+                    <td>Extractor multi-label errors</td>
+                    <td>&mdash;</td>
+                    <td>0 across 56 messages</td>
                 </tr>
                 <tr>
-                    <td>Reliability / no critical bugs</td>
-                    <td>15%</td>
-                    <td>20 → 3 pts</td>
-                    <td>~65 → 9.75 pts</td>
-                    <td>+6.75</td>
-                </tr>
-                <tr>
-                    <td>Commercial readiness</td>
-                    <td>20%</td>
-                    <td>25 → 5 pts</td>
-                    <td>~35 → 7 pts</td>
-                    <td>+2</td>
-                </tr>
-                <tr>
-                    <td><strong>TOTAL</strong></td>
-                    <td>100%</td>
-                    <td><strong>34 / 100</strong></td>
-                    <td><strong>~71 / 100</strong></td>
-                    <td><strong>+37</strong></td>
+                    <td>Audit scope</td>
+                    <td colspan="2">1,751 milestone entries reviewed (FactStore 455 + Chroma 1,296)</td>
                 </tr>
             </tbody>
         </table>
 
         <p>
-            The RAG Quality dimension was the critical bottleneck in April — DB corruption, milestone boost
-            consuming all retrieval slots, topical blindness producing false confidence.
-            After targeted fixes (DB cleanup −175 vectors, milestone compose 4F+2M,
-            FactStore, Temporal Filter, MMR cosine, PERSON threshold), RAG Quality
-            jumped from <strong>15 → ~83</strong> — the largest single gain in the system's history.
-        </p>
-        <p>
-            Commercial Readiness remains low by design — ANIMA is currently a single-user production system,
-            not a multi-tenant SaaS. The architectural decisions (per-user vector isolation, SHA256 IDs)
-            are already in place; the remaining gap is operational (streaming, monitoring, rate limiting).
+            These are measured, not estimated — and reproducible, because <strong>Amnezja</strong> now exposes the
+            exact pipeline behind each one. The next milestone is the first fully reproducible audit: a fixed query
+            set with automated precision@k and recall@k, and commit-level regression detection.
         </p>
 
-        <h3>Progress roadmap (original audit targets)</h3>
-
+        <h3>Milestones ahead</h3>
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Threshold</th>
-                    <th>Description</th>
+                    <th>Milestone</th>
                     <th>Status</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td><strong>45 / 100</strong></td>
-                    <td>System stops lying with false confidence</td>
+                    <td>System stops speaking with false confidence</td>
                     <td>✓ Reached — Phase 0 fixes + DB cleanup</td>
                 </tr>
                 <tr>
-                    <td><strong>58 / 100</strong></td>
                     <td>RAG reliably returns facts</td>
-                    <td>✓ Exceeded — FactStore + Temporal Filter delivered this without BM25</td>
+                    <td>✓ Delivered — FactStore + Temporal Filter, without BM25</td>
                 </tr>
                 <tr>
-                    <td><strong>68 / 100</strong></td>
-                    <td>Consistent character (structured store + curiosity threads)</td>
-                    <td>✓ Exceeded — Domowy Ambient + safe_haven gate + character refactor</td>
+                    <td>Consistent character across sessions</td>
+                    <td>✓ Delivered — ambient layer + safe_haven gate + character refactor</td>
                 </tr>
                 <tr>
-                    <td><strong>71 / 100</strong></td>
-                    <td>Current estimated state (June 2026)</td>
-                    <td>← We are here</td>
+                    <td>Forced-memory monoculture removed</td>
+                    <td>✓ Delivered — July detox (2.0 &rarr; 0.65 per prompt)</td>
                 </tr>
                 <tr>
-                    <td><strong>78 / 100</strong></td>
-                    <td>Beta-ready (multi-user + streaming + monitoring)</td>
-                    <td>Next — RAG Debugger + BM25 unlocks this range</td>
+                    <td>Per-query observability</td>
+                    <td>✓ Shipped — Amnezja (Section IV)</td>
                 </tr>
                 <tr>
-                    <td><strong>88 / 100</strong></td>
-                    <td>Commercially ready (evaluation framework + 3 months testing)</td>
-                    <td>Roadmap Q4 2026</td>
+                    <td>First reproducible audit (precision@k / recall@k)</td>
+                    <td>&larr; Next — unlocked by Amnezja</td>
                 </tr>
                 <tr>
-                    <td><strong>95+ / 100</strong></td>
-                    <td>Market leader (voice, mobile, fine-tuning on custom model)</td>
+                    <td>Beta-ready: multi-user + streaming + monitoring</td>
+                    <td>Roadmap</td>
+                </tr>
+                <tr>
+                    <td>Voice, mobile, custom-model fine-tuning</td>
                     <td>Long-term vision</td>
                 </tr>
             </tbody>
         </table>
 
-        <div class="callout" style="margin-top: 24px;">
-            <p>
-                The June 2026 scores above are manually estimated — the same bottleneck the April audit
-                identified (no evaluation framework). The <strong>RAG Debugger</strong> will make these
-                scores reproducible: fixed query set, automated precision@k and recall@k,
-                commit-level regression detection. The first reproducible audit is the next milestone.
-            </p>
-        </div>
+        <p>
+            ANIMA is a single-user production system by design, not a multi-tenant SaaS — that is a separate track,
+            out of scope for this document. The remaining gap to a broader release is operational (streaming,
+            monitoring, rate limiting), and the architecture for it (per-user isolation, SHA256 IDs) is already in place.
+        </p>
     </section>
 
     <hr>
