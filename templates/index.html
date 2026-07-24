@@ -640,14 +640,13 @@
                 <p class="project-tag">Hacker Card · Research</p>
                 <h3>Gemini XHR Stream Injection</h3>
                 <p>
-                    Reverse-engineered the XHR streaming protocol of an undocumented Gemini endpoint
-                    to inject a custom RAG context layer — without an official API key.
+                    Built a client-side context-injection layer for a third-party AI interface by
+                    intercepting its network layer — the experimental foundation for ANIMA retrieval architecture.
                     <strong>The observation:</strong> the model's response quality changed measurably
                     depending on the injected context structure.
-                    This became the experimental foundation for the ANIMA retrieval architecture.
                 </p>
                 <div class="project-meta">
-                    <span class="meta-chip">XHR reverse engineering</span>
+                    <span class="meta-chip">Network-layer interception</span>
                     <span class="meta-chip">Stream parsing</span>
                     <span class="meta-chip">RAG prototyping</span>
                 </div>
@@ -668,9 +667,10 @@
                     scrub the date forward to see what your agent will remember in 30 days.
                 </p>
                 <p>
-                    First run on my own production system caught what <strong>no metric showed: the RAG had
-                    been dead for 3.5 months</strong> — zero memory reaching the model. Diagnosed, fixed,
-                    <strong>prompt −68%</strong>.
+                    Run on my own production system, it surfaced what <strong>no top-line metric flagged</strong>:
+                    a milestone monoculture flooding every prompt. The detox that followed cut junk-memory creation
+                    <strong>6.5 → 0.5 / day (−92%)</strong> over <strong>1,751 audited entries</strong>, and forced
+                    memories per prompt from <strong>2.0 to 0.65</strong>.
                 </p>
                 <div class="project-meta">
                     <span class="meta-chip">Memory observability</span>
