@@ -385,13 +385,13 @@
         </p>
         <p>
             The highest-value signal is the inverse: <strong>clicked_despite_no_match</strong>.
-            User searched for "iPhone 14 Pro case leather", we didn't have it, but they clicked
-            on "iPhone 14 silicone case" anyway. This tells us:
+            User searched for "iPhone 14 Pro case leather", I didn't have it, but they clicked
+            on "iPhone 14 silicone case" anyway. This tells me:
         </p>
         <ul>
             <li>They have genuine purchase intent (not browsing)</li>
             <li>They're flexible on specification (leather → silicone)</li>
-            <li>We just learned a new product association</li>
+            <li>I just learned a new product association</li>
         </ul>
 
         <div class="callout gold">
@@ -480,7 +480,7 @@
 
         <h3>Why NO_MATCH with features is valid</h3>
         <p>
-            If a user searches "BMW E46 klocki Brembo" and we get NO_MATCH, that's not noise — that's
+            If a user searches "BMW E46 klocki Brembo" and I get NO_MATCH, that's not noise — that's
             <strong>genuine lost demand</strong>. The query has domain context (car brand + part term)
             and the feature extractor pulls out <code>gen:e46</code>. These records are flagged
             <code>VALID_LOST_DEMAND</code> and routed to the Gold/Platinum Signal pipeline.
@@ -522,8 +522,8 @@
             <li><code>E46</code> = BMW 3-series 1998-2006 (car model)</li>
         </ul>
         <p>
-            This context enables fuzzy matching: even if we don't have "Brembo brake pads for E46"
-            in the product database, we can suggest "ATE brake pads for E46" — and if the user clicks,
+            This context enables fuzzy matching: even if I don't have "Brembo brake pads for E46"
+            in the product database, I can suggest "ATE brake pads for E46" — and if the user clicks,
             that's a Gold Signal.
         </p>
     </section>
@@ -856,7 +856,7 @@
         </p>
 
         <div class="callout gold" style="margin-top: 32px;">
-            <p><strong>We don't track what users bought. We track what they wanted.</strong></p>
+            <p><strong>I don't track what users bought. I track what they wanted.</strong></p>
         </div>
     </section>
 

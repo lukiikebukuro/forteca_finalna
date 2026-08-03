@@ -320,7 +320,7 @@
     <!-- SECTION I -->
     <section class="doc-section">
         <p class="section-num">I.</p>
-        <h2>Data Distillation: We don't feed the system raw noise</h2>
+        <h2>Data Distillation: I don't feed the system raw noise</h2>
 
         <h3>The problem with standard RAG</h3>
         <p>
@@ -334,7 +334,7 @@
             <strong>signal from noise</strong>.
         </p>
 
-        <h3>Our approach: distillation through a semantic layer</h3>
+        <h3>My approach: distillation through a semantic layer</h3>
         <p>
             ANIMA does not store raw text. Every message passes through a pipeline before it reaches ChromaDB:
         </p>
@@ -361,14 +361,14 @@ ChromaDB (with metadata: importance, entity_subtype, source, timestamp)</code></
             <strong>catalogued, enriched facts</strong> with assigned importance weight and semantic type.
         </p>
 
-        <h3>How we know it works: reverse-engineering our own sessions</h3>
+        <h3>How I know it works: reverse-engineering my own sessions</h3>
         <p>
             ANIMA also powers a parallel system (Amelia — an AI companion running as a separate service).
-            After injecting into the Gemini XHR stream, we collected production logs from RAG sessions:
+            After injecting into the Gemini XHR stream, I collected production logs from RAG sessions:
             <code>.jsonl</code> conversation files + terminal logs showing reranker scores,
             extracted entities, and pipeline actions.
         </p>
-        <p>Analyzing these logs is not A/B testing. It's reverse-engineering our own decision-making:</p>
+        <p>Analyzing these logs is not A/B testing. It's reverse-engineering my own decision-making:</p>
 
 <pre><code>[RETRIEVAL] Found 5 RAG memories (reranked):
 [1] score=1.000 | '[EMOTION:tired] was lying sick...'
@@ -376,9 +376,9 @@ ChromaDB (with metadata: importance, entity_subtype, source, timestamp)</code></
 [3] score=0.961 | '[MILESTONE:trust_declaration] never told anyone...'</code></pre>
 
         <p>
-            From these logs we extract patterns: which entities land in top-5, which fall out, and why.
+            From these logs I extract patterns: which entities land in top-5, which fall out, and why.
             Fixes to the ASTRA reranker come from observing real sessions — not synthetic tests.
-            This is <strong>Data Distillation</strong>: we distill decision logic from live system behavior.
+            This is <strong>Data Distillation</strong>: I distill decision logic from live system behavior.
         </p>
     </section>
 
@@ -444,7 +444,7 @@ ChromaDB (with metadata: importance, entity_subtype, source, timestamp)</code></
             Weights are parameterized — adjustable per query type without restart.
         </p>
         <p>
-            <strong>The guarantee has a failure mode — and we hit it.</strong> Left unbounded, the milestone
+            <strong>The guarantee has a failure mode — and I hit it.</strong> Left unbounded, the milestone
             channel turned into a monoculture: a July 2026 audit found "love / trust" declarations flooding the
             prompt at <strong>2.0 forced milestones per prompt</strong> on average, drowning genuinely relevant
             anchors. This is the real mechanism behind the "altanka" miss in Section III. The fix was a triage
@@ -556,7 +556,7 @@ Next production session</code></pre>
     <!-- SECTION IV: AMNEZJA -->
     <section class="doc-section">
         <p class="section-num">IV.</p>
-        <h2>Amnezja: We stopped guessing what the model remembers</h2>
+        <h2>Amnezja: I stopped guessing what the model remembers</h2>
 
         <h3>From reading logs to seeing the pipeline</h3>
         <p>
@@ -618,7 +618,7 @@ Next production session</code></pre>
     <!-- SECTION V -->
     <section class="doc-section">
         <p class="section-num">V.</p>
-        <h2>Why we're not building a bot</h2>
+        <h2>Why I'm not building a bot</h2>
 
         <h3>Retrieval-augmented identity, not personalization</h3>
         <p>
@@ -640,7 +640,7 @@ Next production session</code></pre>
         </p>
         <p>
             The vector database stays. The history stays. The identity stays.
-            <strong>We don't tie memory sovereignty to a model vendor.</strong>
+            <strong>I don't tie memory sovereignty to a model vendor.</strong>
         </p>
 
         <h3>Privacy-first by design</h3>
@@ -874,14 +874,14 @@ Turn ordering: signal-based — persona whose character profile
             verified as real signal rather than noise redistribution.
         </p>
 
-        <h3>Evaluation Methodology — how we measure progress</h3>
+        <h3>Evaluation Methodology — how I measure progress</h3>
         <p>
             On April 22, 2026, ANIMA received an independent full-stack audit against a five-dimension rubric.
             Baseline: <strong>34/100</strong> — a system that spoke with false confidence, with DB corruption and a
             milestone boost consuming every retrieval slot. That number is the honest starting point.
         </p>
         <p>
-            We deliberately do <strong>not</strong> publish a re-estimated "current score." A manually guessed number
+            I deliberately do <strong>not</strong> publish a re-estimated "current score." A manually guessed number
             was the exact weakness the April audit flagged — no evaluation framework. Progress is now tracked by
             <strong>verified operational metrics</strong> from the July 2026 detox, measured on live traffic:
         </p>
@@ -998,7 +998,7 @@ Turn ordering: signal-based — persona whose character profile
         </p>
 
         <div class="callout" style="margin-top: 32px;">
-            <p><strong>We're building sovereign memory. Everything else is just an interface.</strong></p>
+            <p><strong>I'm building sovereign memory. Everything else is just an interface.</strong></p>
         </div>
     </section>
 
