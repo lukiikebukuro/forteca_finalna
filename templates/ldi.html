@@ -339,7 +339,8 @@
         <p class="doc-subtitle">
             LDI is a real-time classification engine that identifies purchase intent in e-commerce
             search queries — before the user presses Enter. This document explains the architecture
-            that achieved 91% accuracy on a new product domain without retraining.
+            that reached 91% accuracy on a new product domain by rebuilding only the domain
+            knowledge layer — not by retraining the underlying model.
         </p>
         <div class="doc-meta">
             <span>Author: Łukasz Piskorski / Adept AI</span>
@@ -356,7 +357,7 @@
         </div>
         <div class="stat-item">
             <div class="stat-value">92.3%</div>
-            <div class="stat-label">Electronics accuracy<br>169/183 — no retraining</div>
+            <div class="stat-label">Electronics accuracy<br>169/183 — new domain knowledge layer</div>
         </div>
         <div class="stat-item">
             <div class="stat-value gold">1.0 / 0.8</div>
@@ -710,9 +711,12 @@
         <h3>Cross-domain generalization</h3>
         <p>
             The same architecture was retargeted from automotive to consumer electronics
-            (smartphones, laptops, audio) <strong>without retraining or hyperparameter changes</strong>.
-            Only the domain knowledge layer — brands, categories, and the attribute extractor —
-            was swapped.
+            (smartphones, laptops, audio) <strong>without retraining the underlying model or
+            touching its hyperparameters</strong>. What did change was the domain knowledge
+            layer — brands, categories, and the attribute extractor — which had to be rebuilt
+            for the new vertical. This is not a zero-effort transfer: the validator, reward
+            engine, and session consolidation are domain-agnostic by design, but each new
+            vertical still needs its own domain knowledge layer built out.
         </p>
         <div class="callout">
             <p>
