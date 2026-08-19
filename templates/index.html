@@ -672,8 +672,24 @@
                     <strong>6.5 → 0.5 / day (−92%)</strong> over <strong>1,751 audited entries</strong>, and forced
                     memories per prompt from <strong>2.0 to 0.65</strong>.
                 </p>
+                <p>
+                    It now x-rays the <strong>write path</strong> too — the half nobody instruments.
+                    Paste any message and see which gate dropped it, and why: length filters, similarity
+                    thresholds, the anti-multi-label picker that <em>always</em> assigns some label because
+                    the taxonomy has no verdict for "nothing here". On my own logs it answered in two seconds
+                    what had puzzled me for weeks — the most important message of the year never entered
+                    memory at all, killed by a 4-word minimum. Then it caught a live one: a health fact
+                    routed into a <code>DATE</code> bucket that expires after 7 days, beating the permanent
+                    <code>FACT:health</code> label by <strong>0.01 of similarity</strong>.
+                </p>
+                <p>
+                    That is the point. Most RAG work asks "why didn't it retrieve this?" —
+                    the more expensive question is <strong>"why was it never stored?"</strong>, and it is
+                    invisible until you instrument the write path.
+                </p>
                 <div class="project-meta">
                     <span class="meta-chip">Memory observability</span>
+                    <span class="meta-chip">Write-path tracing</span>
                     <span class="meta-chip">Sandbox generation</span>
                     <span class="meta-chip">Time-travel</span>
                     <span class="meta-chip">Bit-identical</span>
