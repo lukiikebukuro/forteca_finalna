@@ -193,6 +193,31 @@
             transition: background 0.2s;
         }
         .project-card:hover { background: var(--bg2); }
+
+        /* Rozwijana czesc kafelka — natywne <details>, bez JS.
+           Powod: opis Amnezji urosl do 4 akapitow i przytlaczal siatke projektow.
+           Widoczny zostaje hak (jedno pytanie), reszta na klikniecie. */
+        .card-more { margin-top: -4px; }
+        .card-more > summary {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            letter-spacing: 0.04em;
+            color: var(--accent);
+            cursor: pointer;
+            list-style: none;
+            padding: 6px 0;
+            user-select: none;
+            transition: opacity 0.2s;
+        }
+        .card-more > summary::-webkit-details-marker { display: none; }
+        .card-more > summary::after {
+            content: ' +';
+            font-weight: 600;
+        }
+        .card-more[open] > summary::after { content: ' −'; }
+        .card-more > summary:hover { opacity: 0.65; }
+        .card-more > p { margin-top: 14px; }
+
         .project-tag {
             font-family: 'JetBrains Mono', monospace;
             font-size: 11px;
@@ -667,26 +692,39 @@
                     scrub the date forward to see what your agent will remember in 30 days.
                 </p>
                 <p>
-                    Run on my own production system, it surfaced what <strong>no top-line metric flagged</strong>:
-                    a milestone monoculture flooding every prompt. The detox that followed cut junk-memory creation
-                    <strong>6.5 → 0.5 / day (−92%)</strong> over <strong>1,751 audited entries</strong>, and forced
-                    memories per prompt from <strong>2.0 to 0.65</strong>.
+                    Most RAG work asks <em>"why didn't it retrieve this?"</em>. The more expensive question is
+                    <strong>"why was it never stored?"</strong> — and it stays invisible until you instrument
+                    the write path. So I did.
                 </p>
-                <p>
-                    It now x-rays the <strong>write path</strong> too — the half nobody instruments.
-                    Paste any message and see which gate dropped it, and why: length filters, similarity
-                    thresholds, the anti-multi-label picker that <em>always</em> assigns some label because
-                    the taxonomy has no verdict for "nothing here". On my own logs it answered in two seconds
-                    what had puzzled me for weeks — the most important message of the year never entered
-                    memory at all, killed by a 4-word minimum. Then it caught a live one: a health fact
-                    routed into a <code>DATE</code> bucket that expires after 7 days, beating the permanent
-                    <code>FACT:health</code> label by <strong>0.01 of similarity</strong>.
-                </p>
-                <p>
-                    That is the point. Most RAG work asks "why didn't it retrieve this?" —
-                    the more expensive question is <strong>"why was it never stored?"</strong>, and it is
-                    invisible until you instrument the write path.
-                </p>
+
+                <details class="card-more">
+                    <summary>What it found in production</summary>
+
+                    <p>
+                        It surfaced what <strong>no top-line metric flagged</strong>: a milestone monoculture
+                        flooding every prompt. The detox that followed cut junk-memory creation
+                        <strong>6.5 → 0.5 / day (−92%)</strong> over <strong>1,751 audited entries</strong>,
+                        and brought memories per prompt from <strong>2.0 down to 0.65</strong>.
+                    </p>
+                    <p>
+                        On the write path it answered in two seconds what had puzzled me for weeks: the most
+                        important message of the year never entered memory at all, killed by a
+                        <strong>4-word minimum</strong>. A month-wide audit put a number on it —
+                        <strong>41% of messages left no trace</strong>, and of those stored,
+                        <strong>52% carried an expiry date</strong>.
+                    </p>
+                    <p>
+                        Then it caught a live one: a health fact routed into a <code>DATE</code> bucket that
+                        expires after 7 days, losing to the permanent <code>FACT:health</code> label by
+                        <strong>0.01 of similarity</strong>. One hundredth of a cosine deciding whether the
+                        system remembers your surgery next month.
+                    </p>
+                    <p>
+                        Same tooling, same session: an acronym search returning <strong>zero of 60</strong>
+                        matching entries, because the embedding model tokenises a three-letter project name
+                        into noise. Measured, then fixed with a lexical channel — <strong>0 → 3</strong> in the prompt.
+                    </p>
+                </details>
                 <div class="project-meta">
                     <span class="meta-chip">Memory observability</span>
                     <span class="meta-chip">Write-path tracing</span>

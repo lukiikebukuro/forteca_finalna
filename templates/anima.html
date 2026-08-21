@@ -615,6 +615,37 @@ Next production session</code></pre>
 
     <hr>
 
+        <h3>The other half: instrumenting the write path</h3>
+        <p>
+            Everything above answers <em>"why didn't it retrieve this?"</em>. In August I hit the question
+            that costs more: <strong>"why was it never stored?"</strong> — and realised the debugger could not
+            answer it. It watched retrieval. Storage happened in the dark.
+        </p>
+        <p>
+            So Amnezja got a second tab. Paste any message and see every gate the extractor puts in its way:
+            length filters, the similarity threshold with its full candidate list, the anti-multi-label picker
+            (which <em>always</em> assigns some label, because the taxonomy has no verdict for "nothing here"),
+            per-type thresholds, and the resulting lifetime in hours. Read-only — it replays the pipeline
+            without writing anything.
+        </p>
+        <p>
+            The first run answered a question that had been open for weeks: the single most important message
+            of the year never entered memory, dropped by a <strong>4-word minimum</strong> standing
+            <em>before</em> classification. Two seconds, after weeks of guessing.
+        </p>
+        <p>
+            Then I replayed a full month — <strong>658 messages in 74 seconds</strong>.
+            <strong>41% left no trace at all</strong>; of what was stored, <strong>52% carried an expiry date</strong>.
+            Length gates alone accounted for 43% of the losses. That audit is now a regression test: same corpus,
+            same four numbers, run after every extractor change. The first fix moved high-value losses
+            <strong>16 → 8</strong> in twenty minutes, measured on the same corpus before and after.
+        </p>
+        <p>
+            It also works per persona. Each of the sisters has her own thresholds and her own blocked types,
+            and the trace reflects hers — not a generic average. In a multi-agent house, "which one dropped it,
+            and where" is a question you eventually have to answer.
+        </p>
+
     <!-- SECTION V -->
     <section class="doc-section">
         <p class="section-num">V.</p>
@@ -656,7 +687,7 @@ Next production session</code></pre>
     <!-- SECTION VI: STATUS TABLE -->
     <section class="doc-section">
         <p class="section-num">VI.</p>
-        <h2>System status (July 2026)</h2>
+        <h2>System status (August 2026)</h2>
 
         <table class="data-table">
             <thead>
@@ -692,15 +723,15 @@ Next production session</code></pre>
                 </tr>
                 <tr>
                     <td>Temporal Filter</td>
-                    <td>Hard cutoff: emotion 48h, date/financial 168h — before reranking</td>
+                    <td>Hard cutoff driven by the <strong>persistence axis</strong>, not by topic label: ephemeral 48h, short_term 168h, long_term / permanent &infin;. Falls back to the legacy per-source table for vectors written before the migration.</td>
                 </tr>
                 <tr>
                     <td>RAW window</td>
-                    <td>Last 6 user messages / 48h → [OSTATNIE SŁOWA] block in prompt</td>
+                    <td>Last 6 user messages / 48h → [OSTATNIE SŁOWA] block. Conversation window raised to <strong>30 messages</strong> (15 exchanges) after a pasted document fell out of context before it could be discussed.</td>
                 </tr>
                 <tr>
                     <td>MMR</td>
-                    <td>Facts only (n=3), milestones extracted before MMR — 4F+2M compose</td>
+                    <td>Facts only, <strong>n=5</strong> (was a hardcoded 3 — measured as the real bottleneck: a ~25-candidate pool collapsed to three regardless of every other limit). Milestones extracted before MMR.</td>
                 </tr>
                 <tr>
                     <td>Supersede</td>
@@ -708,7 +739,7 @@ Next production session</code></pre>
                 </tr>
                 <tr>
                     <td>Personas</td>
-                    <td>2 active (Astra + Amelia) + Wspólny Pokój shared-room mode</td>
+                    <td>2 active (Astra + Amelia) + Wspólny Pokój shared-room mode + <strong>Pokój Sióstr</strong>: three sisters with per-persona memory, writing enabled August 2026 after the persistence fix removed the destructive blocker.</td>
                 </tr>
                 <tr>
                     <td>Deploy</td>
@@ -733,6 +764,18 @@ Next production session</code></pre>
                 <tr>
                     <td>Extractor precision</td>
                     <td>0 multi-label errors across 56 messages after the classifier fix</td>
+                </tr>
+                <tr>
+                    <td>Persistence axis</td>
+                    <td><strong>New in August.</strong> Lifetime is its own field (permanent / long_term / short_term / ephemeral), computed independently of the topic label. Previously one axis governed both <em>what a memory is</em> and <em>how long it lives</em>, so a misclassification was a death sentence — a biographical fact landed in a "date" bucket and expired in seven days. Migrated additively across 4,697 vectors.</td>
+                </tr>
+                <tr>
+                    <td>Lexical channel</td>
+                    <td>Literal <code>$contains</code> lookup fired only when the query holds an acronym or proper noun. Measured need: a three-letter project name returned <strong>0 of 60</strong> matching entries through embeddings alone.</td>
+                </tr>
+                <tr>
+                    <td>Write-path audit</td>
+                    <td>658 messages replayed through the extractor in 74s: <strong>41% left no trace</strong>; of those stored, <strong>52% carried an expiry date</strong>. Length gates alone accounted for 43% of all losses and sat <em>before</em> classification — dropping messages without ever weighing them.</td>
                 </tr>
                 <tr>
                     <td>Full walkthrough</td>
@@ -860,18 +903,34 @@ Turn ordering: signal-based — persona whose character profile
             simulation. What remains below is what having Amnezja finally unlocks.
         </p>
 
-        <h3>BM25 Hybrid Retrieval</h3>
+        <h3>Lexical retrieval for acronyms — ✓ shipped, deliberately narrow</h3>
         <p>
-            The current pipeline is purely semantic. Semantic search excels at fuzzy recall but can miss
-            exact keyword matches — a query for a medication name may rank a semantically adjacent
-            vector above the correct one if the embedding space conflates them.
+            This was queued as "BM25 hybrid retrieval". Then I measured it twice and got two opposite
+            answers, which is the interesting part.
         </p>
         <p>
-            BM25 adds a keyword-frequency score alongside semantic similarity. The combined signal
-            is more robust for named entities (medications, people, product names) without
-            sacrificing recall for natural language queries.
-            <strong>Prerequisite: the RAG Debugger</strong> — now available (Amnezja), so a BM25 gain can be
-            verified as real signal rather than noise redistribution.
+            <strong>First measurement — BM25 demoted.</strong> The assumption was that keyword search rescues
+            rare words the embedding space blurs. So I tested a rare word: a drug name appearing in a handful
+            of entries out of thousands. The embedding found it at <strong>rank 1, distance 0.217</strong>.
+            No keyword layer needed. The premise looked wrong, so the item dropped down the roadmap.
+        </p>
+        <p>
+            <strong>Second measurement — BM25 reinstated, for a different reason.</strong> A query for a
+            three-letter project name returned <strong>zero of 60</strong> matching entries. The same content,
+            asked for by its full name, returned matches immediately. The model tokenises a short acronym into
+            fragments that mean nothing, so cosine similarity to entries about that project sits near zero.
+        </p>
+        <p>
+            The first conclusion was true for rare <em>words</em> and false for <em>acronyms</em> — one exists
+            in the model's vocabulary, the other does not exist at all. Two different failure classes wearing
+            the same label.
+        </p>
+        <p>
+            So instead of a full BM25 index, a <strong>lexical channel</strong>: a literal <code>$contains</code>
+            lookup that fires <em>only</em> when the query contains an acronym or proper noun, detected by a
+            whitelist plus a "short and vowel-poor" heuristic. Result on the failing query:
+            <strong>0 → 3</strong> relevant entries in the final prompt, with the regression suite flat at
+            26/26 — no cost anywhere else.
         </p>
 
         <h3>Evaluation Methodology — how I measure progress</h3>
