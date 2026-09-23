@@ -15,13 +15,14 @@ os.chdir(ROOT)
 TITLES = {
     'moto': ('Motoryzacja', 'ecommerce_bot.py', 'Oryginalny zestaw z debug.py (wynik opublikowany w czerwcu 2026), '
              'odtworzony 1:1 i przeliczony ponownie.'),
-    'elektro': ('Elektronika', 'elektro_bot.py', 'Zestaw napisany od nowa 23.09.2026 — oryginalny (169/183) zaginął. '
-                'Oczekiwane wyniki ustalone z reguł i katalogu demo przed pierwszym uruchomieniem.'),
+    'elektro': ('Elektronika', 'elektro_bot.py', 'Oryginalny zestaw 183 scenariuszy (listopad 2025), z którego pochodziło '
+                'publikowane wcześniej 169/183. Na obecnym kodzie: wynik poniżej; najbliższa odnaleziona wcześniejsza '
+                'wersja kodu dawała 168/183.'),
 }
 
 
 def latest(suite):
-    files = sorted(glob.glob(f'tests/scenarios/results_{suite}_*.json'))
+    files = sorted(glob.glob(f'tests/scenarios/results_{suite}_2*.json'))
     return json.load(open(files[-1], encoding='utf-8')) if files else None
 
 

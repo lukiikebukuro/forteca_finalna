@@ -339,8 +339,8 @@
         <p class="doc-subtitle">
             LDI is a real-time classification engine that identifies purchase intent in e-commerce
             search queries — before the user presses Enter. This document explains the architecture
-            behind 91% accuracy on its original domain (automotive, 91/100) and 89.5% after being
-            moved to a new one (electronics, 94/105) — by rebuilding the domain knowledge layer, not the core.
+            behind 91% accuracy on its original domain (automotive, 91/100) and 91.3% after being
+            moved to a new one (electronics, 167/183) — by rebuilding the domain knowledge layer, not the core.
             Both measured 23.09.2026; scenarios and scripts are in the repository.
         </p>
         <div class="doc-meta">
@@ -357,8 +357,8 @@
             <div class="stat-label">Automotive accuracy<br>91/100 test scenarios</div>
         </div>
         <div class="stat-item">
-            <div class="stat-value">89.5%</div>
-            <div class="stat-label">Electronics accuracy<br>94/105 — new domain knowledge layer</div>
+            <div class="stat-value">91.3%</div>
+            <div class="stat-label">Electronics accuracy<br>167/183 — new domain knowledge layer</div>
         </div>
         <div class="stat-item">
             <div class="stat-value gold">1.0 / 0.8</div>
@@ -721,11 +721,10 @@
         </p>
         <div class="callout">
             <p>
-                <strong>Electronics test suite: 94/105 scenarios passed (89.5%)</strong> —
-                close to the automotive result, with the same validator, reward engine and session
-                consolidation. The original electronics suite (169/183) was lost with the tool that ran it,
-                so this one was rewritten from scratch in September 2026 — expected answers fixed from
-                rules and the demo catalog before the first run.
+                <strong>Electronics test suite: 167/183 scenarios passed (91.3%)</strong> —
+                on par with the automotive result, with the same validator, reward engine and session
+                consolidation. Same 183-scenario suite that earlier produced the published 169/183;
+                re-run on the current code on 23.09.2026.
             </p>
         </div>
 

@@ -22,7 +22,8 @@ os.chdir(ROOT)
 
 SUITES = {
     'moto': ('tests/scenarios/moto_100.json', 'ecommerce_bot'),
-    'elektro': ('tests/scenarios/elektro.json', 'elektro_bot'),
+    'elektro': ('tests/scenarios/elektro_183.json', 'elektro_bot'),
+    'elektro_105': ('tests/scenarios/elektro_105_2026-09.json', 'elektro_bot'),
 }
 
 
@@ -32,6 +33,8 @@ BUSINESS = {'HIGH': 'SPRZEDAŻ', 'MEDIUM': 'SPRZEDAŻ', 'LOW': 'STRACONY KLIENT'
 DASHBOARD = {
     'moto': {'HIGH': 'SPRZEDAŻ', 'MEDIUM': 'ODFILTROWANE', 'LOW': 'STRACONY KLIENT',
              'NO_MATCH': 'ZAPYTANIE O ROZSZERZENIE OFERTY'},
+    'elektro_105': {'HIGH': 'SPRZEDAŻ', 'MEDIUM': 'SPRZEDAŻ', 'LOW': 'STRACONY KLIENT',
+                    'NO_MATCH': 'ZAPYTANIE O ROZSZERZENIE OFERTY'},
     'elektro': {'HIGH': 'SPRZEDAŻ', 'MEDIUM': 'SPRZEDAŻ', 'LOW': 'STRACONY KLIENT',
                 'NO_MATCH': 'ZAPYTANIE O ROZSZERZENIE OFERTY'},
 }

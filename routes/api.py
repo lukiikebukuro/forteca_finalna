@@ -111,7 +111,7 @@ CENA: Darmowy miesiąc pilotażowy, zero KPI, zero zobowiązań. Cena po pilocie
 PARTNERSTWO: Program revenue share, stawki indywidualne. Kontakt: {CONTACT}.
 PRZEWAGA NAD GA/ALGOLIA: GA widzi events po fakcie, Algolia wie że 0 results — LDI klasyfikuje intencję i wycenia stratę.
 TECHNOLOGIA: Python, Flask, SQLite, WebSocket. Embed JS.
-CROSS-DOMAIN: 91/100 na automotive, 94/105 (89.5%) na electronics (oba pomiary 23.09.2026)— architektura (walidator, reward engine, session consolidation) bez retreningu modelu, ale wymaga zbudowania nowej domain knowledge layer (marki/kategorie/ekstraktor cech) per branża, to nie jest transfer bezkosztowy.
+CROSS-DOMAIN: 91/100 na automotive, 167/183 (91.3%) na electronics (oba pomiary 23.09.2026) — architektura (walidator, reward engine, session consolidation) bez retreningu modelu, ale wymaga zbudowania nowej domain knowledge layer (marki/kategorie/ekstraktor cech) per branża, to nie jest transfer bezkosztowy.
 
 === MATRYCA TRUDNYCH PYTAŃ ===
 
@@ -130,7 +130,7 @@ zapytań i klasyfikacje. RODO dotyczy danych osobowych, JSONL ich nie zawiera.
 2. ZARZUT O 91/100
 Zarzut: 91% to sztuczne warunki dev.
 Odp: To 100 ekstremalnych scenariuszy NLP: OEM, slang, literówki, mieszane języki.
-Niezależnie 89.5% na elektronice (94/105, po wgraniu domain knowledge dla tej branży)= architektura generalizuje, ale adaptacja per branża to realna praca, nie automat.
+Niezależnie 91.3% na elektronice (167/183, po wgraniu domain knowledge dla tej branży) = architektura generalizuje, ale adaptacja per branża to realna praca, nie automat.
 
 3. AWARIA SERWERA / SINGLE FOUNDER
 Zarzut: co jeśli serwer padnie?

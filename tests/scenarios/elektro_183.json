@@ -1,0 +1,1288 @@
+{
+ "suite": "elektro",
+ "source": "Projects/elektronika/debug.py (listopad 2025) — oryginalny zestaw, z którego pochodziło publikowane 169/183; przeniesione 2026-09-23",
+ "grading": "HIGH|MEDIUM=SPRZEDAŻ, LOW=STRACONY KLIENT, NO_MATCH=ZAPYTANIE O ROZSZERZENIE OFERTY (w oryginale: UTRACONY POPYT)",
+ "scenarios": [
+  {
+   "id": 1,
+   "group": "PODSTAWOWA SPRZEDAŻ - TELEFONY",
+   "query": "iphone 13 128gb",
+   "expected": "SPRZEDAŻ",
+   "note": "3599 zł - bestseller"
+  },
+  {
+   "id": 2,
+   "group": "PODSTAWOWA SPRZEDAŻ - TELEFONY",
+   "query": "samsung galaxy s23",
+   "expected": "SPRZEDAŻ",
+   "note": "3699 zł - android top"
+  },
+  {
+   "id": 3,
+   "group": "PODSTAWOWA SPRZEDAŻ - TELEFONY",
+   "query": "pixel 8 256gb",
+   "expected": "SPRZEDAŻ",
+   "note": "3699 zł - google phone"
+  },
+  {
+   "id": 4,
+   "group": "PODSTAWOWA SPRZEDAŻ - TELEFONY",
+   "query": "iphone 14 256gb",
+   "expected": "SPRZEDAŻ",
+   "note": "4599 zł - flagship"
+  },
+  {
+   "id": 5,
+   "group": "PODSTAWOWA SPRZEDAŻ - TELEFONY",
+   "query": "xiaomi 13 pro",
+   "expected": "SPRZEDAŻ",
+   "note": "3499 zł - chiński premium"
+  },
+  {
+   "id": 6,
+   "group": "PODSTAWOWA SPRZEDAŻ - TELEFONY",
+   "query": "galaxy s24 512gb",
+   "expected": "SPRZEDAŻ",
+   "note": "4799 zł - max storage"
+  },
+  {
+   "id": 7,
+   "group": "PODSTAWOWA SPRZEDAŻ - TELEFONY",
+   "query": "iphone 15 128gb",
+   "expected": "SPRZEDAŻ",
+   "note": "4799 zł - najnowszy"
+  },
+  {
+   "id": 8,
+   "group": "PODSTAWOWA SPRZEDAŻ - TELEFONY",
+   "query": "pixel 8 128gb",
+   "expected": "SPRZEDAŻ",
+   "note": "3299 zł - czysty android"
+  },
+  {
+   "id": 9,
+   "group": "PODSTAWOWA SPRZEDAŻ - TELEFONY",
+   "query": "samsung s23 256gb",
+   "expected": "SPRZEDAŻ",
+   "note": "3999 zł - dobrze sprzedający"
+  },
+  {
+   "id": 10,
+   "group": "PODSTAWOWA SPRZEDAŻ - TELEFONY",
+   "query": "xiaomi 14 256gb",
+   "expected": "SPRZEDAŻ",
+   "note": "3899 zł - nowa seria"
+  },
+  {
+   "id": 11,
+   "group": "PODSTAWOWA SPRZEDAŻ - LAPTOPY",
+   "query": "macbook air m2",
+   "expected": "SPRZEDAŻ",
+   "note": "5799 zł - apple ultrabook"
+  },
+  {
+   "id": 12,
+   "group": "PODSTAWOWA SPRZEDAŻ - LAPTOPY",
+   "query": "dell xps 13 16gb",
+   "expected": "SPRZEDAŻ",
+   "note": "5999 zł - windows premium"
+  },
+  {
+   "id": 13,
+   "group": "PODSTAWOWA SPRZEDAŻ - LAPTOPY",
+   "query": "thinkpad t14 8gb",
+   "expected": "SPRZEDAŻ",
+   "note": "4299 zł - biznesowy"
+  },
+  {
+   "id": 14,
+   "group": "PODSTAWOWA SPRZEDAŻ - LAPTOPY",
+   "query": "macbook pro m3",
+   "expected": "SPRZEDAŻ",
+   "note": "9999 zł - pro power"
+  },
+  {
+   "id": 15,
+   "group": "PODSTAWOWA SPRZEDAŻ - LAPTOPY",
+   "query": "asus zenbook 16gb",
+   "expected": "SPRZEDAŻ",
+   "note": "5299 zł - oled screen"
+  },
+  {
+   "id": 16,
+   "group": "PODSTAWOWA SPRZEDAŻ - LAPTOPY",
+   "query": "lenovo thinkpad 16gb",
+   "expected": "SPRZEDAŻ",
+   "note": "5499 zł - upgrade"
+  },
+  {
+   "id": 17,
+   "group": "PODSTAWOWA SPRZEDAŻ - LAPTOPY",
+   "query": "hp elitebook 840",
+   "expected": "SPRZEDAŻ",
+   "note": "6299 zł - business class"
+  },
+  {
+   "id": 18,
+   "group": "PODSTAWOWA SPRZEDAŻ - LAPTOPY",
+   "query": "dell xps 15 32gb",
+   "expected": "SPRZEDAŻ",
+   "note": "9999 zł - workstation"
+  },
+  {
+   "id": 19,
+   "group": "PODSTAWOWA SPRZEDAŻ - LAPTOPY",
+   "query": "macbook air 16gb",
+   "expected": "SPRZEDAŻ",
+   "note": "7599 zł - więcej ram"
+  },
+  {
+   "id": 20,
+   "group": "PODSTAWOWA SPRZEDAŻ - LAPTOPY",
+   "query": "asus rog 32gb",
+   "expected": "SPRZEDAŻ",
+   "note": "8999 zł - gaming beast"
+  },
+  {
+   "id": 21,
+   "group": "PODSTAWOWA SPRZEDAŻ - TELEWIZORY I SŁUCHAWKI",
+   "query": "samsung 55 cali qled",
+   "expected": "SPRZEDAŻ",
+   "note": "3499 zł - średni TV"
+  },
+  {
+   "id": 22,
+   "group": "PODSTAWOWA SPRZEDAŻ - TELEWIZORY I SŁUCHAWKI",
+   "query": "lg 55 oled",
+   "expected": "SPRZEDAŻ",
+   "note": "5499 zł - oled jakość"
+  },
+  {
+   "id": 23,
+   "group": "PODSTAWOWA SPRZEDAŻ - TELEWIZORY I SŁUCHAWKI",
+   "query": "sony 65 4k",
+   "expected": "SPRZEDAŻ",
+   "note": "6999 zł - sony quality"
+  },
+  {
+   "id": 24,
+   "group": "PODSTAWOWA SPRZEDAŻ - TELEWIZORY I SŁUCHAWKI",
+   "query": "tcl 43 cale",
+   "expected": "SPRZEDAŻ",
+   "note": "1699 zł - budżetowy"
+  },
+  {
+   "id": 25,
+   "group": "PODSTAWOWA SPRZEDAŻ - TELEWIZORY I SŁUCHAWKI",
+   "query": "sony wh-1000xm5",
+   "expected": "SPRZEDAŻ",
+   "note": "1599 zł - top anc"
+  },
+  {
+   "id": 26,
+   "group": "PODSTAWOWA SPRZEDAŻ - TELEWIZORY I SŁUCHAWKI",
+   "query": "airpods pro 2",
+   "expected": "SPRZEDAŻ",
+   "note": "1199 zł - apple tws"
+  },
+  {
+   "id": 27,
+   "group": "PODSTAWOWA SPRZEDAŻ - TELEWIZORY I SŁUCHAWKI",
+   "query": "bose quietcomfort 45",
+   "expected": "SPRZEDAŻ",
+   "note": "1399 zł - bose anc"
+  },
+  {
+   "id": 28,
+   "group": "PODSTAWOWA SPRZEDAŻ - TELEWIZORY I SŁUCHAWKI",
+   "query": "jbl tune 510bt",
+   "expected": "SPRZEDAŻ",
+   "note": "199 zł - budżet bt"
+  },
+  {
+   "id": 29,
+   "group": "PODSTAWOWA SPRZEDAŻ - TELEWIZORY I SŁUCHAWKI",
+   "query": "sennheiser momentum 4",
+   "expected": "SPRZEDAŻ",
+   "note": "1499 zł - audiofil"
+  },
+  {
+   "id": 30,
+   "group": "PODSTAWOWA SPRZEDAŻ - TELEWIZORY I SŁUCHAWKI",
+   "query": "jabra elite 85h",
+   "expected": "SPRZEDAŻ",
+   "note": "899 zł - solid choice"
+  },
+  {
+   "id": 31,
+   "group": "LITERÓWKI PODSTAWOWE - TELEFONY",
+   "query": "ajfon 13 128gb",
+   "expected": "SPRZEDAŻ",
+   "note": "3599 zł - literówka iPhone"
+  },
+  {
+   "id": 32,
+   "group": "LITERÓWKI PODSTAWOWE - TELEFONY",
+   "query": "sumsung galaxy s23",
+   "expected": "SPRZEDAŻ",
+   "note": "3699 zł - literówka Samsung"
+  },
+  {
+   "id": 33,
+   "group": "LITERÓWKI PODSTAWOWE - TELEFONY",
+   "query": "iphone 13 128g",
+   "expected": "SPRZEDAŻ",
+   "note": "3599 zł - bez 'b'"
+  },
+  {
+   "id": 34,
+   "group": "LITERÓWKI PODSTAWOWE - TELEFONY",
+   "query": "samsun s24 256gb",
+   "expected": "SPRZEDAŻ",
+   "note": "4299 zł - brak 'g'"
+  },
+  {
+   "id": 35,
+   "group": "LITERÓWKI PODSTAWOWE - TELEFONY",
+   "query": "pixel 8 256g",
+   "expected": "SPRZEDAŻ",
+   "note": "3699 zł - skrócone GB"
+  },
+  {
+   "id": 36,
+   "group": "LITERÓWKI PODSTAWOWE - TELEFONY",
+   "query": "ajfon 14 256",
+   "expected": "SPRZEDAŻ",
+   "note": "4599 zł - bez GB"
+  },
+  {
+   "id": 37,
+   "group": "LITERÓWKI PODSTAWOWE - TELEFONY",
+   "query": "galexy s23 128gb",
+   "expected": "SPRZEDAŻ",
+   "note": "3699 zł - galaxy typo"
+  },
+  {
+   "id": 38,
+   "group": "LITERÓWKI PODSTAWOWE - TELEFONY",
+   "query": "iphone13 128gb",
+   "expected": "SPRZEDAŻ",
+   "note": "3599 zł - bez spacji"
+  },
+  {
+   "id": 39,
+   "group": "LITERÓWKI PODSTAWOWE - TELEFONY",
+   "query": "samsung galaxys24",
+   "expected": "SPRZEDAŻ",
+   "note": "4299 zł - bez spacji"
+  },
+  {
+   "id": 40,
+   "group": "LITERÓWKI PODSTAWOWE - TELEFONY",
+   "query": "ipone 15 128gb",
+   "expected": "SPRZEDAŻ",
+   "note": "4799 zł - brak 'h'"
+  },
+  {
+   "id": 41,
+   "group": "LITERÓWKI TRUDNE - PODWÓJNE LITERY",
+   "query": "iphonne 13",
+   "expected": "SPRZEDAŻ",
+   "note": "3599 zł - podwójne 'n'"
+  },
+  {
+   "id": 42,
+   "group": "LITERÓWKI TRUDNE - PODWÓJNE LITERY",
+   "query": "samsungg s23",
+   "expected": "SPRZEDAŻ",
+   "note": "3699 zł - podwójne 'g'"
+  },
+  {
+   "id": 43,
+   "group": "LITERÓWKI TRUDNE - PODWÓJNE LITERY",
+   "query": "macbookk air",
+   "expected": "SPRZEDAŻ",
+   "note": "5799 zł - podwójne 'k'"
+  },
+  {
+   "id": 44,
+   "group": "LITERÓWKI TRUDNE - PODWÓJNE LITERY",
+   "query": "labtop dell",
+   "expected": "SPRZEDAŻ",
+   "note": "5999 zł - laptop typo"
+  },
+  {
+   "id": 45,
+   "group": "LITERÓWKI TRUDNE - PODWÓJNE LITERY",
+   "query": "słuchy sony",
+   "expected": "SPRZEDAŻ",
+   "note": "1599 zł - slang słuchawki"
+  },
+  {
+   "id": 46,
+   "group": "LITERÓWKI TRUDNE - PODWÓJNE LITERY",
+   "query": "telewizorr samsung",
+   "expected": "SPRZEDAŻ",
+   "note": "3499 zł - podwójne 'r'"
+  },
+  {
+   "id": 47,
+   "group": "LITERÓWKI TRUDNE - PODWÓJNE LITERY",
+   "query": "airpodss pro",
+   "expected": "SPRZEDAŻ",
+   "note": "1199 zł - podwójne 's'"
+  },
+  {
+   "id": 48,
+   "group": "LITERÓWKI TRUDNE - PODWÓJNE LITERY",
+   "query": "thinkpadd t14",
+   "expected": "SPRZEDAŻ",
+   "note": "4299 zł - podwójne 'd'"
+  },
+  {
+   "id": 49,
+   "group": "LITERÓWKI TRUDNE - PODWÓJNE LITERY",
+   "query": "pixell 8",
+   "expected": "SPRZEDAŻ",
+   "note": "3299 zł - podwójne 'l'"
+  },
+  {
+   "id": 50,
+   "group": "LITERÓWKI TRUDNE - PODWÓJNE LITERY",
+   "query": "xiaomii 14",
+   "expected": "SPRZEDAŻ",
+   "note": "3899 zł - podwójne 'i'"
+  },
+  {
+   "id": 51,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "telefon do 4000 zł",
+   "expected": "SPRZEDAŻ",
+   "note": "3699 zł - budżet query"
+  },
+  {
+   "id": 52,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "laptop do pracy",
+   "expected": "SPRZEDAŻ",
+   "note": "4299 zł - use case"
+  },
+  {
+   "id": 53,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "słuchawki z anc",
+   "expected": "SPRZEDAŻ",
+   "note": "1599 zł - feature query"
+  },
+  {
+   "id": 54,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "tv 55 cali",
+   "expected": "SPRZEDAŻ",
+   "note": "3499 zł - rozmiar query"
+  },
+  {
+   "id": 55,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "iphone dla syna",
+   "expected": "SPRZEDAŻ",
+   "note": "3599 zł - kontekst osoby"
+  },
+  {
+   "id": 56,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "macbook na studia",
+   "expected": "SPRZEDAŻ",
+   "note": "5799 zł - use case edu"
+  },
+  {
+   "id": 57,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "samsung galaxy nowy",
+   "expected": "SPRZEDAŻ",
+   "note": "4299 zł - przymiotnik"
+  },
+  {
+   "id": 58,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "bezprzewodowe słuchawki",
+   "expected": "SPRZEDAŻ",
+   "note": "1199 zł - feature"
+  },
+  {
+   "id": 59,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "laptop 16gb ram",
+   "expected": "SPRZEDAŻ",
+   "note": "5499 zł - specyfikacja"
+  },
+  {
+   "id": 60,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "oled telewizor",
+   "expected": "SPRZEDAŻ",
+   "note": "5499 zł - technologia"
+  },
+  {
+   "id": 61,
+   "group": "SLANG UŻYTKOWNIKÓW",
+   "query": "ajfony",
+   "expected": "SPRZEDAŻ",
+   "note": "3599 zł - plural slang"
+  },
+  {
+   "id": 62,
+   "group": "SLANG UŻYTKOWNIKÓW",
+   "query": "maczek air",
+   "expected": "SPRZEDAŻ",
+   "note": "5799 zł - macbook slang"
+  },
+  {
+   "id": 63,
+   "group": "SLANG UŻYTKOWNIKÓW",
+   "query": "eyrpods",
+   "expected": "SPRZEDAŻ",
+   "note": "1199 zł - airpods typo"
+  },
+  {
+   "id": 64,
+   "group": "SLANG UŻYTKOWNIKÓW",
+   "query": "samsungowy telefon",
+   "expected": "SPRZEDAŻ",
+   "note": "3699 zł - przymiotnik"
+  },
+  {
+   "id": 65,
+   "group": "SLANG UŻYTKOWNIKÓW",
+   "query": "sony słuchaweczki",
+   "expected": "SPRZEDAŻ",
+   "note": "1599 zł - zdrobnienie"
+  },
+  {
+   "id": 66,
+   "group": "SLANG UŻYTKOWNIKÓW",
+   "query": "tivi samsung",
+   "expected": "SPRZEDAŻ",
+   "note": "3499 zł - TV slang"
+  },
+  {
+   "id": 67,
+   "group": "SLANG UŻYTKOWNIKÓW",
+   "query": "komp lenovo",
+   "expected": "SPRZEDAŻ",
+   "note": "4299 zł - komputer skrót"
+  },
+  {
+   "id": 68,
+   "group": "SLANG UŻYTKOWNIKÓW",
+   "query": "pixelki google",
+   "expected": "SPRZEDAŻ",
+   "note": "3299 zł - zdrobnienie"
+  },
+  {
+   "id": 69,
+   "group": "SLANG UŻYTKOWNIKÓW",
+   "query": "airdopy",
+   "expected": "SPRZEDAŻ",
+   "note": "1199 zł - airpods slang"
+  },
+  {
+   "id": 70,
+   "group": "SLANG UŻYTKOWNIKÓW",
+   "query": "beaty sony",
+   "expected": "SPRZEDAŻ",
+   "note": "1599 zł - beats typo"
+  },
+  {
+   "id": 71,
+   "group": "MIESZANE JĘZYKI",
+   "query": "smartphone samsung",
+   "expected": "SPRZEDAŻ",
+   "note": "3699 zł - angielski"
+  },
+  {
+   "id": 72,
+   "group": "MIESZANE JĘZYKI",
+   "query": "laptop dell",
+   "expected": "SPRZEDAŻ",
+   "note": "5999 zł - angielski"
+  },
+  {
+   "id": 73,
+   "group": "MIESZANE JĘZYKI",
+   "query": "headphones sony",
+   "expected": "SPRZEDAŻ",
+   "note": "1599 zł - słuchawki EN"
+  },
+  {
+   "id": 74,
+   "group": "MIESZANE JĘZYKI",
+   "query": "television lg",
+   "expected": "SPRZEDAŻ",
+   "note": "5499 zł - telewizor EN"
+  },
+  {
+   "id": 75,
+   "group": "MIESZANE JĘZYKI",
+   "query": "handy iphone",
+   "expected": "SPRZEDAŻ",
+   "note": "3599 zł - niemiecki telefon"
+  },
+  {
+   "id": 76,
+   "group": "MIESZANE JĘZYKI",
+   "query": "ordinateur macbook",
+   "expected": "SPRZEDAŻ",
+   "note": "5799 zł - francuski laptop"
+  },
+  {
+   "id": 77,
+   "group": "MIESZANE JĘZYKI",
+   "query": "auriculares bose",
+   "expected": "SPRZEDAŻ",
+   "note": "1399 zł - hiszpański słuchawki"
+  },
+  {
+   "id": 78,
+   "group": "MIESZANE JĘZYKI",
+   "query": "telefono xiaomi",
+   "expected": "SPRZEDAŻ",
+   "note": "3499 zł - włoski telefon"
+  },
+  {
+   "id": 79,
+   "group": "MIESZANE JĘZYKI",
+   "query": "notebook asus",
+   "expected": "SPRZEDAŻ",
+   "note": "5299 zł - EN laptop"
+  },
+  {
+   "id": 80,
+   "group": "MIESZANE JĘZYKI",
+   "query": "tv sony",
+   "expected": "SPRZEDAŻ",
+   "note": "2799 zł - skrót międzynarodowy"
+  },
+  {
+   "id": 81,
+   "group": "SPECYFIKACJE TECHNICZNE",
+   "query": "128gb iphone",
+   "expected": "SPRZEDAŻ",
+   "note": "3599 zł - pamięć query"
+  },
+  {
+   "id": 82,
+   "group": "SPECYFIKACJE TECHNICZNE",
+   "query": "16gb ram laptop",
+   "expected": "SPRZEDAŻ",
+   "note": "5499 zł - RAM query"
+  },
+  {
+   "id": 83,
+   "group": "SPECYFIKACJE TECHNICZNE",
+   "query": "55 cali samsung",
+   "expected": "SPRZEDAŻ",
+   "note": "3499 zł - przekątna"
+  },
+  {
+   "id": 84,
+   "group": "SPECYFIKACJE TECHNICZNE",
+   "query": "anc słuchawki",
+   "expected": "SPRZEDAŻ",
+   "note": "1599 zł - feature akronim"
+  },
+  {
+   "id": 85,
+   "group": "SPECYFIKACJE TECHNICZNE",
+   "query": "m2 macbook",
+   "expected": "SPRZEDAŻ",
+   "note": "5799 zł - procesor query"
+  },
+  {
+   "id": 86,
+   "group": "SPECYFIKACJE TECHNICZNE",
+   "query": "4k telewizor",
+   "expected": "SPRZEDAŻ",
+   "note": "3499 zł - rozdzielczość"
+  },
+  {
+   "id": 87,
+   "group": "SPECYFIKACJE TECHNICZNE",
+   "query": "256gb samsung",
+   "expected": "SPRZEDAŻ",
+   "note": "3999 zł - storage query"
+  },
+  {
+   "id": 88,
+   "group": "SPECYFIKACJE TECHNICZNE",
+   "query": "oled lg",
+   "expected": "SPRZEDAŻ",
+   "note": "5499 zł - technologia display"
+  },
+  {
+   "id": 89,
+   "group": "SPECYFIKACJE TECHNICZNE",
+   "query": "bluetooth słuchawki",
+   "expected": "SPRZEDAŻ",
+   "note": "199 zł - connectivity"
+  },
+  {
+   "id": 90,
+   "group": "SPECYFIKACJE TECHNICZNE",
+   "query": "qled samsung",
+   "expected": "SPRZEDAŻ",
+   "note": "3499 zł - panel type"
+  },
+  {
+   "id": 91,
+   "group": "UTRACONY POPYT - iPhone BRAKUJĄCE MODELE",
+   "query": "iphone 13 1tb",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nie istnieje taka pojemność!"
+  },
+  {
+   "id": 92,
+   "group": "UTRACONY POPYT - iPhone BRAKUJĄCE MODELE",
+   "query": "iphone 13 32gb",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - za mała pamięć, wycofana"
+  },
+  {
+   "id": 93,
+   "group": "UTRACONY POPYT - iPhone BRAKUJĄCE MODELE",
+   "query": "iphone 14 1tb",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nieistniejąca wersja"
+  },
+  {
+   "id": 94,
+   "group": "UTRACONY POPYT - iPhone BRAKUJĄCE MODELE",
+   "query": "iphone 14 64gb",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nie oferujemy tej wersji"
+  },
+  {
+   "id": 95,
+   "group": "UTRACONY POPYT - iPhone BRAKUJĄCE MODELE",
+   "query": "iphone 15 512gb",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nie mamy w stocku"
+  },
+  {
+   "id": 96,
+   "group": "UTRACONY POPYT - iPhone BRAKUJĄCE MODELE",
+   "query": "iphone 15 1tb",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - za droga wersja"
+  },
+  {
+   "id": 97,
+   "group": "UTRACONY POPYT - iPhone BRAKUJĄCE MODELE",
+   "query": "iphone 16 128gb",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - za nowy model"
+  },
+  {
+   "id": 98,
+   "group": "UTRACONY POPYT - iPhone BRAKUJĄCE MODELE",
+   "query": "iphone 16 256gb",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nie prowadzimy jeszcze"
+  },
+  {
+   "id": 99,
+   "group": "UTRACONY POPYT - iPhone BRAKUJĄCE MODELE",
+   "query": "iphone 12 512gb",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - stary model wyprzedany"
+  },
+  {
+   "id": 100,
+   "group": "UTRACONY POPYT - iPhone BRAKUJĄCE MODELE",
+   "query": "iphone se 256gb",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nie mamy SE w tej pamięci"
+  },
+  {
+   "id": 101,
+   "group": "UTRACONY POPYT - Samsung BRAKUJĄCE MODELE",
+   "query": "samsung s23 512gb",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nie mamy tej pojemności"
+  },
+  {
+   "id": 102,
+   "group": "UTRACONY POPYT - Samsung BRAKUJĄCE MODELE",
+   "query": "samsung s23 1tb",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nieistniejąca wersja"
+  },
+  {
+   "id": 103,
+   "group": "UTRACONY POPYT - Samsung BRAKUJĄCE MODELE",
+   "query": "samsung s24 1tb",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - za droga konfiguracja"
+  },
+  {
+   "id": 104,
+   "group": "UTRACONY POPYT - Samsung BRAKUJĄCE MODELE",
+   "query": "samsung s25 256gb",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - za nowy, nie ma jeszcze"
+  },
+  {
+   "id": 105,
+   "group": "UTRACONY POPYT - Samsung BRAKUJĄCE MODELE",
+   "query": "samsung z fold 5",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nie prowadzimy foldów"
+  },
+  {
+   "id": 106,
+   "group": "UTRACONY POPYT - KOLORY KTÓRYCH NIE MAMY",
+   "query": "iphone 13 128gb różowy",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - mamy Starlight, nie mamy Pink"
+  },
+  {
+   "id": 107,
+   "group": "UTRACONY POPYT - KOLORY KTÓRYCH NIE MAMY",
+   "query": "iphone 14 256gb żółty",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - mamy Purple, nie mamy Yellow"
+  },
+  {
+   "id": 108,
+   "group": "UTRACONY POPYT - KOLORY KTÓRYCH NIE MAMY",
+   "query": "samsung s23 256gb zielony",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - mamy Cream, nie mamy Green"
+  },
+  {
+   "id": 109,
+   "group": "UTRACONY POPYT - LAPTOPY BRAKUJĄCE KONFIGURACJE",
+   "query": "macbook air m2 32gb",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nie istnieje 32GB w Air"
+  },
+  {
+   "id": 110,
+   "group": "UTRACONY POPYT - LAPTOPY BRAKUJĄCE KONFIGURACJE",
+   "query": "dell xps 13 64gb ram",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - za dużo RAM, nie mamy"
+  },
+  {
+   "id": 111,
+   "group": "UTRACONY POPYT - LAPTOPY BRAKUJĄCE KONFIGURACJE",
+   "query": "thinkpad t14 32gb ram",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nie oferujemy 32GB"
+  },
+  {
+   "id": 112,
+   "group": "UTRACONY POPYT - LAPTOPY BRAKUJĄCE KONFIGURACJE",
+   "query": "macbook pro m3 64gb",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - max to 32GB, nie mamy"
+  },
+  {
+   "id": 113,
+   "group": "UTRACONY POPYT - LAPTOPY BRAKUJĄCE KONFIGURACJE",
+   "query": "dell xps 13 4gb ram",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - za mało, wycofane"
+  },
+  {
+   "id": 114,
+   "group": "UTRACONY POPYT - LAPTOPY BRAKUJĄCE KONFIGURACJE",
+   "query": "macbook air m1 16gb",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - stara generacja M1"
+  },
+  {
+   "id": 115,
+   "group": "UTRACONY POPYT - LAPTOPY BRAKUJĄCE KONFIGURACJE",
+   "query": "thinkpad t14 4gb ram",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - za słaba konfiguracja"
+  },
+  {
+   "id": 116,
+   "group": "UTRACONY POPYT - SŁUCHAWKI NIEISTNIEJĄCE MODELE",
+   "query": "sony wh-1000xm6",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nie ma jeszcze XM6!"
+  },
+  {
+   "id": 117,
+   "group": "UTRACONY POPYT - SŁUCHAWKI NIEISTNIEJĄCE MODELE",
+   "query": "airpods pro 3",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nie istnieją Pro 3"
+  },
+  {
+   "id": 118,
+   "group": "UTRACONY POPYT - SŁUCHAWKI NIEISTNIEJĄCE MODELE",
+   "query": "airpods max 2",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nie ma drugiej generacji"
+  },
+  {
+   "id": 119,
+   "group": "UTRACONY POPYT - SŁUCHAWKI NIEISTNIEJĄCE MODELE",
+   "query": "bose quietcomfort 50",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nie istnieje QC50"
+  },
+  {
+   "id": 120,
+   "group": "UTRACONY POPYT - SŁUCHAWKI NIEISTNIEJĄCE MODELE",
+   "query": "sennheiser momentum 5",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - najnowsze to 4"
+  },
+  {
+   "id": 121,
+   "group": "UTRACONY POPYT - TELEWIZORY BRAKUJĄCE ROZMIARY",
+   "query": "samsung 85 cali qled",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - za duży, nie prowadzimy"
+  },
+  {
+   "id": 122,
+   "group": "UTRACONY POPYT - TELEWIZORY BRAKUJĄCE ROZMIARY",
+   "query": "lg 77 cali led",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nie mamy 77 w LED"
+  },
+  {
+   "id": 123,
+   "group": "UTRACONY POPYT - TELEWIZORY BRAKUJĄCE ROZMIARY",
+   "query": "sony 100 cali",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - gigant, nie oferujemy"
+  },
+  {
+   "id": 124,
+   "group": "UTRACONY POPYT - TELEWIZORY BRAKUJĄCE ROZMIARY",
+   "query": "samsung 32 cali oled",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - za mały na OLED"
+  },
+  {
+   "id": 125,
+   "group": "UTRACONY POPYT - TELEWIZORY BRAKUJĄCE ROZMIARY",
+   "query": "lg 55 cali 8k",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nie prowadzimy 8K"
+  },
+  {
+   "id": 126,
+   "group": "UTRACONY POPYT - INNE MARKI/PRODUKTY",
+   "query": "oneplus 12 pro",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nie prowadzimy OnePlus"
+  },
+  {
+   "id": 127,
+   "group": "UTRACONY POPYT - INNE MARKI/PRODUKTY",
+   "query": "huawei p60 pro",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nie mamy Huawei"
+  },
+  {
+   "id": 128,
+   "group": "UTRACONY POPYT - INNE MARKI/PRODUKTY",
+   "query": "oppo find x6",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nie prowadzimy Oppo"
+  },
+  {
+   "id": 129,
+   "group": "UTRACONY POPYT - INNE MARKI/PRODUKTY",
+   "query": "realme gt 5",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nie mamy Realme"
+  },
+  {
+   "id": 130,
+   "group": "UTRACONY POPYT - INNE MARKI/PRODUKTY",
+   "query": "microsoft surface laptop",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nie prowadzimy Surface"
+  },
+  {
+   "id": 131,
+   "group": "UTRACONY POPYT - INNE MARKI/PRODUKTY",
+   "query": "razer blade 15",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nie mamy Razer"
+  },
+  {
+   "id": 132,
+   "group": "UTRACONY POPYT - INNE MARKI/PRODUKTY",
+   "query": "alienware x17",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nie prowadzimy Alienware"
+  },
+  {
+   "id": 133,
+   "group": "UTRACONY POPYT - INNE MARKI/PRODUKTY",
+   "query": "beats studio pro",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - nie mamy Beats"
+  },
+  {
+   "id": 134,
+   "group": "NONSENS DO ODFILTROWANIA",
+   "query": "qwerty asdf",
+   "expected": "STRACONY KLIENT",
+   "note": "0 zł - klawiatura spam"
+  },
+  {
+   "id": 135,
+   "group": "NONSENS DO ODFILTROWANIA",
+   "query": "pizza hamburger",
+   "expected": "STRACONY KLIENT",
+   "note": "0 zł - jedzenie"
+  },
+  {
+   "id": 136,
+   "group": "NONSENS DO ODFILTROWANIA",
+   "query": "hello world",
+   "expected": "STRACONY KLIENT",
+   "note": "0 zł - programowanie"
+  },
+  {
+   "id": 137,
+   "group": "NONSENS DO ODFILTROWANIA",
+   "query": "asdfghjkl",
+   "expected": "STRACONY KLIENT",
+   "note": "0 zł - losowe znaki"
+  },
+  {
+   "id": 138,
+   "group": "NONSENS DO ODFILTROWANIA",
+   "query": "123456789",
+   "expected": "STRACONY KLIENT",
+   "note": "0 zł - same cyfry"
+  },
+  {
+   "id": 139,
+   "group": "EDGE CASES",
+   "query": "",
+   "expected": "STRACONY KLIENT",
+   "note": "0 zł - puste zapytanie"
+  },
+  {
+   "id": 140,
+   "group": "EDGE CASES",
+   "query": "a",
+   "expected": "STRACONY KLIENT",
+   "note": "0 zł - pojedyncza litera"
+  },
+  {
+   "id": 141,
+   "group": "EDGE CASES",
+   "query": "iphone",
+   "expected": "SPRZEDAŻ",
+   "note": "3599 zł - sama marka, pokaże listę"
+  },
+  {
+   "id": 142,
+   "group": "EDGE CASES",
+   "query": "samsung",
+   "expected": "SPRZEDAŻ",
+   "note": "3699 zł - sama marka"
+  },
+  {
+   "id": 143,
+   "group": "EDGE CASES",
+   "query": "laptop",
+   "expected": "SPRZEDAŻ",
+   "note": "4299 zł - sama kategoria"
+  },
+  {
+   "id": 144,
+   "group": "KOLORY IPHONE",
+   "query": "iphone 13 różowy",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - Pink"
+  },
+  {
+   "id": 145,
+   "group": "KOLORY IPHONE",
+   "query": "iphone 13 pink",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - Pink EN"
+  },
+  {
+   "id": 146,
+   "group": "KOLORY IPHONE",
+   "query": "iphone 13 zielony",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - Green"
+  },
+  {
+   "id": 147,
+   "group": "KOLORY IPHONE",
+   "query": "iphone 13 green",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - Green EN"
+  },
+  {
+   "id": 148,
+   "group": "KOLORY IPHONE",
+   "query": "iphone 13 czerwony",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - Red"
+  },
+  {
+   "id": 149,
+   "group": "KOLORY IPHONE",
+   "query": "iphone 13 midnight",
+   "expected": "SPRZEDAŻ",
+   "note": "3599 - Midnight"
+  },
+  {
+   "id": 150,
+   "group": "KOLORY IPHONE",
+   "query": "iphone 13 niebieski",
+   "expected": "SPRZEDAŻ",
+   "note": "3599 - Blue"
+  },
+  {
+   "id": 151,
+   "group": "KOLORY SAMSUNG",
+   "query": "samsung s23 zielony",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - Green"
+  },
+  {
+   "id": 152,
+   "group": "KOLORY SAMSUNG",
+   "query": "samsung s23 lime",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - Lime"
+  },
+  {
+   "id": 153,
+   "group": "KOLORY SAMSUNG",
+   "query": "samsung s23 lawendowy",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - Lavender"
+  },
+  {
+   "id": 154,
+   "group": "KOLORY SAMSUNG",
+   "query": "samsung s23 czarny",
+   "expected": "SPRZEDAŻ",
+   "note": "3699 - Black"
+  },
+  {
+   "id": 155,
+   "group": "KOLORY SAMSUNG",
+   "query": "samsung s23 kremowy",
+   "expected": "SPRZEDAŻ",
+   "note": "3999 - Cream"
+  },
+  {
+   "id": 156,
+   "group": "TECHNOLOGIE TV",
+   "query": "samsung oled 55",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - tylko QLED"
+  },
+  {
+   "id": 157,
+   "group": "TECHNOLOGIE TV",
+   "query": "lg qled 65",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - tylko OLED"
+  },
+  {
+   "id": 158,
+   "group": "TECHNOLOGIE TV",
+   "query": "sony oled 55",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - tylko LED"
+  },
+  {
+   "id": 159,
+   "group": "TECHNOLOGIE TV",
+   "query": "tcl oled 55",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - tylko QLED"
+  },
+  {
+   "id": 160,
+   "group": "TECHNOLOGIE TV",
+   "query": "lg oled 55",
+   "expected": "SPRZEDAŻ",
+   "note": "5499 - OLED"
+  },
+  {
+   "id": 161,
+   "group": "TECHNOLOGIE TV",
+   "query": "samsung qled 55",
+   "expected": "SPRZEDAŻ",
+   "note": "3499 - QLED"
+  },
+  {
+   "id": 162,
+   "group": "TECHNOLOGIE TV",
+   "query": "sony led 50",
+   "expected": "SPRZEDAŻ",
+   "note": "2799 - LED"
+  },
+  {
+   "id": 163,
+   "group": "TECHNOLOGIE TV",
+   "query": "tcl qled 55",
+   "expected": "SPRZEDAŻ",
+   "note": "2399 - QLED"
+  },
+  {
+   "id": 164,
+   "group": "ROZDZIELCZOŚĆ",
+   "query": "telewizor 8k samsung",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - 4K only"
+  },
+  {
+   "id": 165,
+   "group": "ROZDZIELCZOŚĆ",
+   "query": "tv 8k sony",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - 4K only"
+  },
+  {
+   "id": 166,
+   "group": "ROZDZIELCZOŚĆ",
+   "query": "tv 4k samsung",
+   "expected": "SPRZEDAŻ",
+   "note": "3499 - 4K"
+  },
+  {
+   "id": 167,
+   "group": "PROCESORY",
+   "query": "macbook air m1",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - M2/M3"
+  },
+  {
+   "id": 168,
+   "group": "PROCESORY",
+   "query": "macbook pro m1",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - M3"
+  },
+  {
+   "id": 169,
+   "group": "PROCESORY",
+   "query": "dell xps ryzen",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - Intel"
+  },
+  {
+   "id": 170,
+   "group": "PROCESORY",
+   "query": "asus rog ryzen",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - Intel"
+  },
+  {
+   "id": 171,
+   "group": "PROCESORY",
+   "query": "macbook air m2",
+   "expected": "SPRZEDAŻ",
+   "note": "5799 - M2"
+  },
+  {
+   "id": 172,
+   "group": "PROCESORY",
+   "query": "macbook pro m3",
+   "expected": "SPRZEDAŻ",
+   "note": "9999 - M3"
+  },
+  {
+   "id": 173,
+   "group": "KARTY GRAFICZNE",
+   "query": "laptop rtx 4090",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - 4070 max"
+  },
+  {
+   "id": 174,
+   "group": "KARTY GRAFICZNE",
+   "query": "laptop rtx 3060",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - old gen"
+  },
+  {
+   "id": 175,
+   "group": "KARTY GRAFICZNE",
+   "query": "asus rog rtx 4070",
+   "expected": "SPRZEDAŻ",
+   "note": "8999 - 4070"
+  },
+  {
+   "id": 176,
+   "group": "KOMBINACJE",
+   "query": "iphone 13 128gb midnight",
+   "expected": "SPRZEDAŻ",
+   "note": "3599 - OK"
+  },
+  {
+   "id": 177,
+   "group": "KOMBINACJE",
+   "query": "iphone 13 128gb różowy",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - kolor"
+  },
+  {
+   "id": 178,
+   "group": "KOMBINACJE",
+   "query": "iphone 14 256gb purple",
+   "expected": "SPRZEDAŻ",
+   "note": "4599 - OK"
+  },
+  {
+   "id": 179,
+   "group": "KOMBINACJE",
+   "query": "iphone 14 256gb żółty",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - Yellow"
+  },
+  {
+   "id": 180,
+   "group": "KOMBINACJE",
+   "query": "samsung s24 256gb violet",
+   "expected": "SPRZEDAŻ",
+   "note": "4199 - OK"
+  },
+  {
+   "id": 181,
+   "group": "KOMBINACJE",
+   "query": "samsung s24 512gb zielony",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - Green"
+  },
+  {
+   "id": 182,
+   "group": "KOMBINACJE",
+   "query": "samsung s23 512gb black",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "Brak - pamięć"
+  },
+  {
+   "id": 183,
+   "group": "KOMBINACJE",
+   "query": "samsung s23 256gb cream",
+   "expected": "SPRZEDAŻ",
+   "note": "3999 - OK"
+  }
+ ]
+}
