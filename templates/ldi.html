@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LDI — Technical Architecture · Adept AI</title>
+    <title>LDI — Technical Architecture · Sedno Tech</title>
     <meta name="description" content="LDI: Lost Demand Intelligence. Real-time classification engine for e-commerce search queries.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -327,7 +327,7 @@
 <body>
 
 <nav>
-    <a href="/" class="nav-logo">Adept AI <span>·</span> Łukasz Piskorski</a>
+    <a href="/" class="nav-logo">Sedno Tech <span>·</span> Łukasz Piskorski</a>
     <a href="/" class="back-link">← Back to portfolio</a>
 </nav>
 
@@ -339,13 +339,14 @@
         <p class="doc-subtitle">
             LDI is a real-time classification engine that identifies purchase intent in e-commerce
             search queries — before the user presses Enter. This document explains the architecture
-            that reached 91% accuracy on a new product domain by rebuilding only the domain
-            knowledge layer — not by retraining the underlying model.
+            behind 91% accuracy on its original domain (automotive, 91/100) and 89.5% after being
+            moved to a new one (electronics, 94/105) — by rebuilding the domain knowledge layer, not the core.
+            Both measured 23.09.2026; scenarios and scripts are in the repository.
         </p>
         <div class="doc-meta">
-            <span>Author: Łukasz Piskorski / Adept AI</span>
-            <span>Version: 5.1 (Surgery Fixed)</span>
-            <span>Status: Production · Live Demo</span>
+            <span>Author: Łukasz Piskorski / Sedno Tech</span>
+            <span>Version: 5.1</span>
+            <span>Status: Live demo · not yet deployed in a store</span>
         </div>
     </header>
 
@@ -356,8 +357,8 @@
             <div class="stat-label">Automotive accuracy<br>91/100 test scenarios</div>
         </div>
         <div class="stat-item">
-            <div class="stat-value">92.3%</div>
-            <div class="stat-label">Electronics accuracy<br>169/183 — new domain knowledge layer</div>
+            <div class="stat-value">89.5%</div>
+            <div class="stat-label">Electronics accuracy<br>94/105 — new domain knowledge layer</div>
         </div>
         <div class="stat-item">
             <div class="stat-value gold">1.0 / 0.8</div>
@@ -449,7 +450,7 @@
 
         <h3>The problem with raw query logs</h3>
         <p>
-            E-commerce search logs are 60-70% noise: keyboard mashing (<code>asdfgh</code>),
+            E-commerce search logs contain a lot of noise: keyboard mashing (<code>asdfgh</code>),
             incomplete prefixes (<code>ip</code>), food queries on an auto parts store (<code>pizza</code>),
             and hallucinated products (<code>iPhone 30</code>).
         </p>
@@ -493,7 +494,7 @@
     <!-- SECTION III -->
     <section class="doc-section">
         <p class="section-num">III.</p>
-        <h2>Universal Automotive Knowledge: ~980 entities, zero hallucinations</h2>
+        <h2>Universal Automotive Knowledge: ~980 curated entities</h2>
 
         <h3>The domain knowledge layer</h3>
         <p>
@@ -720,10 +721,11 @@
         </p>
         <div class="callout">
             <p>
-                <strong>Electronics test suite: 169/183 scenarios passed (92.3%)</strong> —
-                marginally <em>higher</em> than the automotive benchmark, on a domain the system
-                had never seen before. Evidence that the validator, reward engine, session
-                consolidation, and feature-extraction core are genuinely domain-agnostic.
+                <strong>Electronics test suite: 94/105 scenarios passed (89.5%)</strong> —
+                close to the automotive result, with the same validator, reward engine and session
+                consolidation. The original electronics suite (169/183) was lost with the tool that ran it,
+                so this one was rewritten from scratch in September 2026 — expected answers fixed from
+                rules and the demo catalog before the first run.
             </p>
         </div>
 
@@ -794,7 +796,7 @@
             <p>
                 The 9 failures are documented. Most are edge cases in mechanic slang variants,
                 rare technical specifications, and Polish morphology edge cases. They're on the roadmap — not blockers.
-                <a href="/ldi-tests" style="color: #3b82f6; text-decoration: none; font-weight: 600;">→ Full test methodology (91/100 scenarios)</a>
+                <a href="{{ ldi_url }}/testy" style="color: #3b82f6; text-decoration: none; font-weight: 600;">→ Full test methodology (91/100 scenarios)</a>
             </p>
         </div>
     </section>
@@ -865,8 +867,8 @@
     </section>
 
     <footer class="doc-footer">
-        <p>Adept AI · Łukasz Piskorski · Gorzów Wielkopolski, 2026</p>
-        <a href="/live-demo" class="contact-cta">Try the live demo →</a>
+        <p>Sedno Tech · Łukasz Piskorski · Gorzów Wielkopolski, 2026</p>
+        <a href="{{ ldi_url }}" class="contact-cta">See LDI →</a>
     </footer>
 
 </div>

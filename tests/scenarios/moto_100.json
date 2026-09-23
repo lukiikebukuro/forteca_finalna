@@ -1,0 +1,707 @@
+{
+ "suite": "moto",
+ "source": "debug.py (oryginalny harness, wynik 91/100 z czerwca 2026); przeniesione 2026-09-23",
+ "grading": "HIGH|MEDIUM=SPRZEDAŻ, LOW=STRACONY KLIENT, NO_MATCH=ZAPYTANIE O ROZSZERZENIE OFERTY",
+ "scenarios": [
+  {
+   "id": 1,
+   "group": "PODSTAWOWA SPRZEDAŻ",
+   "query": "klocki bmw e90",
+   "expected": "SPRZEDAŻ",
+   "note": "189 zł - natychmiastowa sprzedaż"
+  },
+  {
+   "id": 2,
+   "group": "PODSTAWOWA SPRZEDAŻ",
+   "query": "filtr oleju mann",
+   "expected": "SPRZEDAŻ",
+   "note": "62 zł - szybka konwersja"
+  },
+  {
+   "id": 3,
+   "group": "PODSTAWOWA SPRZEDAŻ",
+   "query": "akumulator varta 74ah",
+   "expected": "SPRZEDAŻ",
+   "note": "420 zł - wysokomarżowy produkt"
+  },
+  {
+   "id": 4,
+   "group": "PODSTAWOWA SPRZEDAŻ",
+   "query": "olej castrol 5w30",
+   "expected": "SPRZEDAŻ",
+   "note": "165 zł - częste zamówienie"
+  },
+  {
+   "id": 5,
+   "group": "PODSTAWOWA SPRZEDAŻ",
+   "query": "świeca ngk",
+   "expected": "SPRZEDAŻ",
+   "note": "45 zł - łatwa sprzedaż masowa"
+  },
+  {
+   "id": 6,
+   "group": "PODSTAWOWA SPRZEDAŻ",
+   "query": "amortyzator bilstein",
+   "expected": "SPRZEDAŻ",
+   "note": "520 zł - premium sprzedaż"
+  },
+  {
+   "id": 7,
+   "group": "PODSTAWOWA SPRZEDAŻ",
+   "query": "tarcza brembo 320mm",
+   "expected": "SPRZEDAŻ",
+   "note": "420 zł - specjalistyczny produkt"
+  },
+  {
+   "id": 8,
+   "group": "PODSTAWOWA SPRZEDAŻ",
+   "query": "opony continental zimowe",
+   "expected": "SPRZEDAŻ",
+   "note": "456 zł - sezonowa sprzedaż"
+  },
+  {
+   "id": 9,
+   "group": "PODSTAWOWA SPRZEDAŻ",
+   "query": "klocki yamaha r6",
+   "expected": "SPRZEDAŻ",
+   "note": "145 zł - segment motocyklowy"
+  },
+  {
+   "id": 10,
+   "group": "PODSTAWOWA SPRZEDAŻ",
+   "query": "filtr powietrza k&n",
+   "expected": "SPRZEDAŻ",
+   "note": "285 zł - tuning premium"
+  },
+  {
+   "id": 11,
+   "group": "PODSTAWOWE LITERÓWKI",
+   "query": "kloki bosch",
+   "expected": "SPRZEDAŻ",
+   "note": "189 zł - jedna litera"
+  },
+  {
+   "id": 12,
+   "group": "PODSTAWOWE LITERÓWKI",
+   "query": "akumlator varta",
+   "expected": "SPRZEDAŻ",
+   "note": "420 zł - brak litery"
+  },
+  {
+   "id": 13,
+   "group": "PODSTAWOWE LITERÓWKI",
+   "query": "amortyztor sachs",
+   "expected": "SPRZEDAŻ",
+   "note": "425 zł - zamiana liter"
+  },
+  {
+   "id": 14,
+   "group": "PODSTAWOWE LITERÓWKI",
+   "query": "olel 5w30",
+   "expected": "SPRZEDAŻ",
+   "note": "165 zł - powtórzona litera"
+  },
+  {
+   "id": 15,
+   "group": "PODSTAWOWE LITERÓWKI",
+   "query": "swica ngk",
+   "expected": "SPRZEDAŻ",
+   "note": "45 zł - brak polskiego znaku"
+  },
+  {
+   "id": 16,
+   "group": "PODSTAWOWE LITERÓWKI",
+   "query": "filetr mann",
+   "expected": "SPRZEDAŻ",
+   "note": "62 zł - dodatkowa litera"
+  },
+  {
+   "id": 17,
+   "group": "PODSTAWOWE LITERÓWKI",
+   "query": "opny zimowe",
+   "expected": "SPRZEDAŻ",
+   "note": "456 zł - brak litery"
+  },
+  {
+   "id": 18,
+   "group": "PODSTAWOWE LITERÓWKI",
+   "query": "hamulce przod",
+   "expected": "SPRZEDAŻ",
+   "note": "189 zł - brak znaku"
+  },
+  {
+   "id": 19,
+   "group": "PODSTAWOWE LITERÓWKI",
+   "query": "filtry vw",
+   "expected": "SPRZEDAŻ",
+   "note": "73 zł - liczba mnoga"
+  },
+  {
+   "id": 20,
+   "group": "PODSTAWOWE LITERÓWKI",
+   "query": "klocek mercedes",
+   "expected": "SPRZEDAŻ",
+   "note": "156 zł - liczba pojedyncza"
+  },
+  {
+   "id": 21,
+   "group": "TRUDNE LITERÓWKI",
+   "query": "klockii bmw",
+   "expected": "SPRZEDAŻ",
+   "note": "189 zł - podwójne 'i'"
+  },
+  {
+   "id": 22,
+   "group": "TRUDNE LITERÓWKI",
+   "query": "fiiltr mann",
+   "expected": "SPRZEDAŻ",
+   "note": "62 zł - podwójne 'i' w środku"
+  },
+  {
+   "id": 23,
+   "group": "TRUDNE LITERÓWKI",
+   "query": "amortyzatorr",
+   "expected": "SPRZEDAŻ",
+   "note": "425 zł - podwójne 'r'"
+  },
+  {
+   "id": 24,
+   "group": "TRUDNE LITERÓWKI",
+   "query": "oopony zimowe",
+   "expected": "SPRZEDAŻ",
+   "note": "456 zł - podwójne 'o'"
+  },
+  {
+   "id": 25,
+   "group": "TRUDNE LITERÓWKI",
+   "query": "świeeca ngk",
+   "expected": "SPRZEDAŻ",
+   "note": "45 zł - podwójne 'e'"
+  },
+  {
+   "id": 26,
+   "group": "TRUDNE LITERÓWKI",
+   "query": "akkumulator",
+   "expected": "SPRZEDAŻ",
+   "note": "420 zł - podwójne 'k'"
+  },
+  {
+   "id": 27,
+   "group": "TRUDNE LITERÓWKI",
+   "query": "tarczaa hamulcowa",
+   "expected": "SPRZEDAŻ",
+   "note": "420 zł - podwójne 'a'"
+  },
+  {
+   "id": 28,
+   "group": "TRUDNE LITERÓWKI",
+   "query": "olejj castrol",
+   "expected": "SPRZEDAŻ",
+   "note": "165 zł - podwójne 'j'"
+  },
+  {
+   "id": 29,
+   "group": "TRUDNE LITERÓWKI",
+   "query": "filltr oleju",
+   "expected": "SPRZEDAŻ",
+   "note": "62 zł - podwójne 'l'"
+  },
+  {
+   "id": 30,
+   "group": "TRUDNE LITERÓWKI",
+   "query": "kloccki yamaha",
+   "expected": "SPRZEDAŻ",
+   "note": "145 zł - podwójne 'c'"
+  },
+  {
+   "id": 31,
+   "group": "KODY PRODUKTÓW",
+   "query": "0986494104",
+   "expected": "SPRZEDAŻ",
+   "note": "189 zł - kod Bosch"
+  },
+  {
+   "id": 32,
+   "group": "KODY PRODUKTÓW",
+   "query": "hu719/7x",
+   "expected": "SPRZEDAŻ",
+   "note": "62 zł - kod Mann"
+  },
+  {
+   "id": 33,
+   "group": "KODY PRODUKTÓW",
+   "query": "22-266767",
+   "expected": "SPRZEDAŻ",
+   "note": "520 zł - kod Bilstein"
+  },
+  {
+   "id": 34,
+   "group": "KODY PRODUKTÓW",
+   "query": "p83052",
+   "expected": "SPRZEDAŻ",
+   "note": "156 zł - kod Brembo"
+  },
+  {
+   "id": 35,
+   "group": "KODY PRODUKTÓW",
+   "query": "FR7DPP33",
+   "expected": "SPRZEDAŻ",
+   "note": "38 zł - kod świecy"
+  },
+  {
+   "id": 36,
+   "group": "KODY PRODUKTÓW",
+   "query": "13.0460-7218",
+   "expected": "SPRZEDAŻ",
+   "note": "156 zł - kod ATE"
+  },
+  {
+   "id": 37,
+   "group": "KODY PRODUKTÓW",
+   "query": "GDB1748",
+   "expected": "SPRZEDAŻ",
+   "note": "135 zł - kod TRW"
+  },
+  {
+   "id": 38,
+   "group": "KODY PRODUKTÓW",
+   "query": "E12",
+   "expected": "SPRZEDAŻ",
+   "note": "420 zł - kod Varta"
+  },
+  {
+   "id": 39,
+   "group": "KODY PRODUKTÓW",
+   "query": "520VX3-114",
+   "expected": "SPRZEDAŻ",
+   "note": "345 zł - kod łańcucha"
+  },
+  {
+   "id": 40,
+   "group": "KODY PRODUKTÓW",
+   "query": "TS850",
+   "expected": "SPRZEDAŻ",
+   "note": "456 zł - kod Continental"
+  },
+  {
+   "id": 41,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "klocki do bmw",
+   "expected": "SPRZEDAŻ",
+   "note": "189 zł - z przyimkiem 'do'"
+  },
+  {
+   "id": 42,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "filtr dla golfa",
+   "expected": "SPRZEDAŻ",
+   "note": "73 zł - z przyimkiem 'dla'"
+  },
+  {
+   "id": 43,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "olej na zimę",
+   "expected": "SPRZEDAŻ",
+   "note": "165 zł - kontekst sezonowy"
+  },
+  {
+   "id": 44,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "części do yamaha",
+   "expected": "SPRZEDAŻ",
+   "note": "145 zł - ogólne części"
+  },
+  {
+   "id": 45,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "hamulce w mercedes",
+   "expected": "SPRZEDAŻ",
+   "note": "156 zł - z przyimkiem 'w'"
+  },
+  {
+   "id": 46,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "amortyzator z przodu",
+   "expected": "SPRZEDAŻ",
+   "note": "520 zł - lokalizacja"
+  },
+  {
+   "id": 47,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "klocki pod sprinter",
+   "expected": "SPRZEDAŻ",
+   "note": "267 zł - z przyimkiem 'pod'"
+  },
+  {
+   "id": 48,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "świeca do civic",
+   "expected": "SPRZEDAŻ",
+   "note": "52 zł - model Honda"
+  },
+  {
+   "id": 49,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "zimówki continental",
+   "expected": "SPRZEDAŻ",
+   "note": "456 zł - potoczne"
+  },
+  {
+   "id": 50,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "sportowy filtr k&n",
+   "expected": "SPRZEDAŻ",
+   "note": "285 zł - przymiotnik"
+  },
+  {
+   "id": 51,
+   "group": "SLANG MECHANIKÓW",
+   "query": "kloce bmw",
+   "expected": "SPRZEDAŻ",
+   "note": "189 zł - warsztatowy slang"
+  },
+  {
+   "id": 52,
+   "group": "SLANG MECHANIKÓW",
+   "query": "amory sachs",
+   "expected": "SPRZEDAŻ",
+   "note": "425 zł - skrót amortyzatorów"
+  },
+  {
+   "id": 53,
+   "group": "SLANG MECHANIKÓW",
+   "query": "aku varta",
+   "expected": "SPRZEDAŻ",
+   "note": "420 zł - skrót akumulatora"
+  },
+  {
+   "id": 54,
+   "group": "SLANG MECHANIKÓW",
+   "query": "świece do benza",
+   "expected": "SPRZEDAŻ",
+   "note": "45 zł - benzyna potocznie"
+  },
+  {
+   "id": 55,
+   "group": "SLANG MECHANIKÓW",
+   "query": "filtry do diesla",
+   "expected": "SPRZEDAŻ",
+   "note": "62 zł - diesel potocznie"
+  },
+  {
+   "id": 56,
+   "group": "SLANG MECHANIKÓW",
+   "query": "olej do tfsi",
+   "expected": "SPRZEDAŻ",
+   "note": "165 zł - typ silnika"
+  },
+  {
+   "id": 57,
+   "group": "SLANG MECHANIKÓW",
+   "query": "części beemka",
+   "expected": "SPRZEDAŻ",
+   "note": "189 zł - BMW potocznie"
+  },
+  {
+   "id": 58,
+   "group": "SLANG MECHANIKÓW",
+   "query": "klocki merola",
+   "expected": "SPRZEDAŻ",
+   "note": "156 zł - Mercedes potocznie"
+  },
+  {
+   "id": 59,
+   "group": "SLANG MECHANIKÓW",
+   "query": "opony na feldze",
+   "expected": "SPRZEDAŻ",
+   "note": "456 zł - felgi potocznie"
+  },
+  {
+   "id": 60,
+   "group": "SLANG MECHANIKÓW",
+   "query": "akum na mróz",
+   "expected": "SPRZEDAŻ",
+   "note": "420 zł - zima potocznie"
+  },
+  {
+   "id": 61,
+   "group": "MIESZANE JĘZYKI",
+   "query": "brake pads bmw",
+   "expected": "SPRZEDAŻ",
+   "note": "189 zł - angielskie klocki"
+  },
+  {
+   "id": 62,
+   "group": "MIESZANE JĘZYKI",
+   "query": "oil filter mann",
+   "expected": "SPRZEDAŻ",
+   "note": "62 zł - angielski filtr"
+  },
+  {
+   "id": 63,
+   "group": "MIESZANE JĘZYKI",
+   "query": "spark plug ngk",
+   "expected": "SPRZEDAŻ",
+   "note": "45 zł - angielska świeca"
+  },
+  {
+   "id": 64,
+   "group": "MIESZANE JĘZYKI",
+   "query": "battery varta",
+   "expected": "SPRZEDAŻ",
+   "note": "420 zł - angielski akumulator"
+  },
+  {
+   "id": 65,
+   "group": "MIESZANE JĘZYKI",
+   "query": "bremsen mercedes",
+   "expected": "SPRZEDAŻ",
+   "note": "156 zł - niemieckie hamulce"
+  },
+  {
+   "id": 66,
+   "group": "MIESZANE JĘZYKI",
+   "query": "huile castrol",
+   "expected": "SPRZEDAŻ",
+   "note": "165 zł - francuski olej"
+  },
+  {
+   "id": 67,
+   "group": "MIESZANE JĘZYKI",
+   "query": "freni brembo",
+   "expected": "SPRZEDAŻ",
+   "note": "420 zł - włoskie hamulce"
+  },
+  {
+   "id": 68,
+   "group": "MIESZANE JĘZYKI",
+   "query": "filter für golf",
+   "expected": "SPRZEDAŻ",
+   "note": "73 zł - niemiecki dla"
+  },
+  {
+   "id": 69,
+   "group": "MIESZANE JĘZYKI",
+   "query": "parts yamaha",
+   "expected": "SPRZEDAŻ",
+   "note": "145 zł - angielskie części"
+  },
+  {
+   "id": 70,
+   "group": "MIESZANE JĘZYKI",
+   "query": "reifen continental",
+   "expected": "SPRZEDAŻ",
+   "note": "456 zł - niemieckie opony"
+  },
+  {
+   "id": 71,
+   "group": "SPECYFIKACJE TECHNICZNE",
+   "query": "5w30 longlife",
+   "expected": "SPRZEDAŻ",
+   "note": "178 zł - specyfikacja VW"
+  },
+  {
+   "id": 72,
+   "group": "SPECYFIKACJE TECHNICZNE",
+   "query": "0w40 mobil1",
+   "expected": "SPRZEDAŻ",
+   "note": "189 zł - pełna syntetyka"
+  },
+  {
+   "id": 73,
+   "group": "SPECYFIKACJE TECHNICZNE",
+   "query": "10w40 półsyntetyk",
+   "expected": "SPRZEDAŻ",
+   "note": "145 zł - półsyntetyczny"
+  },
+  {
+   "id": 74,
+   "group": "SPECYFIKACJE TECHNICZNE",
+   "query": "195/65r15 zimowe",
+   "expected": "SPRZEDAŻ",
+   "note": "345 zł - rozmiar opon"
+  },
+  {
+   "id": 75,
+   "group": "SPECYFIKACJE TECHNICZNE",
+   "query": "225/45r17 lato",
+   "expected": "SPRZEDAŻ",
+   "note": "456 zł - opony letnie"
+  },
+  {
+   "id": 76,
+   "group": "SPECYFIKACJE TECHNICZNE",
+   "query": "74ah 680a varta",
+   "expected": "SPRZEDAŻ",
+   "note": "420 zł - parametry aku"
+  },
+  {
+   "id": 77,
+   "group": "SPECYFIKACJE TECHNICZNE",
+   "query": "60ah 540a bosch",
+   "expected": "SPRZEDAŻ",
+   "note": "350 zł - akumulator"
+  },
+  {
+   "id": 78,
+   "group": "SPECYFIKACJE TECHNICZNE",
+   "query": "320mm tarcze",
+   "expected": "SPRZEDAŻ",
+   "note": "420 zł - średnica tarcz"
+  },
+  {
+   "id": 79,
+   "group": "SPECYFIKACJE TECHNICZNE",
+   "query": "280mm przód",
+   "expected": "SPRZEDAŻ",
+   "note": "385 zł - tarcze przednie"
+  },
+  {
+   "id": 80,
+   "group": "SPECYFIKACJE TECHNICZNE",
+   "query": "ventylowane 312mm",
+   "expected": "SPRZEDAŻ",
+   "note": "450 zł - tarcze wentylowane"
+  },
+  {
+   "id": 81,
+   "group": "NONSENS DO ODFILTROWANIA",
+   "query": "qwerty asdf",
+   "expected": "STRACONY KLIENT",
+   "note": "0 zł - klawiatura"
+  },
+  {
+   "id": 82,
+   "group": "NONSENS DO ODFILTROWANIA",
+   "query": "pizza hamburger",
+   "expected": "STRACONY KLIENT",
+   "note": "0 zł - jedzenie"
+  },
+  {
+   "id": 83,
+   "group": "NONSENS DO ODFILTROWANIA",
+   "query": "hello world",
+   "expected": "STRACONY KLIENT",
+   "note": "0 zł - programowanie"
+  },
+  {
+   "id": 84,
+   "group": "NONSENS DO ODFILTROWANIA",
+   "query": "asdfghjkl",
+   "expected": "STRACONY KLIENT",
+   "note": "0 zł - losowe znaki"
+  },
+  {
+   "id": 85,
+   "group": "NONSENS DO ODFILTROWANIA",
+   "query": "123456789",
+   "expected": "STRACONY KLIENT",
+   "note": "0 zł - same cyfry"
+  },
+  {
+   "id": 86,
+   "group": "UTRACONY POPYT - MARKI PREMIUM",
+   "query": "klocki ferrari",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "2000 zł - supercar"
+  },
+  {
+   "id": 87,
+   "group": "UTRACONY POPYT - MARKI PREMIUM",
+   "query": "filtr tesla",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "300 zł - elektryki"
+  },
+  {
+   "id": 88,
+   "group": "UTRACONY POPYT - MARKI PREMIUM",
+   "query": "części genesis",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "500 zł - Korea premium"
+  },
+  {
+   "id": 89,
+   "group": "UTRACONY POPYT - MARKI PREMIUM",
+   "query": "klocki mclaren",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "3000 zł - F1 marka"
+  },
+  {
+   "id": 90,
+   "group": "UTRACONY POPYT - MARKI PREMIUM",
+   "query": "akumulator nio",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "800 zł - chiński EV"
+  },
+  {
+   "id": 91,
+   "group": "UTRACONY POPYT - MARKI PREMIUM",
+   "query": "olej bugatti",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "500 zł - hypercars"
+  },
+  {
+   "id": 92,
+   "group": "UTRACONY POPYT - MARKI PREMIUM",
+   "query": "tarcze pagani",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "5000 zł - włoski supercar"
+  },
+  {
+   "id": 93,
+   "group": "UTRACONY POPYT - MARKI PREMIUM",
+   "query": "świece koenigsegg",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "200 zł - szwedzki hypercar"
+  },
+  {
+   "id": 94,
+   "group": "UTRACONY POPYT - MARKI PREMIUM",
+   "query": "filtr rolls-royce",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "400 zł - luksus brytyjski"
+  },
+  {
+   "id": 95,
+   "group": "UTRACONY POPYT - MARKI PREMIUM",
+   "query": "amortyzatory bentley",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "note": "2000 zł - brytyjski luksus"
+  },
+  {
+   "id": 96,
+   "group": "EDGE CASES - GRANICZNE",
+   "query": "",
+   "expected": "STRACONY KLIENT",
+   "note": "0 zł - puste zapytanie"
+  },
+  {
+   "id": 97,
+   "group": "EDGE CASES - GRANICZNE",
+   "query": "a",
+   "expected": "STRACONY KLIENT",
+   "note": "0 zł - pojedyncza litera"
+  },
+  {
+   "id": 98,
+   "group": "EDGE CASES - GRANICZNE",
+   "query": "bmw",
+   "expected": "SPRZEDAŻ",
+   "note": "100 zł - sama marka"
+  },
+  {
+   "id": 99,
+   "group": "EDGE CASES - GRANICZNE",
+   "query": "klocki",
+   "expected": "SPRZEDAŻ",
+   "note": "150 zł - sama kategoria"
+  },
+  {
+   "id": 100,
+   "group": "EDGE CASES - GRANICZNE",
+   "query": "bmw e90 e91 e92 e93",
+   "expected": "SPRZEDAŻ",
+   "note": "189 zł - wiele kodów"
+  }
+ ]
+}

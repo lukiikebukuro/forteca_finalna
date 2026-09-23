@@ -275,7 +275,7 @@
             <div class="header-icon">📡</div>
             <div class="header-titles">
                 <h1>Site Analytics — P5</h1>
-                <div class="subtitle">adeptai.pl · /ldi · /ldi-readme · /ldi-tests · /anima</div>
+                <div class="subtitle">sedno.tech · /anima · /ldi &nbsp;|&nbsp; utraconypopyt.pl · strona produktu · /testy</div>
             </div>
         </div>
         <div class="header-right">
@@ -294,7 +294,7 @@
         <div class="stat-sub">wszystkie strony</div>
     </div>
     <div class="stat-card home">
-        <div class="stat-label">adeptai.pl</div>
+        <div class="stat-label">sedno.tech</div>
         <div class="stat-value" id="stat-home">—</div>
         <div class="stat-sub">strona główna</div>
     </div>
@@ -445,7 +445,9 @@
 // ===== HELPERS =====
 function pageBadge(path) {
     const map = {
-        '/':           ['page-home',      'adeptai.pl'],
+        '/':           ['page-home',      'sedno.tech'],
+        '[LDI]/':      ['page-ldi-readme','utraconypopyt.pl'],
+        '[LDI]/testy': ['page-ldi-tests', 'LDI /testy'],
         '/ldi':        ['page-ldi',       '/ldi'],
         '/ldi-readme': ['page-ldi-readme','/ldi-readme'],
         '/ldi-tests':  ['page-ldi-tests', '/ldi-tests'],

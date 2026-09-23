@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ANIMA — Technical Manifest · Adept AI</title>
+    <title>ANIMA — Technical Manifest · Sedno Tech</title>
     <meta name="description" content="ANIMA: Autonomous Neural Intelligence Memory Architecture. Sovereign RAG memory engine for AI companions.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -287,7 +287,7 @@
 <body>
 
 <nav>
-    <a href="/" class="nav-logo">Adept AI <span>·</span> Łukasz Piskorski</a>
+    <a href="/" class="nav-logo">Sedno Tech <span>·</span> Łukasz Piskorski</a>
     <a href="/" class="back-link">← Back to portfolio</a>
 </nav>
 
@@ -295,13 +295,13 @@
 
     <header class="doc-header">
         <p class="doc-tag">Technical Manifest · ANIMA v3.1 · Updated July 2026</p>
-        <h1 class="doc-title">Reverse-engineering consciousness:<br>Sovereign AI memory architecture</h1>
+        <h1 class="doc-title">Long-term memory for an AI companion:<br>architecture, failures, fixes</h1>
         <p class="doc-subtitle">
             ANIMA (Autonomous Neural Intelligence Memory Architecture) is a RAG-based long-term memory system
             for AI companions. This document explains why it works differently — and how.
         </p>
         <div class="doc-meta">
-            <span>Author: Łukasz Piskorski / Adept AI</span>
+            <span>Author: Łukasz Piskorski / Sedno Tech</span>
             <span>Version: Blueprint 3.1</span>
             <span>Status: Production · myastra.pl</span>
         </div>
@@ -312,8 +312,8 @@
         <p>
             This is not a chatbot with a personality. Not a GPT-4 wrapper with a system prompt.
             Not another AI companion that "remembers your name and your dog."
-            This is a system that <strong>evolves faster than standard models</strong> — through a unique
-            feedback loop built on reverse-engineering its own decisions.
+            It is a retrieval layer that I keep improving by reading its own logs: what reached the prompt,
+            what fell out, and why — then patching the pipeline, not the model.
         </p>
     </div>
 
@@ -329,7 +329,7 @@
         </p>
         <p>
             Problem: the database grows linearly. After a month you have 1,400 vectors of "I'm tired",
-            "I was at the doctor today", "I like tea." The model gets a pool of 30 candidates,
+            "I had a long day at work", "I like tea." The model gets a pool of 30 candidates,
             the reranker picks top-5 — and often picks badly, because there's no mechanism to distinguish
             <strong>signal from noise</strong>.
         </p>
@@ -342,7 +342,7 @@
 <pre><code>User message
     ↓
 SemanticExtractor (sentence-transformers, zero-shot classification)
-    → entity_type: EMOTION / MILESTONE / FACT / DATE / PERSON / MEDICATION
+    → entity_type: EMOTION / MILESTONE / FACT / DATE / PERSON / ...
     → subtype: 'preference' / 'tired' / 'trust_declaration' / 'inventory_status' ...
     → confidence: 0.0–1.0
     ↓
@@ -364,15 +364,15 @@ ChromaDB (with metadata: importance, entity_subtype, source, timestamp)</code></
         <h3>How I know it works: reverse-engineering my own sessions</h3>
         <p>
             ANIMA also powers a parallel system (Amelia — an AI companion running as a separate service).
-            After injecting into the Gemini XHR stream, I collected production logs from RAG sessions:
+            From its production RAG sessions I collected logs:
             <code>.jsonl</code> conversation files + terminal logs showing reranker scores,
             extracted entities, and pipeline actions.
         </p>
         <p>Analyzing these logs is not A/B testing. It's reverse-engineering my own decision-making:</p>
 
 <pre><code>[RETRIEVAL] Found 5 RAG memories (reranked):
-[1] score=1.000 | '[EMOTION:tired] was lying sick...'
-[2] score=0.983 | '[MEDICATION:pregabalina] took a pill...'
+[1] score=1.000 | '[EMOTION:tired] long day, no energy...'
+[2] score=0.983 | '[FACT:preference] switched to green tea...'
 [3] score=0.961 | '[MILESTONE:trust_declaration] never told anyone...'</code></pre>
 
         <p>
@@ -416,14 +416,14 @@ ChromaDB (with metadata: importance, entity_subtype, source, timestamp)</code></
     # Facts — new value overwrites old
     ('FACT', 'preference'), ('FACT', 'correction'),
     # Dates — most recent wins
-    ('DATE', 'inventory_status'), ('DATE', 'medical_visit'),
+    ('DATE', 'inventory_status'), ('DATE', 'appointment'),
 }</code></pre>
 
         <p>
             When the pipeline detects an entity from this list, it calls <code>delete_by_entity_subtype()</code>
             before writing — clears old vectors of the same type:subtype, then saves the new one.
             Result: the database doesn't grow indefinitely. Only types where history has value accumulate
-            (milestones, medical visits, facts about people).
+            (milestones, appointments, facts about people).
         </p>
 
         <p><strong>2. Reranker with adaptive weights</strong></p>
@@ -463,15 +463,14 @@ ChromaDB (with metadata: importance, entity_subtype, source, timestamp)</code></
 
         <p><strong>4. FactStore — SQLite alongside vectors</strong></p>
         <p>
-            Vector similarity is powerful for fuzzy recall. It's unreliable for exact facts — "what medication does the user take?"
+            Vector similarity is powerful for fuzzy recall. It's unreliable for exact facts — "what city does the user live in?"
             A similar-but-wrong answer is worse than no answer. ANIMA gained a second retrieval channel: a SQLite
             <strong>FactStore</strong> for hard facts that must not degrade through similarity scoring.
         </p>
 
 <pre><code>FactStore (astra_facts.db)
-    → 12 entity types: medication, medical_visit, preference,
-      financial, relationship, location, age, job, goal,
-      health, date, correction
+    → 12 typed entity categories, e.g. preference, relationship,
+      location, job, goal, date, correction
     → Exact-match lookup — zero cosine scoring
     → Supersede per SQL DELETE (not vector overwrite)
     → Injected as [TWARDE FAKTY — SQLite] block in every prompt</code></pre>
@@ -518,10 +517,10 @@ ChromaDB (with metadata: importance, entity_subtype, source, timestamp)</code></
             now deletes the old one before saving. One vector instead of dozens — MMR stops penalizing it.
         </p>
 
-        <h3>A feedback loop that outpaces standard models</h3>
+        <h3>A feedback loop on the retrieval layer</h3>
         <p>
             Standard language models learn through retraining — expensive, rare, centralized.
-            ASTRA evolves differently:
+            ASTRA's retrieval layer improves differently:
         </p>
 
 <pre><code>Production session
@@ -677,7 +676,8 @@ Next production session</code></pre>
         <h3>Privacy-first by design</h3>
         <p>
             All vector IDs are <code>SHA256(salt:user_id:text)</code> — deterministic, anonymous,
-            impossible to reverse without the salt. User data never leaves the VPS in raw form.
+            impossible to reverse without the salt. The memory store itself lives only on my VPS; to generate
+            a reply, the prompt — including the memories retrieved for that turn — is sent to the Gemini API.
             Multi-user isolation is baked in from day zero, not added post-hoc.
         </p>
     </section>
@@ -779,7 +779,8 @@ Next production session</code></pre>
                 </tr>
                 <tr>
                     <td>Full walkthrough</td>
-                    <td><a href="https://myastra.pl/casestudy">myastra.pl/casestudy</a> — the detox as a documented case study</td>
+                    <td><a href="https://myastra.pl/casestudy">myastra.pl/casestudy</a> — the detox as a documented case study<br>
+                    <a href="https://myastra.pl/casestudy2">myastra.pl/casestudy2</a> — when the memory wasn't the problem</td>
                 </tr>
             </tbody>
         </table>
@@ -802,8 +803,8 @@ Next production session</code></pre>
         <p><strong>Example: April 2026 audit findings</strong></p>
         <ul>
             <li><strong>Semantic mismatch</strong> — MiniLM embeddings vs Gemini generation are different semantic spaces. Fix: two-stage reranking pipeline.</li>
-            <li><strong>Aggressive recency decay</strong> — 7-day half-life destroyed medical facts. Fix: per-type decay curves (ephemeral=3d, persistent=180d).</li>
-            <li><strong>No context feedback loop</strong> — system didn't know if model used retrieved memories. Fix: Memory Healer analyzing XHR logs.</li>
+            <li><strong>Aggressive recency decay</strong> — 7-day half-life destroyed long-lived facts. Fix: per-type decay curves (ephemeral=3d, persistent=180d).</li>
+            <li><strong>No context feedback loop</strong> — system didn't know if model used retrieved memories. Fix: Memory Healer analyzing conversation logs.</li>
         </ul>
 
         <h3>Behavioral adaptation patterns</h3>
@@ -812,8 +813,7 @@ Next production session</code></pre>
             were extracted, named, and embedded into the character architecture:
         </p>
         <ul>
-            <li><strong>Body-Mind Bridge</strong> — technical metaphors for physical states ("hardware in maintenance mode") outperform therapeutic language in user retention and response quality</li>
-            <li><strong>Permission Protocol</strong> — explicit acknowledgment before redirecting self-critical users produces better outcomes than productivity nudges</li>
+            <li><strong>Permission Protocol</strong> — explicit acknowledgment before redirecting a self-critical user, instead of a productivity nudge</li>
             <li><strong>System Override</strong> — when live user signals conflict with stored RAG data, trust the signal; stale memory is worse than no memory</li>
         </ul>
 
@@ -1037,7 +1037,7 @@ Turn ordering: signal-based — persona whose character profile
 
     <!-- EPILOG -->
     <section class="doc-section">
-        <h2>Epilogue: What it means that the system evolves</h2>
+        <h2>Epilogue: improving the layer around the model</h2>
         <p>
             A standard language model has fixed weights. It learns through retraining —
             expensive, rare, requiring enormous data.
@@ -1048,9 +1048,8 @@ Turn ordering: signal-based — persona whose character profile
             of architectural constraints.
         </p>
         <p>
-            A system that spends a year collecting logs of its own sessions, analyzes them,
-            and improves retrieval — without touching the base model — is more adaptive
-            than a model that goes through retraining once a year.
+            A system that collects logs of its own sessions, analyzes them, and improves retrieval —
+            without touching the base model — can iterate in hours instead of waiting for a retraining cycle.
         </p>
         <p>
             This is not AI utopia. This is engineering: concrete, iterative, data-driven.
@@ -1062,8 +1061,8 @@ Turn ordering: signal-based — persona whose character profile
     </section>
 
     <footer class="doc-footer">
-        <p>Adept AI · Łukasz Piskorski · Gorzów Wielkopolski, 2026</p>
-        <a href="mailto:lukasz@adeptai.pl" class="contact-cta">Get in touch →</a>
+        <p>Sedno Tech · Łukasz Piskorski · Gorzów Wielkopolski, 2026</p>
+        <a href="mailto:{{ contact_email }}" class="contact-cta">Get in touch →</a>
     </footer>
 
 </div>

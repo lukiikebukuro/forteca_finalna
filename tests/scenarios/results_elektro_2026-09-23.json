@@ -1,0 +1,1063 @@
+{
+ "meta": {
+  "suite": "elektro",
+  "date": "2026-09-23",
+  "commit": "dfb2db0+zmiany",
+  "passed": 94,
+  "total": 105,
+  "accuracy": 89.5,
+  "passed_dashboard_view": 94
+ },
+ "results": [
+  {
+   "id": 1,
+   "group": "PODSTAWOWA SPRZEDAŻ",
+   "query": "iphone 13 128gb",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 2,
+   "group": "PODSTAWOWA SPRZEDAŻ",
+   "query": "samsung galaxy s24",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 3,
+   "group": "PODSTAWOWA SPRZEDAŻ",
+   "query": "macbook air m2",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 4,
+   "group": "PODSTAWOWA SPRZEDAŻ",
+   "query": "dell xps 15",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 5,
+   "group": "PODSTAWOWA SPRZEDAŻ",
+   "query": "sony wh-1000xm5",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 6,
+   "group": "PODSTAWOWA SPRZEDAŻ",
+   "query": "airpods pro 2",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 7,
+   "group": "PODSTAWOWA SPRZEDAŻ",
+   "query": "lg oled 55",
+   "expected": "SPRZEDAŻ",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": false,
+   "pass_dashboard": false
+  },
+  {
+   "id": 8,
+   "group": "PODSTAWOWA SPRZEDAŻ",
+   "query": "xiaomi 14",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 9,
+   "group": "PODSTAWOWA SPRZEDAŻ",
+   "query": "google pixel 8",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 10,
+   "group": "PODSTAWOWA SPRZEDAŻ",
+   "query": "lenovo thinkpad t14",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 11,
+   "group": "PODSTAWOWE LITERÓWKI",
+   "query": "iphnoe 14",
+   "expected": "SPRZEDAŻ",
+   "level": "MEDIUM",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 12,
+   "group": "PODSTAWOWE LITERÓWKI",
+   "query": "samsng galaxy s23",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 13,
+   "group": "PODSTAWOWE LITERÓWKI",
+   "query": "macbok air",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 14,
+   "group": "PODSTAWOWE LITERÓWKI",
+   "query": "del xps 13",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 15,
+   "group": "PODSTAWOWE LITERÓWKI",
+   "query": "lenovvo thinkpad",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 16,
+   "group": "PODSTAWOWE LITERÓWKI",
+   "query": "sonny wh-1000xm4",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 17,
+   "group": "PODSTAWOWE LITERÓWKI",
+   "query": "xiaomii 13 pro",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 18,
+   "group": "PODSTAWOWE LITERÓWKI",
+   "query": "airpds pro",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 19,
+   "group": "PODSTAWOWE LITERÓWKI",
+   "query": "pixle 8",
+   "expected": "SPRZEDAŻ",
+   "level": "MEDIUM",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 20,
+   "group": "PODSTAWOWE LITERÓWKI",
+   "query": "zenbok 14",
+   "expected": "SPRZEDAŻ",
+   "level": "MEDIUM",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 21,
+   "group": "SLANG I POTOCZNE",
+   "query": "ajfon 15",
+   "expected": "SPRZEDAŻ",
+   "level": "MEDIUM",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 22,
+   "group": "SLANG I POTOCZNE",
+   "query": "sumsung s24",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 23,
+   "group": "SLANG I POTOCZNE",
+   "query": "makbuk pro",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 24,
+   "group": "SLANG I POTOCZNE",
+   "query": "słuchy sony",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 25,
+   "group": "SLANG I POTOCZNE",
+   "query": "lapa dell",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 26,
+   "group": "SLANG I POTOCZNE",
+   "query": "tivi samsung 65",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 27,
+   "group": "SLANG I POTOCZNE",
+   "query": "maczek air",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 28,
+   "group": "SLANG I POTOCZNE",
+   "query": "fon samsung",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 29,
+   "group": "SLANG I POTOCZNE",
+   "query": "eyrpods",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 30,
+   "group": "SLANG I POTOCZNE",
+   "query": "galexy s23",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 31,
+   "group": "MODELE I KODY",
+   "query": "QE55Q70C",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 32,
+   "group": "MODELE I KODY",
+   "query": "OLED65C3",
+   "expected": "SPRZEDAŻ",
+   "level": "LOW",
+   "got": "STRACONY KLIENT",
+   "pass": false,
+   "pass_dashboard": false
+  },
+  {
+   "id": 33,
+   "group": "MODELE I KODY",
+   "query": "KD-50X75WL",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 34,
+   "group": "MODELE I KODY",
+   "query": "XR55X90L",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 35,
+   "group": "MODELE I KODY",
+   "query": "WH-1000XM5",
+   "expected": "SPRZEDAŻ",
+   "level": "LOW",
+   "got": "STRACONY KLIENT",
+   "pass": false,
+   "pass_dashboard": false
+  },
+  {
+   "id": 36,
+   "group": "MODELE I KODY",
+   "query": "QE75QN90C",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 37,
+   "group": "MODELE I KODY",
+   "query": "43P635",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 38,
+   "group": "MODELE I KODY",
+   "query": "elitebook 840 g10",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 39,
+   "group": "MODELE I KODY",
+   "query": "rog strix g16",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 40,
+   "group": "MODELE I KODY",
+   "query": "momentum 4",
+   "expected": "SPRZEDAŻ",
+   "level": "MEDIUM",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 41,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "laptop dla studenta",
+   "expected": "SPRZEDAŻ",
+   "level": "MEDIUM",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 42,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "telewizor do salonu 65 cali",
+   "expected": "SPRZEDAŻ",
+   "level": "MEDIUM",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 43,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "słuchawki do biegania",
+   "expected": "SPRZEDAŻ",
+   "level": "MEDIUM",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 44,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "iphone dla syna",
+   "expected": "SPRZEDAŻ",
+   "level": "MEDIUM",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 45,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "laptop do gier rtx",
+   "expected": "SPRZEDAŻ",
+   "level": "MEDIUM",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 46,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "telefon z dobrym aparatem samsung",
+   "expected": "SPRZEDAŻ",
+   "level": "MEDIUM",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 47,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "słuchawki z anc bose",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 48,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "telewizor oled lg",
+   "expected": "SPRZEDAŻ",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": false,
+   "pass_dashboard": false
+  },
+  {
+   "id": 49,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "macbook do pracy",
+   "expected": "SPRZEDAŻ",
+   "level": "MEDIUM",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 50,
+   "group": "ZAPYTANIA KONTEKSTOWE",
+   "query": "tani telewizor tcl",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 51,
+   "group": "MIESZANE JĘZYKI",
+   "query": "headphones sony",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 52,
+   "group": "MIESZANE JĘZYKI",
+   "query": "laptop dell notebook",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 53,
+   "group": "MIESZANE JĘZYKI",
+   "query": "smartphone samsung galaxy",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 54,
+   "group": "MIESZANE JĘZYKI",
+   "query": "kopfhörer bose",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 55,
+   "group": "MIESZANE JĘZYKI",
+   "query": "fernseher lg oled",
+   "expected": "SPRZEDAŻ",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": false,
+   "pass_dashboard": false
+  },
+  {
+   "id": 56,
+   "group": "MIESZANE JĘZYKI",
+   "query": "wireless earbuds apple",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 57,
+   "group": "MIESZANE JĘZYKI",
+   "query": "television sony 55",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 58,
+   "group": "MIESZANE JĘZYKI",
+   "query": "noise cancelling jbl",
+   "expected": "SPRZEDAŻ",
+   "level": "MEDIUM",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 59,
+   "group": "MIESZANE JĘZYKI",
+   "query": "gaming laptop asus",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 60,
+   "group": "MIESZANE JĘZYKI",
+   "query": "handy xiaomi",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 61,
+   "group": "SPECYFIKACJE",
+   "query": "iphone 14 512gb",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 62,
+   "group": "SPECYFIKACJE",
+   "query": "laptop 32gb ram 1tb",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 63,
+   "group": "SPECYFIKACJE",
+   "query": "telewizor 77 cali oled",
+   "expected": "SPRZEDAŻ",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": false,
+   "pass_dashboard": false
+  },
+  {
+   "id": 64,
+   "group": "SPECYFIKACJE",
+   "query": "macbook pro 36gb",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 65,
+   "group": "SPECYFIKACJE",
+   "query": "samsung s24 512gb",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 66,
+   "group": "SPECYFIKACJE",
+   "query": "laptop 16gb ram 512gb ssd",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 67,
+   "group": "SPECYFIKACJE",
+   "query": "słuchawki anc bluetooth",
+   "expected": "SPRZEDAŻ",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": false,
+   "pass_dashboard": false
+  },
+  {
+   "id": 68,
+   "group": "SPECYFIKACJE",
+   "query": "telewizor 4k 43 cale",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 69,
+   "group": "SPECYFIKACJE",
+   "query": "laptop rtx 4070",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 70,
+   "group": "SPECYFIKACJE",
+   "query": "iphone 15 256gb różowy",
+   "expected": "SPRZEDAŻ",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": false,
+   "pass_dashboard": false
+  },
+  {
+   "id": 71,
+   "group": "LITERÓWKA W MARCE + MODEL SPOZA OFERTY (Q9)",
+   "query": "samsubng",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 72,
+   "group": "LITERÓWKA W MARCE + MODEL SPOZA OFERTY (Q9)",
+   "query": "samsubng s",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 73,
+   "group": "LITERÓWKA W MARCE + MODEL SPOZA OFERTY (Q9)",
+   "query": "samsubng s25",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 74,
+   "group": "LITERÓWKA W MARCE + MODEL SPOZA OFERTY (Q9)",
+   "query": "ipone 16",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 75,
+   "group": "LITERÓWKA W MARCE + MODEL SPOZA OFERTY (Q9)",
+   "query": "xiaommi 15",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "level": "LOW",
+   "got": "STRACONY KLIENT",
+   "pass": false,
+   "pass_dashboard": false
+  },
+  {
+   "id": 76,
+   "group": "UTRACONY POPYT — MODEL/WARIANT SPOZA OFERTY",
+   "query": "samsung s25",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 77,
+   "group": "UTRACONY POPYT — MODEL/WARIANT SPOZA OFERTY",
+   "query": "iphone 16 pro max",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 78,
+   "group": "UTRACONY POPYT — MODEL/WARIANT SPOZA OFERTY",
+   "query": "pixel 9 pro",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 79,
+   "group": "UTRACONY POPYT — MODEL/WARIANT SPOZA OFERTY",
+   "query": "iphone 13 1tb",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 80,
+   "group": "UTRACONY POPYT — MODEL/WARIANT SPOZA OFERTY",
+   "query": "macbook pro m4",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 81,
+   "group": "UTRACONY POPYT — MODEL/WARIANT SPOZA OFERTY",
+   "query": "dell xps 17",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 82,
+   "group": "UTRACONY POPYT — MODEL/WARIANT SPOZA OFERTY",
+   "query": "samsung s25 ultra",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 83,
+   "group": "UTRACONY POPYT — MODEL/WARIANT SPOZA OFERTY",
+   "query": "sony wh-1000xm6",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 84,
+   "group": "UTRACONY POPYT — MODEL/WARIANT SPOZA OFERTY",
+   "query": "airpods max",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "level": "MEDIUM",
+   "got": "SPRZEDAŻ",
+   "pass": false,
+   "pass_dashboard": false
+  },
+  {
+   "id": 85,
+   "group": "UTRACONY POPYT — MODEL/WARIANT SPOZA OFERTY",
+   "query": "lg oled 83 cale",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 86,
+   "group": "UTRACONY POPYT — MARKA SPOZA OFERTY",
+   "query": "oneplus 12",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 87,
+   "group": "UTRACONY POPYT — MARKA SPOZA OFERTY",
+   "query": "huawei p60 pro",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 88,
+   "group": "UTRACONY POPYT — MARKA SPOZA OFERTY",
+   "query": "motorola edge 50",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 89,
+   "group": "UTRACONY POPYT — MARKA SPOZA OFERTY",
+   "query": "nothing phone 2",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 90,
+   "group": "UTRACONY POPYT — MARKA SPOZA OFERTY",
+   "query": "oppo find x7",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 91,
+   "group": "UTRACONY POPYT — MARKA SPOZA OFERTY",
+   "query": "razer blade 16",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 92,
+   "group": "UTRACONY POPYT — MARKA SPOZA OFERTY",
+   "query": "msi katana 15",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 93,
+   "group": "UTRACONY POPYT — MARKA SPOZA OFERTY",
+   "query": "marshall major 4",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 94,
+   "group": "UTRACONY POPYT — MARKA SPOZA OFERTY",
+   "query": "philips oled 55",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 95,
+   "group": "UTRACONY POPYT — MARKA SPOZA OFERTY",
+   "query": "hisense 65 cali",
+   "expected": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "level": "NO_MATCH",
+   "got": "ZAPYTANIE O ROZSZERZENIE OFERTY",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 96,
+   "group": "NONSENS DO ODFILTROWANIA",
+   "query": "qwerty asdf",
+   "expected": "STRACONY KLIENT",
+   "level": "LOW",
+   "got": "STRACONY KLIENT",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 97,
+   "group": "NONSENS DO ODFILTROWANIA",
+   "query": "pizza margherita",
+   "expected": "STRACONY KLIENT",
+   "level": "LOW",
+   "got": "STRACONY KLIENT",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 98,
+   "group": "NONSENS DO ODFILTROWANIA",
+   "query": "asdfghjkl",
+   "expected": "STRACONY KLIENT",
+   "level": "LOW",
+   "got": "STRACONY KLIENT",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 99,
+   "group": "NONSENS DO ODFILTROWANIA",
+   "query": "123456789",
+   "expected": "STRACONY KLIENT",
+   "level": "LOW",
+   "got": "STRACONY KLIENT",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 100,
+   "group": "NONSENS DO ODFILTROWANIA",
+   "query": "klocki hamulcowe bmw",
+   "expected": "STRACONY KLIENT",
+   "level": "LOW",
+   "got": "STRACONY KLIENT",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 101,
+   "group": "EDGE CASES",
+   "query": "",
+   "expected": "STRACONY KLIENT",
+   "level": "LOW",
+   "got": "STRACONY KLIENT",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 102,
+   "group": "EDGE CASES",
+   "query": "x",
+   "expected": "STRACONY KLIENT",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": false,
+   "pass_dashboard": false
+  },
+  {
+   "id": 103,
+   "group": "EDGE CASES",
+   "query": "samsung",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 104,
+   "group": "EDGE CASES",
+   "query": "laptop",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  },
+  {
+   "id": 105,
+   "group": "EDGE CASES",
+   "query": "iphone iphone iphone iphone iphone iphone iphone iphone",
+   "expected": "SPRZEDAŻ",
+   "level": "HIGH",
+   "got": "SPRZEDAŻ",
+   "pass": true,
+   "pass_dashboard": true
+  }
+ ]
+}

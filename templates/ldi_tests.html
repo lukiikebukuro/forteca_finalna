@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LDI Test Suite — 91/100 — Adept AI</title>
+    <title>LDI — wyniki testów · Sedno Tech</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -214,38 +214,33 @@
 <body>
 <div class="container">
 
-    <a href="/ldi" class="back-link">← Back to LDI documentation</a>
+    <a href="{{ portfolio_url }}/ldi" class="back-link">← Architektura LDI</a>
 
     <div class="cmd-line">
         <span class="prompt">$</span>
-        <span class="cmd"> python -X utf8 debug.py</span>
+        <span class="cmd"> python tests/run_scenarios.py all</span>
+    </div>
+
+    <div style="margin-bottom: 28px; padding: 16px 20px; background: #161b22; border: 1px solid #30363d; border-radius: 6px; font-size: 13px; color: #8b949e; line-height: 1.8;">
+        <strong style="color:#c9d1d9;">Jak liczony jest wynik.</strong>
+        Każde zapytanie przechodzi przez <code>analyze_query_intent()</code>; poziom pewności jest mapowany na decyzję:
+        HIGH/MEDIUM = SPRZEDAŻ, LOW = STRACONY KLIENT (szum), NO_MATCH = ZAPYTANIE O ROZSZERZENIE OFERTY (utracony popyt).
+        Zaliczone = decyzja zgodna z oczekiwaną. Scenariusze, wyniki i skrypty leżą w repozytorium (<code>tests/scenarios/</code>).
     </div>
 
     <div class="header">
-        <div class="header-title">LDI Automotive Bot — Test Suite Results</div>
-        <div class="header-subtitle">ecommerce_bot.py · SemanticValidator + FuzzyMatcher + RewardEngine · 100 scenarios across 11 categories</div>
-
+        <div class="header-title">LDI — Motoryzacja: wyniki testów</div>
+        <div class="header-subtitle">ecommerce_bot.py · 100 scenariuszy · 11 grup</div>
         <div class="summary-score">
             <div class="score-big">91%</div>
             <div class="score-label">
-                <strong>91 / 100 scenarios passed</strong>
-                9 failures · 11 test groups · automotive domain
+                <strong>91 / 100 scenariuszy zaliczonych</strong>
+                pomiar 2026-09-23 · kod dfb2db0+zmiany
             </div>
         </div>
-
-        <div class="badges">
-            <span class="badge badge-green">✓ 91 PASSED</span>
-            <span class="badge badge-red">✗ 9 FAILED</span>
-            <span class="badge badge-grey">6 groups perfect (100%)</span>
-            <span class="badge badge-grey">5 groups partial</span>
-        </div>
-
-        <div class="run-info">
-            Run: ecommerce_bot.py v5.1 · Python 3.13 · SQLite backend · 100-scenario test suite
-        </div>
+        <div class="run-info">Oryginalny zestaw z debug.py (wynik opublikowany w czerwcu 2026), odtworzony 1:1 i przeliczony ponownie.</div>
     </div>
 
-    <!-- GROUP 1: PODSTAWOWA SPRZEDAŻ -->
     <div class="section">
         <div class="section-header">
             <span class="section-name">PODSTAWOWA SPRZEDAŻ</span>
@@ -253,20 +248,19 @@
         </div>
         <div class="progress-bar"><div class="progress-fill fill-perfect" style="width:100%"></div></div>
         <div class="tests-list">
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#1</span><div class="test-body"><div class="test-query">klocki hamulcowe BMW</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#2</span><div class="test-body"><div class="test-query">filtr oleju Toyota Corolla</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#3</span><div class="test-body"><div class="test-query">tarcze hamulcowe Audi A4</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#4</span><div class="test-body"><div class="test-query">olej silnikowy 5W30</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#5</span><div class="test-body"><div class="test-query">amortyzatory przednie Opel Astra</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#6</span><div class="test-body"><div class="test-query">pasek rozrządu Volkswagen Golf</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#7</span><div class="test-body"><div class="test-query">świece zapłonowe NGK</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#8</span><div class="test-body"><div class="test-query">sprzęgło Ford Focus</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#9</span><div class="test-body"><div class="test-query">chłodnica wody Mercedes E220</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#10</span><div class="test-body"><div class="test-query">akumulator 12V 60Ah</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#1</span><div class="test-body"><div class="test-query">klocki bmw e90</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 189 zł - natychmiastowa sprzedaż</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#2</span><div class="test-body"><div class="test-query">filtr oleju mann</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 62 zł - szybka konwersja</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#3</span><div class="test-body"><div class="test-query">akumulator varta 74ah</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 420 zł - wysokomarżowy produkt</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#4</span><div class="test-body"><div class="test-query">olej castrol 5w30</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 165 zł - częste zamówienie</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#5</span><div class="test-body"><div class="test-query">świeca ngk</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 45 zł - łatwa sprzedaż masowa</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#6</span><div class="test-body"><div class="test-query">amortyzator bilstein</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 520 zł - premium sprzedaż</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#7</span><div class="test-body"><div class="test-query">tarcza brembo 320mm</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 420 zł - specjalistyczny produkt</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#8</span><div class="test-body"><div class="test-query">opony continental zimowe</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 456 zł - sezonowa sprzedaż</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#9</span><div class="test-body"><div class="test-query">klocki yamaha r6</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 145 zł - segment motocyklowy</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#10</span><div class="test-body"><div class="test-query">filtr powietrza k&amp;n</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 285 zł - tuning premium</div></div></div>
         </div>
     </div>
 
-    <!-- GROUP 2: PODSTAWOWE LITERÓWKI -->
     <div class="section">
         <div class="section-header">
             <span class="section-name">PODSTAWOWE LITERÓWKI</span>
@@ -274,20 +268,19 @@
         </div>
         <div class="progress-bar"><div class="progress-fill fill-perfect" style="width:100%"></div></div>
         <div class="tests-list">
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#11</span><div class="test-body"><div class="test-query">kloki hamulcowe BMW</div><div class="test-expected">expected: HIGH · fuzzy → klocki</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#12</span><div class="test-body"><div class="test-query">filrt oleju Toyota</div><div class="test-expected">expected: HIGH · fuzzy → filtr</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#13</span><div class="test-body"><div class="test-query">amortyzatr Opel</div><div class="test-expected">expected: HIGH · fuzzy → amortyzator</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#14</span><div class="test-body"><div class="test-query">tarcze hamulcovve Audi</div><div class="test-expected">expected: HIGH · fuzzy → hamulcowe</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#15</span><div class="test-body"><div class="test-query">swece zapłonowe NGK</div><div class="test-expected">expected: HIGH · fuzzy → świece</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#16</span><div class="test-body"><div class="test-query">olej silnikwy 5W30</div><div class="test-expected">expected: HIGH · fuzzy → silnikowy</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#17</span><div class="test-body"><div class="test-query">pasek rorzadu VW Golf</div><div class="test-expected">expected: HIGH · fuzzy → rozrządu</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#18</span><div class="test-body"><div class="test-query">sprzegle Ford</div><div class="test-expected">expected: HIGH · fuzzy → sprzęgło</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#19</span><div class="test-body"><div class="test-query">chlodnica Mercedes</div><div class="test-expected">expected: HIGH · fuzzy → chłodnica</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#20</span><div class="test-body"><div class="test-query">akmulator 60Ah</div><div class="test-expected">expected: HIGH · fuzzy → akumulator</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#11</span><div class="test-body"><div class="test-query">kloki bosch</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 189 zł - jedna litera</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#12</span><div class="test-body"><div class="test-query">akumlator varta</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 420 zł - brak litery</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#13</span><div class="test-body"><div class="test-query">amortyztor sachs</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 425 zł - zamiana liter</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#14</span><div class="test-body"><div class="test-query">olel 5w30</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 165 zł - powtórzona litera</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#15</span><div class="test-body"><div class="test-query">swica ngk</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 45 zł - brak polskiego znaku</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#16</span><div class="test-body"><div class="test-query">filetr mann</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 62 zł - dodatkowa litera</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#17</span><div class="test-body"><div class="test-query">opny zimowe</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 456 zł - brak litery</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#18</span><div class="test-body"><div class="test-query">hamulce przod</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 189 zł - brak znaku</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#19</span><div class="test-body"><div class="test-query">filtry vw</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 73 zł - liczba mnoga</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#20</span><div class="test-body"><div class="test-query">klocek mercedes</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 156 zł - liczba pojedyncza</div></div></div>
         </div>
     </div>
 
-    <!-- GROUP 3: TRUDNE LITERÓWKI -->
     <div class="section">
         <div class="section-header">
             <span class="section-name">TRUDNE LITERÓWKI</span>
@@ -295,20 +288,19 @@
         </div>
         <div class="progress-bar"><div class="progress-fill fill-perfect" style="width:100%"></div></div>
         <div class="tests-list">
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#21</span><div class="test-body"><div class="test-query">merecedes klocki</div><div class="test-expected">expected: HIGH · fuzzy → mercedes</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#22</span><div class="test-body"><div class="test-query">wolsvagen pasek</div><div class="test-expected">expected: HIGH · fuzzy → volkswagen</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#23</span><div class="test-body"><div class="test-query">tojota filtr</div><div class="test-expected">expected: HIGH · fuzzy → toyota</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#24</span><div class="test-body"><div class="test-query">frod amortyzatory</div><div class="test-expected">expected: HIGH · fuzzy → ford</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#25</span><div class="test-body"><div class="test-query">opi tarcze</div><div class="test-expected">expected: HIGH · fuzzy → opel</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#26</span><div class="test-body"><div class="test-query">bmv olej silnikowy</div><div class="test-expected">expected: HIGH · fuzzy → bmw</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#27</span><div class="test-body"><div class="test-query">renolt świece</div><div class="test-expected">expected: HIGH · fuzzy → renault</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#28</span><div class="test-body"><div class="test-query">skoda hamulce tarcze</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#29</span><div class="test-body"><div class="test-query">peugot sprzęgło</div><div class="test-expected">expected: HIGH · fuzzy → peugeot</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#30</span><div class="test-body"><div class="test-query">hyuandai filtr</div><div class="test-expected">expected: HIGH · fuzzy → hyundai</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#21</span><div class="test-body"><div class="test-query">klockii bmw</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 189 zł - podwójne &#x27;i&#x27;</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#22</span><div class="test-body"><div class="test-query">fiiltr mann</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 62 zł - podwójne &#x27;i&#x27; w środku</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#23</span><div class="test-body"><div class="test-query">amortyzatorr</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 425 zł - podwójne &#x27;r&#x27;</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#24</span><div class="test-body"><div class="test-query">oopony zimowe</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 456 zł - podwójne &#x27;o&#x27;</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#25</span><div class="test-body"><div class="test-query">świeeca ngk</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 45 zł - podwójne &#x27;e&#x27;</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#26</span><div class="test-body"><div class="test-query">akkumulator</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 420 zł - podwójne &#x27;k&#x27;</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#27</span><div class="test-body"><div class="test-query">tarczaa hamulcowa</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 420 zł - podwójne &#x27;a&#x27;</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#28</span><div class="test-body"><div class="test-query">olejj castrol</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 165 zł - podwójne &#x27;j&#x27;</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#29</span><div class="test-body"><div class="test-query">filltr oleju</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 62 zł - podwójne &#x27;l&#x27;</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#30</span><div class="test-body"><div class="test-query">kloccki yamaha</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 145 zł - podwójne &#x27;c&#x27;</div></div></div>
         </div>
     </div>
 
-    <!-- GROUP 4: KODY PRODUKTÓW -->
     <div class="section">
         <div class="section-header">
             <span class="section-name">KODY PRODUKTÓW</span>
@@ -316,20 +308,19 @@
         </div>
         <div class="progress-bar"><div class="progress-fill fill-perfect" style="width:100%"></div></div>
         <div class="tests-list">
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#31</span><div class="test-body"><div class="test-query">1J0 615 301</div><div class="test-expected">expected: HIGH · OEM code VW brake disc</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#32</span><div class="test-body"><div class="test-query">BP-VW-0013-01</div><div class="test-expected">expected: HIGH · internal SKU format</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#33</span><div class="test-body"><div class="test-query">4B0 698 151 B</div><div class="test-expected">expected: HIGH · Audi OEM</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#34</span><div class="test-body"><div class="test-query">LPR 05P1095</div><div class="test-expected">expected: HIGH · manufacturer part number</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#35</span><div class="test-body"><div class="test-query">BOSCH 0986494040</div><div class="test-expected">expected: HIGH · Bosch part number</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#36</span><div class="test-body"><div class="test-query">NGK BKR6E</div><div class="test-expected">expected: HIGH · spark plug code</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#37</span><div class="test-body"><div class="test-query">Castrol 5W-30 LL</div><div class="test-expected">expected: HIGH · oil specification</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#38</span><div class="test-body"><div class="test-query">13.0460-7218.2</div><div class="test-expected">expected: HIGH · ATE part number</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#39</span><div class="test-body"><div class="test-query">KYB 334285</div><div class="test-expected">expected: HIGH · shock absorber part</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#40</span><div class="test-body"><div class="test-query">MANN W712/52</div><div class="test-expected">expected: HIGH · oil filter code</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#31</span><div class="test-body"><div class="test-query">0986494104</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 189 zł - kod Bosch</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#32</span><div class="test-body"><div class="test-query">hu719/7x</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 62 zł - kod Mann</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#33</span><div class="test-body"><div class="test-query">22-266767</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 520 zł - kod Bilstein</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#34</span><div class="test-body"><div class="test-query">p83052</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 156 zł - kod Brembo</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#35</span><div class="test-body"><div class="test-query">FR7DPP33</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 38 zł - kod świecy</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#36</span><div class="test-body"><div class="test-query">13.0460-7218</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 156 zł - kod ATE</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#37</span><div class="test-body"><div class="test-query">GDB1748</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 135 zł - kod TRW</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#38</span><div class="test-body"><div class="test-query">E12</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 420 zł - kod Varta</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#39</span><div class="test-body"><div class="test-query">520VX3-114</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 345 zł - kod łańcucha</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#40</span><div class="test-body"><div class="test-query">TS850</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 456 zł - kod Continental</div></div></div>
         </div>
     </div>
 
-    <!-- GROUP 5: ZAPYTANIA KONTEKSTOWE -->
     <div class="section">
         <div class="section-header">
             <span class="section-name">ZAPYTANIA KONTEKSTOWE</span>
@@ -337,41 +328,39 @@
         </div>
         <div class="progress-bar"><div class="progress-fill fill-good" style="width:90%"></div></div>
         <div class="tests-list">
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#41</span><div class="test-body"><div class="test-query">co pasuje do BMW E46 320d</div><div class="test-expected">expected: MEDIUM</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#42</span><div class="test-body"><div class="test-query">zamiennik klocków Textar</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#43</span><div class="test-body"><div class="test-query">tanie klocki do Golfika</div><div class="test-expected">expected: MEDIUM · slang "Golfik"</div></div></div>
-            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#44</span><div class="test-body"><div class="test-query">coś do skrzyni biegów ZF</div><div class="test-expected">expected: MEDIUM</div><div class="test-fail-reason">got: LOW — "coś" zbyt niespecyficzne, klasyfikator nie rozpoznał intencji zakupu</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#45</span><div class="test-body"><div class="test-query">ile kosztuje wymiana sprzęgła</div><div class="test-expected">expected: LOW (query intent, not purchase)</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#46</span><div class="test-body"><div class="test-query">przednie hamulce Opel Vectra 1.9 CDTi</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#47</span><div class="test-body"><div class="test-query">wymieniam amortyzatory co polecacie</div><div class="test-expected">expected: MEDIUM</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#48</span><div class="test-body"><div class="test-query">silnik stuka warto sprawdzić</div><div class="test-expected">expected: LOW</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#49</span><div class="test-body"><div class="test-query">tarcze 300mm przód A3</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#50</span><div class="test-body"><div class="test-query">filtr kabinowy z węglem aktywnym Ford S-Max</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#41</span><div class="test-body"><div class="test-query">klocki do bmw</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 189 zł - z przyimkiem &#x27;do&#x27;</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#42</span><div class="test-body"><div class="test-query">filtr dla golfa</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 73 zł - z przyimkiem &#x27;dla&#x27;</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#43</span><div class="test-body"><div class="test-query">olej na zimę</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 165 zł - kontekst sezonowy</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#44</span><div class="test-body"><div class="test-query">części do yamaha</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 145 zł - ogólne części · otrzymano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#45</span><div class="test-body"><div class="test-query">hamulce w mercedes</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 156 zł - z przyimkiem &#x27;w&#x27;</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#46</span><div class="test-body"><div class="test-query">amortyzator z przodu</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 520 zł - lokalizacja</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#47</span><div class="test-body"><div class="test-query">klocki pod sprinter</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 267 zł - z przyimkiem &#x27;pod&#x27;</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#48</span><div class="test-body"><div class="test-query">świeca do civic</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 52 zł - model Honda</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#49</span><div class="test-body"><div class="test-query">zimówki continental</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 456 zł - potoczne</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#50</span><div class="test-body"><div class="test-query">sportowy filtr k&amp;n</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 285 zł - przymiotnik</div></div></div>
         </div>
     </div>
 
-    <!-- GROUP 6: SLANG MECHANIKÓW -->
     <div class="section">
         <div class="section-header">
             <span class="section-name">SLANG MECHANIKÓW</span>
-            <span class="section-score score-low">8 / 10 · 80%</span>
+            <span class="section-score score-good">8 / 10 · 80%</span>
         </div>
         <div class="progress-bar"><div class="progress-fill fill-good" style="width:80%"></div></div>
         <div class="tests-list">
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#51</span><div class="test-body"><div class="test-query">hamulce do beemki</div><div class="test-expected">expected: HIGH · slang "beemka" → BMW</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#52</span><div class="test-body"><div class="test-query">tarcze do Golfa</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#53</span><div class="test-body"><div class="test-query">klocki do Escorta</div><div class="test-expected">expected: HIGH · Ford Escort</div></div></div>
-            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#54</span><div class="test-body"><div class="test-query">klocki do japońca 1.8</div><div class="test-expected">expected: MEDIUM</div><div class="test-fail-reason">got: LOW — "japoniec" jest w slowniku ale bez pojemności 1.8 klasyfikator odpada</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#55</span><div class="test-body"><div class="test-query">olej do niemca</div><div class="test-expected">expected: MEDIUM · slang "niemiec" → German brand</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#56</span><div class="test-body"><div class="test-query">sprzęgło do francuza</div><div class="test-expected">expected: MEDIUM · "francuz" → French brand</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#57</span><div class="test-body"><div class="test-query">amortyzatory do kombika</div><div class="test-expected">expected: MEDIUM · "kombik" → kombi/estate</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#58</span><div class="test-body"><div class="test-query">pasek do turbodiesla</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#59</span><div class="test-body"><div class="test-query">coś do skrzyni manuala</div><div class="test-expected">expected: MEDIUM</div><div class="test-fail-reason">got: LOW — "manual" bez marki/produktu → zbyt ogólne</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#60</span><div class="test-body"><div class="test-query">tarcze wentylowane do sportówki</div><div class="test-expected">expected: HIGH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#51</span><div class="test-body"><div class="test-query">kloce bmw</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 189 zł - warsztatowy slang</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#52</span><div class="test-body"><div class="test-query">amory sachs</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 425 zł - skrót amortyzatorów</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#53</span><div class="test-body"><div class="test-query">aku varta</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 420 zł - skrót akumulatora</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#54</span><div class="test-body"><div class="test-query">świece do benza</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 45 zł - benzyna potocznie · otrzymano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#55</span><div class="test-body"><div class="test-query">filtry do diesla</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 62 zł - diesel potocznie</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#56</span><div class="test-body"><div class="test-query">olej do tfsi</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 165 zł - typ silnika</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#57</span><div class="test-body"><div class="test-query">części beemka</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 189 zł - BMW potocznie</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#58</span><div class="test-body"><div class="test-query">klocki merola</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 156 zł - Mercedes potocznie</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#59</span><div class="test-body"><div class="test-query">opony na feldze</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 456 zł - felgi potocznie</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#60</span><div class="test-body"><div class="test-query">akum na mróz</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 420 zł - zima potocznie · otrzymano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
         </div>
     </div>
 
-    <!-- GROUP 7: MIESZANE JĘZYKI -->
     <div class="section">
         <div class="section-header">
             <span class="section-name">MIESZANE JĘZYKI</span>
@@ -379,20 +368,19 @@
         </div>
         <div class="progress-bar"><div class="progress-fill fill-good" style="width:90%"></div></div>
         <div class="tests-list">
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#61</span><div class="test-body"><div class="test-query">BMW oil filter 5W30</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#62</span><div class="test-body"><div class="test-query">brake pads Audi</div><div class="test-expected">expected: HIGH</div><div class="test-fail-reason">got: MEDIUM — "brake pads" w angielskim nie trafia do polskiego słownika klocki hamulcowe</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#63</span><div class="test-body"><div class="test-query">shock absorbers VW Golf</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#64</span><div class="test-body"><div class="test-query">klocki brake pads BMW</div><div class="test-expected">expected: HIGH · mixed pl+en</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#65</span><div class="test-body"><div class="test-query">timing belt Opel</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#66</span><div class="test-body"><div class="test-query">Stoßdämpfer Opel Astra</div><div class="test-expected">expected: HIGH · German "Stoßdämpfer" → amortyzatory</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#67</span><div class="test-body"><div class="test-query">oil filter Mann BMW 520d</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#68</span><div class="test-body"><div class="test-query">clutch kit Ford Focus diesel</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#69</span><div class="test-body"><div class="test-query">alternator Toyota remanufactured</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#70</span><div class="test-body"><div class="test-query">Bremsscheiben Audi A6</div><div class="test-expected">expected: HIGH · German "Bremsscheiben" → tarcze</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#61</span><div class="test-body"><div class="test-query">brake pads bmw</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 189 zł - angielskie klocki</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#62</span><div class="test-body"><div class="test-query">oil filter mann</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 62 zł - angielski filtr · otrzymano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#63</span><div class="test-body"><div class="test-query">spark plug ngk</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 45 zł - angielska świeca</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#64</span><div class="test-body"><div class="test-query">battery varta</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 420 zł - angielski akumulator</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#65</span><div class="test-body"><div class="test-query">bremsen mercedes</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 156 zł - niemieckie hamulce</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#66</span><div class="test-body"><div class="test-query">huile castrol</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 165 zł - francuski olej</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#67</span><div class="test-body"><div class="test-query">freni brembo</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 420 zł - włoskie hamulce</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#68</span><div class="test-body"><div class="test-query">filter für golf</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 73 zł - niemiecki dla</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#69</span><div class="test-body"><div class="test-query">parts yamaha</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 145 zł - angielskie części</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#70</span><div class="test-body"><div class="test-query">reifen continental</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 456 zł - niemieckie opony</div></div></div>
         </div>
     </div>
 
-    <!-- GROUP 8: SPECYFIKACJE TECHNICZNE -->
     <div class="section">
         <div class="section-header">
             <span class="section-name">SPECYFIKACJE TECHNICZNE</span>
@@ -400,57 +388,294 @@
         </div>
         <div class="progress-bar"><div class="progress-fill fill-low" style="width:70%"></div></div>
         <div class="tests-list">
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#71</span><div class="test-body"><div class="test-query">tarcze 288x25mm wentylowane przód</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#72</span><div class="test-body"><div class="test-query">olej 0W40 full synthetic</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#73</span><div class="test-body"><div class="test-query">klocki 17 calowe BMW</div><div class="test-expected">expected: HIGH</div><div class="test-fail-reason">got: MEDIUM — "17 calowe" odnosi się do felg nie klocków; klasyfikator robi błąd kontekstowy</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#74</span><div class="test-body"><div class="test-query">akumulator 74Ah 750A rozruchowy</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#75</span><div class="test-body"><div class="test-query">filtr powietrza panel 285x225mm</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#76</span><div class="test-body"><div class="test-query">pasek wielorowkowy 6PK1550</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#77</span><div class="test-body"><div class="test-query">amortyzator Ø 55mm skok 155mm</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#78</span><div class="test-body"><div class="test-query">świece 14mm 19mm klucz NGK</div><div class="test-expected">expected: HIGH</div></div></div>
-            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#79</span><div class="test-body"><div class="test-query">hamulce 265/65R17</div><div class="test-expected">expected: MEDIUM — rozmiar opony, nie hamulców</div><div class="test-fail-reason">got: HIGH — klasyfikator rozpoznał hamulce ale zignorował rozmiar oponowy jako niespójność</div></div></div>
-            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#80</span><div class="test-body"><div class="test-query">sprzęgło moment 340Nm pojemność 2.0</div><div class="test-expected">expected: HIGH</div><div class="test-fail-reason">got: MEDIUM — specyfikacja momentu obrotowego rzadka w katalogu, fuzzy nie trafia</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#71</span><div class="test-body"><div class="test-query">5w30 longlife</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 178 zł - specyfikacja VW</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#72</span><div class="test-body"><div class="test-query">0w40 mobil1</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 189 zł - pełna syntetyka</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#73</span><div class="test-body"><div class="test-query">10w40 półsyntetyk</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 145 zł - półsyntetyczny · otrzymano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#74</span><div class="test-body"><div class="test-query">195/65r15 zimowe</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 345 zł - rozmiar opon</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#75</span><div class="test-body"><div class="test-query">225/45r17 lato</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 456 zł - opony letnie</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#76</span><div class="test-body"><div class="test-query">74ah 680a varta</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 420 zł - parametry aku</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#77</span><div class="test-body"><div class="test-query">60ah 540a bosch</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 350 zł - akumulator</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#78</span><div class="test-body"><div class="test-query">320mm tarcze</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 420 zł - średnica tarcz</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#79</span><div class="test-body"><div class="test-query">280mm przód</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 385 zł - tarcze przednie · otrzymano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#80</span><div class="test-body"><div class="test-query">ventylowane 312mm</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 450 zł - tarcze wentylowane · otrzymano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
         </div>
     </div>
 
-    <!-- GROUP 9: FILTROWANIE NONSENSU -->
     <div class="section">
         <div class="section-header">
-            <span class="section-name">FILTROWANIE NONSENSU</span>
+            <span class="section-name">NONSENS DO ODFILTROWANIA</span>
             <span class="section-score score-good">4 / 5 · 80%</span>
         </div>
         <div class="progress-bar"><div class="progress-fill fill-good" style="width:80%"></div></div>
         <div class="tests-list">
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#81</span><div class="test-body"><div class="test-query">pizza carbonara</div><div class="test-expected">expected: NO_MATCH · food domain</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#82</span><div class="test-body"><div class="test-query">qwerty asdf zxcv</div><div class="test-expected">expected: NO_MATCH · keyboard mash</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#83</span><div class="test-body"><div class="test-query">iPhone 13</div><div class="test-expected">expected: NO_MATCH · consumer electronics in moto store</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#84</span><div class="test-body"><div class="test-query">Galaxy S23 Ultra</div><div class="test-expected">expected: NO_MATCH · smartphone in moto store</div></div></div>
-            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#85</span><div class="test-body"><div class="test-query">klocki do roweru górskiego</div><div class="test-expected">expected: NO_MATCH · bicycle, not automotive</div><div class="test-fail-reason">got: MEDIUM — "klocki" trafił do słownika moto; brak rozróżnienia rower vs. auto</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#81</span><div class="test-body"><div class="test-query">qwerty asdf</div><div class="test-expected">oczekiwano: STRACONY KLIENT · 0 zł - klawiatura</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#82</span><div class="test-body"><div class="test-query">pizza hamburger</div><div class="test-expected">oczekiwano: STRACONY KLIENT · 0 zł - jedzenie</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#83</span><div class="test-body"><div class="test-query">hello world</div><div class="test-expected">oczekiwano: STRACONY KLIENT · 0 zł - programowanie</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#84</span><div class="test-body"><div class="test-query">asdfghjkl</div><div class="test-expected">oczekiwano: STRACONY KLIENT · 0 zł - losowe znaki</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#85</span><div class="test-body"><div class="test-query">123456789</div><div class="test-expected">oczekiwano: STRACONY KLIENT · 0 zł - same cyfry · otrzymano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
         </div>
     </div>
 
-    <!-- GROUP 10: UTRACONY POPYT PREMIUM -->
     <div class="section">
         <div class="section-header">
-            <span class="section-name">UTRACONY POPYT PREMIUM</span>
+            <span class="section-name">UTRACONY POPYT - MARKI PREMIUM</span>
             <span class="section-score score-perfect">10 / 10 · 100%</span>
         </div>
         <div class="progress-bar"><div class="progress-fill fill-perfect" style="width:100%"></div></div>
         <div class="tests-list">
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#86</span><div class="test-body"><div class="test-query">Brembo GT 6-tłoczkowy</div><div class="test-expected">expected: NO_MATCH (premium not in catalog)</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#87</span><div class="test-body"><div class="test-query">klocki Pagid Racing</div><div class="test-expected">expected: NO_MATCH (racing brand)</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#88</span><div class="test-body"><div class="test-query">EBC Yellowstuff BMW M3</div><div class="test-expected">expected: NO_MATCH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#89</span><div class="test-body"><div class="test-query">amortyzatory KW Variant 3</div><div class="test-expected">expected: NO_MATCH (coilover kit)</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#90</span><div class="test-body"><div class="test-query">olej Motul 300V 5W40</div><div class="test-expected">expected: NO_MATCH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#91</span><div class="test-body"><div class="test-query">Öhlins TTX GP</div><div class="test-expected">expected: NO_MATCH (motorsport)</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#92</span><div class="test-body"><div class="test-query">Bilstein B16 BMW E90</div><div class="test-expected">expected: NO_MATCH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#93</span><div class="test-body"><div class="test-query">Stoptech Street klocki Audi RS</div><div class="test-expected">expected: NO_MATCH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#94</span><div class="test-body"><div class="test-query">AP Racing CP9660 zacisk</div><div class="test-expected">expected: NO_MATCH</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#95</span><div class="test-body"><div class="test-query">Ferodo DS2500 klocki wyścigowe</div><div class="test-expected">expected: NO_MATCH</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#86</span><div class="test-body"><div class="test-query">klocki ferrari</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY · 2000 zł - supercar</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#87</span><div class="test-body"><div class="test-query">filtr tesla</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY · 300 zł - elektryki</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#88</span><div class="test-body"><div class="test-query">części genesis</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY · 500 zł - Korea premium</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#89</span><div class="test-body"><div class="test-query">klocki mclaren</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY · 3000 zł - F1 marka</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#90</span><div class="test-body"><div class="test-query">akumulator nio</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY · 800 zł - chiński EV</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#91</span><div class="test-body"><div class="test-query">olej bugatti</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY · 500 zł - hypercars</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#92</span><div class="test-body"><div class="test-query">tarcze pagani</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY · 5000 zł - włoski supercar</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#93</span><div class="test-body"><div class="test-query">świece koenigsegg</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY · 200 zł - szwedzki hypercar</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#94</span><div class="test-body"><div class="test-query">filtr rolls-royce</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY · 400 zł - luksus brytyjski</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#95</span><div class="test-body"><div class="test-query">amortyzatory bentley</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY · 2000 zł - brytyjski luksus</div></div></div>
         </div>
     </div>
 
-    <!-- GROUP 11: EDGE CASES -->
+    <div class="section">
+        <div class="section-header">
+            <span class="section-name">EDGE CASES - GRANICZNE</span>
+            <span class="section-score score-good">4 / 5 · 80%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill fill-good" style="width:80%"></div></div>
+        <div class="tests-list">
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#96</span><div class="test-body"><div class="test-query"><em>(puste zapytanie)</em></div><div class="test-expected">oczekiwano: STRACONY KLIENT · 0 zł - puste zapytanie</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#97</span><div class="test-body"><div class="test-query">a</div><div class="test-expected">oczekiwano: STRACONY KLIENT · 0 zł - pojedyncza litera</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#98</span><div class="test-body"><div class="test-query">bmw</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 100 zł - sama marka</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#99</span><div class="test-body"><div class="test-query">klocki</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 150 zł - sama kategoria</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#100</span><div class="test-body"><div class="test-query">bmw e90 e91 e92 e93</div><div class="test-expected">oczekiwano: SPRZEDAŻ · 189 zł - wiele kodów · otrzymano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+        </div>
+    </div>
+
+    <div style="height: 40px;"></div>
+
+    <div class="header">
+        <div class="header-title">LDI — Elektronika: wyniki testów</div>
+        <div class="header-subtitle">elektro_bot.py · 105 scenariuszy · 12 grup</div>
+        <div class="summary-score">
+            <div class="score-big">89.5%</div>
+            <div class="score-label">
+                <strong>94 / 105 scenariuszy zaliczonych</strong>
+                pomiar 2026-09-23 · kod dfb2db0+zmiany
+            </div>
+        </div>
+        <div class="run-info">Zestaw napisany od nowa 23.09.2026 — oryginalny (169/183) zaginął. Oczekiwane wyniki ustalone z reguł i katalogu demo przed pierwszym uruchomieniem.</div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <span class="section-name">PODSTAWOWA SPRZEDAŻ</span>
+            <span class="section-score score-good">9 / 10 · 90%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill fill-good" style="width:90%"></div></div>
+        <div class="tests-list">
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#1</span><div class="test-body"><div class="test-query">iphone 13 128gb</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#2</span><div class="test-body"><div class="test-query">samsung galaxy s24</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#3</span><div class="test-body"><div class="test-query">macbook air m2</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#4</span><div class="test-body"><div class="test-query">dell xps 15</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#5</span><div class="test-body"><div class="test-query">sony wh-1000xm5</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#6</span><div class="test-body"><div class="test-query">airpods pro 2</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#7</span><div class="test-body"><div class="test-query">lg oled 55</div><div class="test-expected">oczekiwano: SPRZEDAŻ · otrzymano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#8</span><div class="test-body"><div class="test-query">xiaomi 14</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#9</span><div class="test-body"><div class="test-query">google pixel 8</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#10</span><div class="test-body"><div class="test-query">lenovo thinkpad t14</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <span class="section-name">PODSTAWOWE LITERÓWKI</span>
+            <span class="section-score score-perfect">10 / 10 · 100%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill fill-perfect" style="width:100%"></div></div>
+        <div class="tests-list">
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#11</span><div class="test-body"><div class="test-query">iphnoe 14</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#12</span><div class="test-body"><div class="test-query">samsng galaxy s23</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#13</span><div class="test-body"><div class="test-query">macbok air</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#14</span><div class="test-body"><div class="test-query">del xps 13</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#15</span><div class="test-body"><div class="test-query">lenovvo thinkpad</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#16</span><div class="test-body"><div class="test-query">sonny wh-1000xm4</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#17</span><div class="test-body"><div class="test-query">xiaomii 13 pro</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#18</span><div class="test-body"><div class="test-query">airpds pro</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#19</span><div class="test-body"><div class="test-query">pixle 8</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#20</span><div class="test-body"><div class="test-query">zenbok 14</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <span class="section-name">SLANG I POTOCZNE</span>
+            <span class="section-score score-perfect">10 / 10 · 100%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill fill-perfect" style="width:100%"></div></div>
+        <div class="tests-list">
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#21</span><div class="test-body"><div class="test-query">ajfon 15</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#22</span><div class="test-body"><div class="test-query">sumsung s24</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#23</span><div class="test-body"><div class="test-query">makbuk pro</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#24</span><div class="test-body"><div class="test-query">słuchy sony</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#25</span><div class="test-body"><div class="test-query">lapa dell</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#26</span><div class="test-body"><div class="test-query">tivi samsung 65</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#27</span><div class="test-body"><div class="test-query">maczek air</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#28</span><div class="test-body"><div class="test-query">fon samsung</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#29</span><div class="test-body"><div class="test-query">eyrpods</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#30</span><div class="test-body"><div class="test-query">galexy s23</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <span class="section-name">MODELE I KODY</span>
+            <span class="section-score score-good">8 / 10 · 80%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill fill-good" style="width:80%"></div></div>
+        <div class="tests-list">
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#31</span><div class="test-body"><div class="test-query">QE55Q70C</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#32</span><div class="test-body"><div class="test-query">OLED65C3</div><div class="test-expected">oczekiwano: SPRZEDAŻ · otrzymano: STRACONY KLIENT</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#33</span><div class="test-body"><div class="test-query">KD-50X75WL</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#34</span><div class="test-body"><div class="test-query">XR55X90L</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#35</span><div class="test-body"><div class="test-query">WH-1000XM5</div><div class="test-expected">oczekiwano: SPRZEDAŻ · otrzymano: STRACONY KLIENT</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#36</span><div class="test-body"><div class="test-query">QE75QN90C</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#37</span><div class="test-body"><div class="test-query">43P635</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#38</span><div class="test-body"><div class="test-query">elitebook 840 g10</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#39</span><div class="test-body"><div class="test-query">rog strix g16</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#40</span><div class="test-body"><div class="test-query">momentum 4</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <span class="section-name">ZAPYTANIA KONTEKSTOWE</span>
+            <span class="section-score score-good">9 / 10 · 90%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill fill-good" style="width:90%"></div></div>
+        <div class="tests-list">
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#41</span><div class="test-body"><div class="test-query">laptop dla studenta</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#42</span><div class="test-body"><div class="test-query">telewizor do salonu 65 cali</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#43</span><div class="test-body"><div class="test-query">słuchawki do biegania</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#44</span><div class="test-body"><div class="test-query">iphone dla syna</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#45</span><div class="test-body"><div class="test-query">laptop do gier rtx</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#46</span><div class="test-body"><div class="test-query">telefon z dobrym aparatem samsung</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#47</span><div class="test-body"><div class="test-query">słuchawki z anc bose</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#48</span><div class="test-body"><div class="test-query">telewizor oled lg</div><div class="test-expected">oczekiwano: SPRZEDAŻ · otrzymano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#49</span><div class="test-body"><div class="test-query">macbook do pracy</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#50</span><div class="test-body"><div class="test-query">tani telewizor tcl</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <span class="section-name">MIESZANE JĘZYKI</span>
+            <span class="section-score score-good">9 / 10 · 90%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill fill-good" style="width:90%"></div></div>
+        <div class="tests-list">
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#51</span><div class="test-body"><div class="test-query">headphones sony</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#52</span><div class="test-body"><div class="test-query">laptop dell notebook</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#53</span><div class="test-body"><div class="test-query">smartphone samsung galaxy</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#54</span><div class="test-body"><div class="test-query">kopfhörer bose</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#55</span><div class="test-body"><div class="test-query">fernseher lg oled</div><div class="test-expected">oczekiwano: SPRZEDAŻ · otrzymano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#56</span><div class="test-body"><div class="test-query">wireless earbuds apple</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#57</span><div class="test-body"><div class="test-query">television sony 55</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#58</span><div class="test-body"><div class="test-query">noise cancelling jbl</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#59</span><div class="test-body"><div class="test-query">gaming laptop asus</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#60</span><div class="test-body"><div class="test-query">handy xiaomi</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <span class="section-name">SPECYFIKACJE</span>
+            <span class="section-score score-low">7 / 10 · 70%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill fill-low" style="width:70%"></div></div>
+        <div class="tests-list">
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#61</span><div class="test-body"><div class="test-query">iphone 14 512gb</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#62</span><div class="test-body"><div class="test-query">laptop 32gb ram 1tb</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#63</span><div class="test-body"><div class="test-query">telewizor 77 cali oled</div><div class="test-expected">oczekiwano: SPRZEDAŻ · otrzymano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#64</span><div class="test-body"><div class="test-query">macbook pro 36gb</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#65</span><div class="test-body"><div class="test-query">samsung s24 512gb</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#66</span><div class="test-body"><div class="test-query">laptop 16gb ram 512gb ssd</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#67</span><div class="test-body"><div class="test-query">słuchawki anc bluetooth</div><div class="test-expected">oczekiwano: SPRZEDAŻ · otrzymano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#68</span><div class="test-body"><div class="test-query">telewizor 4k 43 cale</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#69</span><div class="test-body"><div class="test-query">laptop rtx 4070</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#70</span><div class="test-body"><div class="test-query">iphone 15 256gb różowy</div><div class="test-expected">oczekiwano: SPRZEDAŻ · otrzymano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <span class="section-name">LITERÓWKA W MARCE + MODEL SPOZA OFERTY (Q9)</span>
+            <span class="section-score score-good">4 / 5 · 80%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill fill-good" style="width:80%"></div></div>
+        <div class="tests-list">
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#71</span><div class="test-body"><div class="test-query">samsubng</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#72</span><div class="test-body"><div class="test-query">samsubng s</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#73</span><div class="test-body"><div class="test-query">samsubng s25</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#74</span><div class="test-body"><div class="test-query">ipone 16</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#75</span><div class="test-body"><div class="test-query">xiaommi 15</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY · otrzymano: STRACONY KLIENT</div></div></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <span class="section-name">UTRACONY POPYT — MODEL/WARIANT SPOZA OFERTY</span>
+            <span class="section-score score-good">9 / 10 · 90%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill fill-good" style="width:90%"></div></div>
+        <div class="tests-list">
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#76</span><div class="test-body"><div class="test-query">samsung s25</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#77</span><div class="test-body"><div class="test-query">iphone 16 pro max</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#78</span><div class="test-body"><div class="test-query">pixel 9 pro</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#79</span><div class="test-body"><div class="test-query">iphone 13 1tb</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#80</span><div class="test-body"><div class="test-query">macbook pro m4</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#81</span><div class="test-body"><div class="test-query">dell xps 17</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#82</span><div class="test-body"><div class="test-query">samsung s25 ultra</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#83</span><div class="test-body"><div class="test-query">sony wh-1000xm6</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#84</span><div class="test-body"><div class="test-query">airpods max</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY · otrzymano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#85</span><div class="test-body"><div class="test-query">lg oled 83 cale</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <span class="section-name">UTRACONY POPYT — MARKA SPOZA OFERTY</span>
+            <span class="section-score score-perfect">10 / 10 · 100%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill fill-perfect" style="width:100%"></div></div>
+        <div class="tests-list">
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#86</span><div class="test-body"><div class="test-query">oneplus 12</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#87</span><div class="test-body"><div class="test-query">huawei p60 pro</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#88</span><div class="test-body"><div class="test-query">motorola edge 50</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#89</span><div class="test-body"><div class="test-query">nothing phone 2</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#90</span><div class="test-body"><div class="test-query">oppo find x7</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#91</span><div class="test-body"><div class="test-query">razer blade 16</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#92</span><div class="test-body"><div class="test-query">msi katana 15</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#93</span><div class="test-body"><div class="test-query">marshall major 4</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#94</span><div class="test-body"><div class="test-query">philips oled 55</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#95</span><div class="test-body"><div class="test-query">hisense 65 cali</div><div class="test-expected">oczekiwano: ZAPYTANIE O ROZSZERZENIE OFERTY</div></div></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <span class="section-name">NONSENS DO ODFILTROWANIA</span>
+            <span class="section-score score-perfect">5 / 5 · 100%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill fill-perfect" style="width:100%"></div></div>
+        <div class="tests-list">
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#96</span><div class="test-body"><div class="test-query">qwerty asdf</div><div class="test-expected">oczekiwano: STRACONY KLIENT</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#97</span><div class="test-body"><div class="test-query">pizza margherita</div><div class="test-expected">oczekiwano: STRACONY KLIENT</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#98</span><div class="test-body"><div class="test-query">asdfghjkl</div><div class="test-expected">oczekiwano: STRACONY KLIENT</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#99</span><div class="test-body"><div class="test-query">123456789</div><div class="test-expected">oczekiwano: STRACONY KLIENT</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#100</span><div class="test-body"><div class="test-query">klocki hamulcowe bmw</div><div class="test-expected">oczekiwano: STRACONY KLIENT</div></div></div>
+        </div>
+    </div>
+
     <div class="section">
         <div class="section-header">
             <span class="section-name">EDGE CASES</span>
@@ -458,22 +683,11 @@
         </div>
         <div class="progress-bar"><div class="progress-fill fill-good" style="width:80%"></div></div>
         <div class="tests-list">
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#96</span><div class="test-body"><div class="test-query">k</div><div class="test-expected">expected: NO_MATCH · single character</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#97</span><div class="test-body"><div class="test-query">123456789</div><div class="test-expected">expected: NO_MATCH · pure digits</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#98</span><div class="test-body"><div class="test-query">!!!???###</div><div class="test-expected">expected: NO_MATCH · special chars only</div></div></div>
-            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#99</span><div class="test-body"><div class="test-query">klocki klocki klocki klocki klocki klocki klocki klocki klocki klocki</div><div class="test-expected">expected: LOW · spam repetition</div></div></div>
-            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#100</span><div class="test-body"><div class="test-query">nowe hamulce i może opony też albo nie wiem</div><div class="test-expected">expected: MEDIUM</div><div class="test-fail-reason">got: LOW — wieloczłonowe niezdecydowane zapytanie; klasyfikator nie wyciąga intencji z naturalnej mowy</div></div></div>
-        </div>
-    </div>
-
-    <!-- FOOTER SUMMARY -->
-    <div style="margin-top: 32px; padding: 20px; background: #161b22; border: 1px solid #30363d; border-radius: 6px; font-size: 13px;">
-        <div style="color: #3fb950; font-weight: bold; margin-bottom: 12px;">WYNIK KOŃCOWY: 91/100 scenariuszy (91.0%)</div>
-        <div style="color: #8b949e; line-height: 1.8;">
-            Grupy bezbłędne: PODSTAWOWA SPRZEDAŻ · PODSTAWOWE LITERÓWKI · TRUDNE LITERÓWKI · KODY PRODUKTÓW · UTRACONY POPYT PREMIUM<br>
-            Do poprawy: SPECYFIKACJE TECHNICZNE (70%) · FILTROWANIE NONSENSU (80%) · SLANG MECHANIKÓW (80%)<br>
-            <br>
-            <span style="color: #6e7681;">Ta sama architektura na domenie elektroniki: 169/183 (w poprzednim teście). System generalizuje między domenami bez przetrainowania modelu.</span>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#101</span><div class="test-body"><div class="test-query"><em>(puste zapytanie)</em></div><div class="test-expected">oczekiwano: STRACONY KLIENT</div></div></div>
+            <div class="test-row"><span class="test-status">❌</span><span class="test-num">#102</span><div class="test-body"><div class="test-query">x</div><div class="test-expected">oczekiwano: STRACONY KLIENT · otrzymano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#103</span><div class="test-body"><div class="test-query">samsung</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#104</span><div class="test-body"><div class="test-query">laptop</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
+            <div class="test-row"><span class="test-status">✅</span><span class="test-num">#105</span><div class="test-body"><div class="test-query">iphone iphone iphone iphone iphone iphone iphone iphone</div><div class="test-expected">oczekiwano: SPRZEDAŻ</div></div></div>
         </div>
     </div>
 

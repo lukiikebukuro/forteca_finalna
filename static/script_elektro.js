@@ -125,6 +125,21 @@ this.dashboardOverlay = null;
                 this.sendTextMessage();
             });
         }
+
+        // Chipy scenariuszy (redesign 2026-09): klik = to samo co wpisanie frazy.
+        // NIE submit: sendTextMessage() kasuje timer sendFinalAnalysis, więc panel analityki nic by nie dostał.
+        document.querySelectorAll('.scenario-chips .chip[data-query]').forEach(chip => {
+            chip.addEventListener('click', () => {
+                if (!this.userInput) return;
+                const query = chip.dataset.query;
+                this.userInput.value = query;
+                this.userInput.focus();
+                this.lastQuery = query;
+                this.searchMode = true;
+                this.performSearch(query);      // WARSTWA 1: sugestie
+                this.sendFinalAnalysis(query);  // WARSTWA 2: klasyfikacja → panel (TCD)
+            });
+        });
         
         if (this.userInput) {
             this.userInput.addEventListener('keypress', (e) => {

@@ -1,17 +1,5 @@
 {
   "welcome_message_lines": [
-    "🚗 <strong>Centrum Analityczne Adept AI (Moto)</strong> ⚡",
-    "To nie jest zwykły chatbot. To analityk, który widzi braki w Twoim magazynie.",
-    "",
-    "📉 <strong>SCENARIUSZE TESTOWE: Wykrywanie Utraconego Popytu</strong>",
-    "<i>(Wpisz te frazy. System wie, czego nie masz i policzy stratę)</i>",
-    "1. <strong>Tarcza hamulcowa 280mm</strong> (Brak wymiaru - Mamy 300mm)",
-    "2. <strong>Olej 10W40</strong> (Brak parametru - Mamy 5W30)",
-    "3. <strong>Akumulator 65Ah</strong> (Brak pojemności - Mamy 60Ah i 74Ah)",
-    "4. <strong>Klocki Ferrari</strong> (Brak marki - Klient szuka Premium)",
-    "",
-    "5. <strong>Amortyzator 1.7 Opel</strong> (Brak zastosowania - Mamy do Golfa)",
-    "6. <strong>Klocki BMW E46</strong> (Brak generacji - Mamy do E90)",
-    "7. <strong>jaka pogodaa</strong> (filtracja nonsensu)"
+    "<strong>Centrum Analityczne LDI — Motoryzacja</strong><p>To radar, który namierza pieniądze uciekające z Twojego sklepu.</p><p class=\"welcome-invite\">Wpisz numer części, nazwę lub VIN — albo kliknij scenariusz pod polem wyszukiwania.</p><div class=\"welcome-brands\"><span class=\"welcome-brands-label\">W katalogu demo</span><div class=\"welcome-brand-list\"><span>BMW</span><span>Audi</span><span>Volkswagen</span><span>Ford</span><span>Opel</span><span>Bosch</span><span>Brembo</span><span>Mann</span><span>Sachs</span><span>Bilstein</span></div></div>"
   ]
 }

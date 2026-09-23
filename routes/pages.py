@@ -73,6 +73,32 @@ def elektro_demo_page():
     return render_template('demo_page_elektro.html')
 
 
+@pages_bp.route('/motoryzacja')
+def ldi_demo_moto():
+    """LDI live demo — motoryzacja (docelowy adres na domenie LDI)"""
+    return render_template('demo_page.html')
+
+
+@pages_bp.route('/elektronika')
+def ldi_demo_elektro():
+    """LDI live demo — elektronika (docelowy adres na domenie LDI)"""
+    if not ELEKTRO_BOT_AVAILABLE:
+        return redirect(url_for('pages.ldi_demo_moto'))
+    return render_template('demo_page_elektro.html')
+
+
+@pages_bp.route('/testy')
+def ldi_tests_new():
+    """LDI — wyniki testów (docelowy adres na domenie LDI)"""
+    return render_template('ldi_tests.html')
+
+
+@pages_bp.route('/ldi-landing')
+def ldi_landing_preview():
+    """Strona produktu LDI. Na domenie LDI serwowana pod '/' (routes/hosts.py); ta trasa do podglądu lokalnego."""
+    return render_template('ldi_home.html')
+
+
 @pages_bp.route('/anima')
 def anima_page():
     """ANIMA technical manifest page"""
@@ -102,12 +128,6 @@ def ldi_readme_page():
 def site_analytics():
     """P5 — Site Analytics Panel (admin only)"""
     return render_template('site_analytics.html', user=current_user)
-
-
-@pages_bp.route('/tech')
-def tech_docs():
-    """Technical documentation page"""
-    return render_template('tech.html')
 
 
 @pages_bp.route('/dashboard')
@@ -195,6 +215,12 @@ def client_dashboard():
     return render_template('client-dashboard.html',
                            user=current_user,
                            client=client_info)
+
+
+@pages_bp.route('/panel-demo')
+def client_dashboard_demo():
+    """Publiczny podgląd panelu klienta (P1) na danych przykładowych — CTA ze strony produktu LDI"""
+    return render_template('client-dashboard.html', demo_mode=True, user=None, client=None)
 
 
 @pages_bp.route('/admin-dashboard')

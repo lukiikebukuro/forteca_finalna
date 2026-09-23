@@ -475,21 +475,34 @@
     </style>
 </head>
 <body>
+    {% if demo_mode %}
+    <div style="background:#eab308;color:#1f2937;text-align:center;padding:8px 16px;font-size:13px;font-weight:600;letter-spacing:.02em;">
+        DANE PRZYKŁADOWE — podgląd panelu właściciela sklepu. Liczby i produkty są ilustracyjne, nie pochodzą z żadnego sklepu.
+        <a href="{{ ldi_url }}" style="color:#1f2937;margin-left:10px;">← wróć do LDI</a>
+    </div>
+    {% endif %}
     <div class="header">
         <div class="header-content">
             <div class="header-left">
-                <img src="{{ url_for('static', filename='logo.png') }}" alt="Studio Adept AI" class="company-logo">
+                <img src="{{ url_for('static', filename='sedno_logo.svg') }}" alt="Sedno Tech" class="company-logo">
                 <div class="header-titles">
                     <h1>Centrum Analityczne Utraconych Okazji</h1>
-                    <div class="subtitle">Dashboard Klienta - Poziom 1 • by Studio Adept AI</div>
+                    <div class="subtitle">Dashboard Klienta - Poziom 1 • by Sedno Tech</div>
                 </div>
             </div>
             <div class="header-right">
+                {% if demo_mode %}
+                <div class="user-info">
+                    <div class="company">Sklep demo</div>
+                    <div class="user">tryb podglądu</div>
+                </div>
+                {% else %}
                 <div class="user-info">
                     <div class="company">{{ client.company_name if client else 'Demo Company Ltd' }}</div>
                     <div class="user">{{ user.username }} ({{ user.role }})</div>
                 </div>
                 <a href="{{ url_for('pages.logout') }}" class="logout-btn">Wyloguj</a>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -500,7 +513,7 @@
             <div class="card realtime-section">
                 <div class="section-title">
                     <div class="section-icon">📊</div>
-                    Metryki Real-time
+                    {{ 'Metryki (przykładowe)' if demo_mode else 'Metryki — dziś' }}
                     <div class="status-indicator">
                         <div class="status-dot"></div>
                         System Online
@@ -509,33 +522,33 @@
                 
                 <div class="metrics-grid">
                     <div class="metric">
-                        <div class="metric-value" id="today-queries">0</div>
+                        <div class="metric-value" id="today-queries">—</div>
                         <div class="metric-label">Zapytania Dziś</div>
-                        <div class="metric-change positive">+12% vs wczoraj</div>
+                        <div class="metric-change neutral">dziś</div>
                     </div>
                     
                     <div class="metric">
-                        <div class="metric-value" id="week-queries">0</div>
+                        <div class="metric-value" id="week-queries">—</div>
                         <div class="metric-label">Zapytania Ten Tydzień</div>
-                        <div class="metric-change positive">+8% vs poprzedni</div>
+                        <div class="metric-change neutral">ostatnie 7 dni</div>
                     </div>
                     
                     <div class="metric">
-                        <div class="metric-value" id="queries-in-analysis">0</div>
+                        <div class="metric-value" id="queries-in-analysis">—</div>
                         <div class="metric-label">Zapytania w Analizie</div>
                         <div class="metric-change neutral">Oczekujące na kurację</div>
                     </div>
                     
                     <div class="metric">
-                        <div class="metric-value" id="response-time">250ms</div>
+                        <div class="metric-value" id="response-time">—</div>
                         <div class="metric-label">Średni Czas Odpowiedzi</div>
-                        <div class="metric-change positive">System wydajny</div>
+                        <div class="metric-change neutral">średnio</div>
                     </div>
 
                     <div class="metric" style="border: 1px solid #fcd34d; background: #fffbeb;" title="Klient szukał produktu którego nie ma i mimo to kliknął alternatywę. Najcenniejszy sygnał w systemie.">
                         <div class="metric-value" id="gold-signals" style="color: #d97706;">0</div>
                         <div class="metric-label" style="color: #92400e;">🏆 Gold Signals</div>
-                        <div class="metric-change" style="color: #d97706; font-size: 11px;">Szukał X → kupił Y</div>
+                        <div class="metric-change" style="color: #d97706; font-size: 11px;">Szukał X → kliknął Y</div>
                     </div>
                 </div>
             </div>
@@ -545,7 +558,7 @@
         <div class="report-item">
     <div class="report-header">
         <div class="report-title">Puls Rynku - Top Utracone Produkty</div>
-        <div class="report-date">Ostatnia aktualizacja: 15.10.2025</div>
+        <div class="report-date">{{ 'Dane przykładowe' if demo_mode else 'Ostatnia aktualizacja: 15.10.2025' }}</div>
     </div>
     
     <div class="top-products">
@@ -618,9 +631,9 @@
         <span style="font-size: 0.9em; opacity: 0.8;">(Całkowity wolumen popytu brutto: >250,000 zł)</span>
     </div>
     
-    <button class="download-button" onclick="downloadReport()">
+    {% if not demo_mode %}<button class="download-button" onclick="downloadReport()">
         📄 Pobierz pełny raport PDF (47 produktów)
-    </button>
+    </button>{% endif %}
                     
                     <div class="download-info">
                         Raport zawiera analizę konwersji i potencjału retencji
@@ -720,19 +733,15 @@
             window.location.href = `/api/client/${clientId}/weekly-report.pdf`;
         }
         
-        // Symulacja aktualizacji danych real-time
-        function updateRealTimeMetrics() {
-            document.getElementById('today-queries').textContent = Math.floor(Math.random() * 50) + 20;
-            document.getElementById('week-queries').textContent = Math.floor(Math.random() * 200) + 150;
-            document.getElementById('queries-in-analysis').textContent = Math.floor(Math.random() * 15) + 5;
-            document.getElementById('response-time').textContent = (Math.floor(Math.random() * 100) + 200) + 'ms';
-        }
-        
-        // Aktualizuj co 15 sekund
-        setInterval(updateRealTimeMetrics, 15000);
-        updateRealTimeMetrics(); // Pierwsza aktualizacja
-        
-        // Załaduj prawdziwe dane z API
+        // Metryki: symulacja usunięta 2026-09-23.
+        // Tryb demo: stałe wartości przykładowe. Tryb klienta: tylko to, co zwraca API; reszta "—".
+        {% if demo_mode %}
+        document.getElementById('today-queries').textContent = '68';
+        document.getElementById('week-queries').textContent = '412';
+        document.getElementById('queries-in-analysis').textContent = '7';
+        document.getElementById('response-time').textContent = '240ms';
+        document.getElementById('gold-signals').textContent = '3';
+        {% else %}
         fetch('/api/client/{{ user.client_id if user.client_id else 1 }}/stats')
             .then(response => response.json())
             .then(data => {
@@ -752,6 +761,7 @@
                 }
             })
             .catch(() => {});
+        {% endif %}
     </script>
 </body>
 </html>

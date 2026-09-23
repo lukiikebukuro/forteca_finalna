@@ -1,5 +1,5 @@
 /**
- * ADEPT AI Dashboard - Real-time JavaScript Controller
+ * LDI Dashboard - Real-time JavaScript Controller
  * NAPRAWIONE: Liczniki działają z polskimi statusami z backendu
  * v5.2 - FIX dla ELEKTRO + MOTO
  */
@@ -43,7 +43,7 @@ class TacticalDashboard {
     }
     
     async initialize() {
-        console.log('🎯 Initializing ADEPT AI Dashboard...');
+        console.log('🎯 Initializing LDI Dashboard...');
         
         try {
             this.setupEventListeners();
@@ -271,11 +271,13 @@ class TacticalDashboard {
                 
                 // === ZADANIE 1.2: Nasłuchuj na live_feed_update ===
                 this.socket.on('live_feed_update', (data) => {
+                    this.markNotEmpty();
                     console.log('🛰️ Received live_feed_update:', data);
                     this.handleLiveFeedUpdate(data);
                 });
                 
                 this.socket.on('stats_update', (data) => {
+                    this.markNotEmpty();
                     this.updateStatistics(data);
                 });
                 
@@ -692,10 +694,20 @@ class TacticalDashboard {
         this.showToast(this.feedPaused ? 'Feed wstrzymany' : 'Feed wznowiony', 'info');
     }
     
+    // Redesign 2026-09: panel startuje z .is-empty ("Wpisz frazę..."); pierwsze dane go zdejmują
+    markNotEmpty() {
+        document.getElementById('dashboardColumn')?.classList.remove('is-empty');
+    }
+
     clearFeed() {
         const liveFeed = document.getElementById('liveFeed');
         if (liveFeed) {
-            liveFeed.innerHTML = '<div class="feed-placeholder"><i class="fas fa-satellite-dish"></i><span>Oczekiwanie na dane...</span></div>';
+            liveFeed.innerHTML = '<div class="feed-placeholder">' +
+                '<div class="feed-radar" aria-hidden="true"></div>' +
+                '<div class="feed-placeholder-title">Nasłuch aktywny</div>' +
+                '<span>Każde zapytanie pojawi się tutaj w sekundę po wpisaniu — z klasyfikacją intencji i wyceną.</span>' +
+                '<div class="feed-placeholder-meta">0 zdarzeń w sesji</div>' +
+                '</div>';
         }
         
         localStorage.removeItem('feedHistory');

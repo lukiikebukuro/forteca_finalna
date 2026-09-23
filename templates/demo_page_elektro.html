@@ -3,389 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ElektroParts Pro - Demo + Analytics Dashboard</title>
-    <meta name="description" content="Universal Soldier - Bot e-commerce z dashboardem analitycznym">
-    
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📱</text></svg>">
-    
+    <title>LDI — Live Demo (Elektronika) · Sedno Tech</title>
+    <meta name="description" content="Lost Demand Intelligence — demo live wykrywania utraconego popytu w e-commerce">
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23c2410c'/><text x='16' y='23' font-family='Georgia,serif' font-size='19' font-weight='600' fill='%23faf7f2' text-anchor='middle'>L</text></svg>">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+    <!-- Font Awesome ZOSTAJE: dashboard.js wstrzykuje <i class="fas fa-*"> do feedu i przycisków pause/clear -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ECOMMERCE123"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-ECOMMERCE123', {
-        debug_mode: true,
-        page_title: 'Universal Soldier Bot + Dashboard',
-        app_name: 'AutoParts Pro Demo',
-        app_version: '3.0'
-      });
-    </script>
-    
     <link rel="stylesheet" href="{{ url_for('static', filename='unified_style.css') }}">
-   
-   <style>
-        .clarification-banner {
-            background-color: #fefce8; /* Jasnożółty */
-            border: 1px solid #fde047; /* Żółty border */
-            color: #713f12; /* Ciemny tekst */
-            padding: 16px 20px;
-            border-radius: 12px;
-            margin: 0 0 20px 0; /* Odstęp TYLKO na dole, przed botem */
-            font-size: 15px;
-            font-weight: 500;
-            line-height: 1.6;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-        .clarification-banner strong {
-            color: #ca8a04; /* Ciemniejszy żółty */
-            display: block; /* "💡 Uwaga:" w osobnej linii */
-            margin-bottom: 4px;
-            font-weight: 700;
-        }
-        
-        /* Fix dla advantage-grid - 3 kolumny w grid - NADPISANIE unified_style.css */
-        .sales-arguments .arguments-container .advantage-grid {
-            display: grid !important;
-            grid-template-columns: repeat(3, 1fr) !important;
-            gap: 24px !important;
-            margin-top: 32px !important;
-            width: 100% !important;
-        }
-        
-        /* Dla ekranów powyżej 1025px wymuszamy 3 kolumny */
-        @media (min-width: 1025px) {
-            .sales-arguments .arguments-container .advantage-grid {
-                grid-template-columns: repeat(3, 1fr) !important;
-            }
-        }
-        
-        .advantage-item {
-            background: rgba(255, 255, 255, 0.05) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            border-radius: 12px !important;
-            padding: 24px !important;
-            transition: all 0.3s ease !important;
-        }
-        
-        .advantage-item:hover {
-            background: rgba(255, 255, 255, 0.08) !important;
-            transform: translateY(-4px) !important;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
-        }
-        
-        .advantage-icon {
-            font-size: 32px !important;
-            margin-bottom: 12px !important;
-        }
-        
-        .advantage-content h4 {
-            color: #ffffff !important;
-            font-size: 18px !important;
-            font-weight: 700 !important;
-            margin-bottom: 12px !important;
-        }
-        
-        .advantage-content p {
-            color: #e5e7eb !important;
-            line-height: 1.6 !important;
-        }
-        
-        /* Responsive - na mniejszych ekranach 1 kolumna */
-        @media (max-width: 1024px) {
-            .advantage-grid {
-                grid-template-columns: 1fr !important;
-            }
-        }
-    </style>
+    <!-- Redesign 2026-09: ładowany PO unified_style.css; zmienne :root z !important przebijają stare nadpisy -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='ldi_redesign.css') }}?v=1">
 
-    
-    
-    </head>
+    <style>
+        /* ====================================================================
+           TRYB ELEKTRONIKA — jedyna różnica wizualna względem /motobot.
+           Wspólna paleta (miedź/złoto/off-white) siedzi w unified_style.css,
+           sekcja 14. Tutaj tylko akcent trybu: stonowana zieleń (dawny
+           "MATRIX GREEN" i cały jego blok override'ów usunięty).
+           ==================================================================== */
+        :root {
+            --mode-accent: #15803d;
+            --mode-accent-soft: rgba(21, 128, 61, 0.09);
+        }
+        .feed-control-btn i { font-size: 11px; }
+    </style>
+</head>
 <body>
 
     <div class="connection-status" id="connectionStatus">
         <i class="fas fa-wifi"></i>
         <span>Łączenie...</span>
     </div>
-    
+
     <div class="demo-container">
         <div class="bot-column" id="botColumn">
-           
-            <button class="mobile-dashboard-toggle" id="mobileDashboardToggle">
-    📊 Pokaż Centrum Analityczne
-</button>
+
+            <button class="mobile-dashboard-toggle" id="mobileDashboardToggle" type="button">
+                Centrum analityczne
+            </button>
 
             <div class="bot-content">
                 <div class="app-container" data-api-prefix="/elektrobot-prototype">
-                    <div style="background: linear-gradient(135deg, #10b981 0%, #047857 100%); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1);">
-    
-    <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="font-size: 18px;">📱</span>
-        <span style="color: white; font-weight: 700; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase;">Tryb: ELEKTRONIKA</span>
-    </div>
 
-    <a href="/motobot-prototype" style="
-        background-color: #2563eb; 
-        color: white; 
-        text-decoration: none; 
-        padding: 8px 16px; 
-        border-radius: 6px; 
-        font-size: 12px; 
-        font-weight: 700; 
-        border: 1px solid #1d4ed8;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        gap: 6px;">
-        <span>🚗</span> Przełącz na MOTORYZACJĘ →
-    </a>
-</div>
-                    
-                    <style>
-    /* STYL DO NAGŁÓWKA - WERSJA COMPACT PRO */
-    .app-header {
-        background: #fff;
-        border-bottom: 1px solid #e2e8f0;
-        padding: 12px 20px;
-    }
-    
-    .header-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
+                    <!-- PASEK TRYBU — segmented control zamiast krzykliwego zielonego bloku.
+                         Zachowanie bez zmian: to nadal LINK, przeładowuje stronę. -->
+                    <div class="mode-bar">
+                        <div class="mode-bar-brand">
+                            <strong>LDI</strong> Live Demo
+                        </div>
+                        <nav class="mode-switch" aria-label="Tryb branży">
+                            <a href="/motoryzacja" class="mode-seg">
+                                <span class="mode-seg-dot"></span>
+                                Motoryzacja
+                            </a>
+                            <span class="mode-seg" aria-current="page">
+                                <span class="mode-seg-dot"></span>
+                                Elektronika
+                            </span>
+                        </nav>
+                    </div>
 
-    /* LEWA STRONA */
-    .logo-section {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-    .logo-icon {
-        font-size: 24px;
-        background: #ecfdf5; /* Lekka zieleń tła dla ikony */
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 8px;
-        border: 1px solid #d1fae5;
-    }
-    .logo-text h1 {
-        font-size: 18px;
-        font-weight: 700;
-        color: #1e293b;
-        margin: 0;
-        line-height: 1.1;
-        letter-spacing: -0.5px;
-    }
-    .logo-subtitle {
-        font-size: 11px;
-        color: #64748b;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-weight: 600;
-    }
+                    <header class="app-header">
+                        <div class="header-content">
+                            <div class="logo-section">
+                                <div class="logo-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"></rect><path d="M10.5 18.5h3"></path></svg>
+                                </div>
+                                <div class="logo-text">
+                                    <h1>LDI | Demand Intelligence</h1>
+                                    <span class="logo-subtitle">System LDI — Lost Demand Intelligence</span>
+                                </div>
+                            </div>
 
-    /* PRAWA STRONA */
-    .header-right {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-    .header-badges {
-        display: flex;
-        gap: 8px;
-    }
+                            <div class="header-right">
+                                <div class="header-badges">
+                                    <div class="tech-badge badge-blue">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+                                        Silnik LDI v5.1
+                                    </div>
+                                    <div class="tech-badge badge-green">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2.5-6 4 12 2.5-6h5"></path></svg>
+                                        Monitoring live
+                                    </div>
+                                    <div class="tech-badge badge-gray">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6l7-3z"></path></svg>
+                                        Number Guard™
+                                    </div>
+                                </div>
 
-    /* TECHNICZNE BADGE */
-    .tech-badge {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 12px;
-        border-radius: 6px;
-        font-size: 11px;
-        font-weight: 600;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        white-space: nowrap;
-    }
-    
-    .badge-blue { color: #2563eb; background: #eff6ff; border-color: #bfdbfe; }
-    .badge-green { color: #059669; background: #ecfdf5; border-color: #a7f3d0; }
-    .badge-gray { color: #475569; background: #f1f5f9; border-color: #cbd5e1; }
+                                <a href="/login" class="header-cta-link">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><path d="M4 19V5"></path><path d="M4 19h16"></path><path d="M8 16V9"></path><path d="M13 16v-4"></path><path d="M18 16V7"></path></svg>
+                                    Dostęp dla partnerów
+                                </a>
+                            </div>
+                        </div>
+                    </header>
 
-    /* --- ATOMOWY PRZYCISK CTA (ŻÓŁTY + PULS) --- */
-    
-    .header-cta-link {
-        display: flex;
-        align-items: center;
-        gap: 10px; /* Większy odstęp */
-        /* BARDZIEJ ŻÓŁTY GRADIENT (Złoto -> Bursztyn) */
-        background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%) !important;
-        color: #000 !important;
-        text-decoration: none;
-        /* WIĘKSZY ROZMIAR */
-        padding: 12px 24px !important; 
-        border-radius: 8px; /* Bardziej zaokrąglony */
-        font-size: 13px !important; /* Większa czcionka */
-        font-weight: 800;
-        line-height: 1.2;
-        border: 1px solid #e6b800 !important;
-        /* DODAJEMY ANIMACJĘ PULSOWANIA */
-        animation: pulse-gold 2s infinite ease-in-out;
-    }
-    
-    /* EFEKT NA HOVER (Zatrzymujemy puls, powiększamy) */
-    .header-cta-link:hover {
-        animation: none; /* Stop pulsu */
-        transform: scale(1.05) translateY(-2px); /* Powiększ i unieś */
-        box-shadow: 0 10px 20px rgba(255, 215, 0, 0.5) !important; /* Wielka złota poświata */
-        background: linear-gradient(135deg, #ffe066 0%, #ffd700 100%) !important; /* Jeszcze jaśniejszy */
-    }
-
-    /* DEFINICJA ANIMACJI PULSOWANIA */
-    @keyframes pulse-gold {
-        0% {
-            transform: scale(1);
-            box-shadow: 0 4px 6px rgba(255, 215, 0, 0.4);
-        }
-        50% {
-            transform: scale(1.03); /* Lekkie powiększenie */
-            box-shadow: 0 8px 15px rgba(255, 215, 0, 0.7); /* Mocna poświata */
-        }
-        100% {
-            transform: scale(1);
-            box-shadow: 0 4px 6px rgba(255, 215, 0, 0.4);
-        }
-    }
-    /* ------------------------------------------ */
-    /* --- FIX: PULSUJĄCY ATOMOWY PRZYCISK --- */
-    /* Definicja animacji musi być globalna */
-    @keyframes pulse-gold-glow {
-        0% {
-            transform: scale(1);
-            box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
-        }
-        70% {
-            transform: scale(1.05); /* Lekkie powiększenie */
-            box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); /* Rozchodząca się fala */
-        }
-        100% {
-            transform: scale(1);
-            box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
-        }
-    }
-
-    .header-cta-link {
-        /* Wymuszamy animację */
-        animation: pulse-gold-glow 2s infinite !important;
-        background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%) !important;
-        border: 1px solid #b45309 !important;
-        color: #000 !important;
-        font-weight: 800 !important;
-        z-index: 100; /* Żeby na pewno był na wierzchu */
-    }
-    
-    .header-cta-link:hover {
-        animation: none !important; /* Stop po najechaniu */
-        transform: scale(1.1) !important;
-        background: #f59e0b !important;
-    }
-</style>
-
-<header class="app-header">
-    <div class="header-content">
-        <div class="logo-section">
-            <div class="logo-icon">📱</div>
-            <div class="logo-text">
-                <h1>Adept AI | Demand Intelligence</h1>
-                <span class="logo-subtitle">System LDI (Lost Demand Intelligence)</span>
-            </div>
-        </div>
-        
-        <div class="header-right">
-            <div class="header-badges">
-                <div class="tech-badge badge-blue">
-                    <span>🔵</span> SILNIK: LDI v5.1
-                </div>
-                <div class="tech-badge badge-green">
-                    <span>🟢</span> LIVE MONITORING
-                </div>
-                <div class="tech-badge badge-gray">
-                    <span>🛡️</span> NUMBER GUARD™
-                </div>
-            </div>
-
-            <a href="/login" class="header-cta-link">
-                <span style="font-size: 16px;">📊</span>
-                <span>
-                    DOSTĘP DLA<br>
-                    PARTNERÓW
-                </span>
-            </a>
-        </div>
-    </div>
-</header>
-                    
                     <main class="main-content">
-    <div id="chat-interface" class="chat-interface">
-        
-        <div class="chat-header">
-            <div class="chat-status">
-                <div class="status-indicator"></div>
-                <span>Adept AI | LDI System - <strong>MONITORING ACTIVE</strong></span>
-            </div>
-            <div class="header-controls">
-                <div class="cart-counter" id="cart-counter" style="display:none;">
-                    🛒 Lead: 0
-                </div>
-                <button id="reset-btn" class="reset-btn" type="button">
-                    <span>🔄</span>
-                    Reset Analizy
-                </button>
-            </div>
-        </div>
-        
-        <div id="messages-container" class="messages-container">
-            </div>
-        
-        <div class="input-section">
-            <div id="button-container" class="button-container">
-            </div>
-            
-            <div id="text-input-container" class="text-input-container">
-                <form class="input-group" id="message-form">
-                    <input
-                        type="text"
-                        id="user-input"
-                        placeholder="Wprowadź model produktu (np. iPhone 15, Samsung S24)..."
-                        autocomplete="off"
-                        maxlength="500"
-                    >
-                    <button id="send-btn" class="send-btn" type="submit">
-                        <span>Analizuj</span> <span class="btn-icon">🔍</span>
-                    </button>
-                </form>
-                <div class="input-hint">
-                    <small>🛡️ System LDI weryfikuje stany magazynowe w czasie rzeczywistym (Number Guard™ Active)</small>
-                </div>
-            </div>
-        </div>
-    </div>
-</main>
-                    
-                    
+                        <div id="chat-interface" class="chat-interface">
+
+                            <div class="chat-header">
+                                <div class="chat-status">
+                                    <div class="status-indicator"></div>
+                                    <div class="sys-status">
+                                        <strong>LDI · Elektronika</strong>
+                                        <span class="sys-sep">•</span>
+                                        <span>System Live</span>
+                                        <span class="sys-sep">•</span>
+                                        <span class="sys-latency">Latency &lt;60ms</span>
+                                    </div>
+                                </div>
+                                <div class="header-controls">
+                                    <div class="cart-counter" id="cart-counter" style="display:none;">
+                                        Lead: 0
+                                    </div>
+                                    <button id="reset-btn" class="reset-btn" type="button">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"></path><path d="M3 4v5h5"></path></svg>
+                                        Reset analizy
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="messages-container" class="messages-container">
+                            </div>
+
+                            <div class="input-section">
+                                <div id="button-container" class="button-container">
+                                </div>
+
+                                <div id="text-input-container" class="text-input-container">
+
+                                    <!-- CHIPY SCENARIUSZY — zamiast ściany tekstu w dymku bota.
+                                         ⚠️ WYGLĄD + data-query. Wpięcie klik→input→submit robi CC
+                                         (snippet w unified_style.css, koniec sekcji 14). -->
+                                    <div class="scenario-block">
+                                        <div class="chips-label">Scenariusze testowe</div>
+                                        <div class="scenario-chips">
+                                            <button type="button" class="chip" data-query="iPhone 13 pink" data-tip="Brak koloru — mamy niebieski. System rozpoznaje, że to konfiguracja której nie ma.">iPhone 13 pink</button>
+                                            <button type="button" class="chip" data-query="Laptop RTX 4090" data-tip="Brak karty graficznej — mamy RTX 4070. Sygnał braku w segmencie High-End.">Laptop RTX 4090</button>
+                                            <button type="button" class="chip" data-query="TV 100 cali" data-tip="Brak rozmiaru — w katalogu maksymalnie 77 cali.">TV 100 cali</button>
+                                            <button type="button" class="chip" data-query="OnePlus 11" data-tip="Brak marki w katalogu — klient szuka konkurencji.">OnePlus 11</button>
+                                            <button type="button" class="chip" data-query="Samsung S25" data-tip="Popyt na nowość — w magazynie S24.">Samsung S25</button>
+                                            <button type="button" class="chip" data-query="Dell XPS 14" data-tip="Brak matrycy — mamy 13 i 15 cali.">Dell XPS 14</button>
+                                            <button type="button" class="chip chip-noise" data-query="kanapka z serem" data-tip="Filtracja śmieci — zapytanie bez intencji zakupowej nie trafia do statystyk.">kanapka z serem</button>
+                                        </div>
+
+                                    <form class="input-group" id="message-form">
+                                        <input
+                                            type="text"
+                                            id="user-input"
+                                            placeholder="Wprowadź model produktu (np. iPhone 15, Samsung S24)..."
+                                            autocomplete="off"
+                                            maxlength="500"
+                                        >
+                                        <button id="send-btn" class="send-btn" type="submit">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+                                            Analizuj
+                                        </button>
+                                    </form>
+                                    <div class="input-hint">
+                                        <small>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6l7-3z"></path></svg>
+                                            System LDI weryfikuje dostępność w katalogu i magazynach — Number Guard™ aktywny
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
                 </div>
             </div>
         </div>
@@ -394,142 +183,111 @@
             <div class="resize-grip"></div>
         </div>
 
-        <div class="dashboard-column" id="dashboardColumn">
+        <!-- klasa is-empty: zdejmuje ją CC po pierwszym stats_update/live_feed_update -->
+        <div class="dashboard-column is-empty" id="dashboardColumn">
             <div class="dashboard-header">
                 <div class="dashboard-title">
-                    📊 Centrum Analityczne TCD
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5"></path><path d="M4 19h16"></path><path d="M8 16V9"></path><path d="M13 16v-4"></path><path d="M18 16V7"></path></svg>
+                    Centrum Analityczne TCD
                 </div>
                 <div class="dashboard-controls">
-                    <button id="collapseDashboard" class="collapse-btn">←</button>
+                    <button id="collapseDashboard" class="collapse-btn" type="button" title="Zwiń panel">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><path d="m14 6-6 6 6 6"></path></svg>
+                    </button>
                 </div>
             </div>
-            
+
             <div class="dashboard-content">
                 <section class="dashboard-metrics">
                     <div class="metric-card found-products">
-    <div class="metric-icon">✅</div>
-    <div class="metric-data">
-        <div class="metric-label">ZNALEZIONE PRODUKTY</div>
-        <div class="metric-number">
-            <span class="count" id="foundProductsCount">0</span>
-            <span class="unit">trafień</span>
-        </div>
-    </div>
-</div>
+                        <div class="metric-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4L19 7"></path></svg>
+                        </div>
+                        <div class="metric-data">
+                            <div class="metric-label">Znalezione produkty</div>
+                            <div class="metric-number">
+                                <span class="count" id="foundProductsCount">0</span>
+                                <span class="unit">trafień</span>
+                            </div>
+                        </div>
+                    </div>
 
-<div class="metric-card lost-opportunities">
-    <div class="metric-icon">💰</div>
-    <div class="metric-data">
-        <div class="metric-label">UTRACONE OKAZJE</div>
-        <div class="metric-number">
-            <span class="count" id="lostOpportunitiesCount">0</span>
-            <span class="unit">zapytań</span>
-        </div>
-        <div class="metric-value">
-            <span class="amount" id="lostOpportunitiesAmount">0</span> zł
-        </div>
-    </div>
-</div>
+                    <div class="metric-card lost-opportunities">
+                        <div class="metric-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"></path><path d="M17 6.5c0-1.9-2.2-3-5-3s-5 1.1-5 3 2.2 3 5 3.5 5 1.6 5 3.5-2.2 3-5 3-5-1.1-5-3"></path></svg>
+                        </div>
+                        <div class="metric-data">
+                            <div class="metric-label">Utracone okazje</div>
+                            <div class="metric-number">
+                                <span class="count" id="lostOpportunitiesCount">0</span>
+                                <span class="unit">zapytań</span>
+                            </div>
+                            <div class="metric-value">
+                                <span class="amount" id="lostOpportunitiesAmount">0</span> zł
+                            </div>
+                        </div>
+                    </div>
 
-<div class="metric-card filtered-out">
-    <div class="metric-icon">🛡️</div>
-    <div class="metric-data">
-        <div class="metric-label">ODFILTROWANE</div>
-        <div class="metric-number">
-            <span class="count" id="filteredOutCount">0</span>
-            <span class="unit">błędów</span>
-        </div>
-    </div>
-</div>
+                    <div class="metric-card filtered-out">
+                        <div class="metric-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6l7-3z"></path></svg>
+                        </div>
+                        <div class="metric-data">
+                            <div class="metric-label">Odfiltrowane</div>
+                            <div class="metric-number">
+                                <span class="count" id="filteredOutCount">0</span>
+                                <span class="unit">błędów</span>
+                            </div>
+                        </div>
+                    </div>
                 </section>
+
+                <div class="panel-empty">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+                    <p>
+                        Wpisz frazę, aby zobaczyć analitykę intencji
+                        <span>Każde zapytanie jest klasyfikowane w czasie rzeczywistym — z wyceną utraconej sprzedaży.</span>
+                    </p>
+                </div>
 
                 <section class="dashboard-feed">
                     <div class="feed-header">
-                        <h3><i class="fas fa-satellite-dish"></i> Live Feed</h3>
+                        <h3>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1.6"></circle></svg>
+                            Podgląd na żywo
+                        </h3>
                         <div class="feed-controls">
-                            <button class="feed-control-btn" id="pauseFeed" title="Wstrzymaj">
+                            <button class="feed-control-btn" id="pauseFeed" title="Wstrzymaj" type="button">
                                 <i class="fas fa-pause"></i>
                             </button>
-                            <button class="feed-control-btn" id="clearFeed" title="Wyczyść">
+                            <button class="feed-control-btn" id="clearFeed" title="Wyczyść" type="button">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
                     </div>
-                    
+
                     <div class="feed-content" id="liveFeed">
                         <div class="feed-placeholder">
-                            <i class="fas fa-satellite-dish"></i>
-                            <span>Oczekiwanie na dane...</span>
+                            <div class="feed-radar" aria-hidden="true"></div>
+                            <div class="feed-placeholder-title">Nasłuch aktywny</div>
+                            <span>Każde zapytanie pojawi się tutaj w sekundę po wpisaniu — z klasyfikacją intencji i wyceną.</span>
+                            <div class="feed-placeholder-meta">0 zdarzeń w sesji</div>
                         </div>
                     </div>
                 </section>
 
                 <section class="dashboard-analytics">
                     <div class="analytics-grid">
-                        <div class="chart-panel">
-                            <div class="panel-title">
-                                <i class="fas fa-chart-pie"></i> Rozkład Zapytań
-                            </div>
-                            <div class="chart-container">
-                                <canvas id="performanceChart"></canvas>
-                            </div>
-                        </div>
-                        
                         <div class="stats-panel">
                             <div class="panel-title">
-                                <i class="fas fa-chart-line"></i> Statystyki
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19h16"></path><path d="m5 15 4-5 3 3 5-7"></path></svg>
+                                Statystyki
                             </div>
                             <div class="stats-list">
                                 <div class="stat-row">
-    <span class="stat-label">Potencjał utracony</span>
-    <span class="stat-value" id="successRate">0%</span>
-</div>
-
-<style>
-    /* OVERRIDE DLA ELEKTRONIKI - MATRIX GREEN */
-    
-    /* 1. Belka tytułowa */
-    .chat-header {
-        background: linear-gradient(135deg, #065f46 0%, #10b981 100%) !important;
-        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3) !important;
-    }
-
-    /* 2. Przycisk wyślij */
-    .send-btn {
-        background-color: #10b981 !important;
-    }
-    .send-btn:hover {
-        background-color: #059669 !important;
-    }
-
-    /* 3. Status indicator (Kropka) */
-    .status-indicator {
-        background-color: #34d399 !important;
-        box-shadow: 0 0 8px #34d399 !important;
-    }
-
-    /* 4. Dymki bota (lewa krawędź) */
-    .bot-message {
-        border-left: 4px solid #10b981 !important;
-    }
-
-    /* --- NOWY DODATEK: ZIELONA RAMKA (PODŁOGA) NA DOLE --- */
-    .chat-interface {
-        /* Gruba, solidna zielona belka zamykająca dół */
-        border-bottom: 6px solid #10b981 !important;
-        
-        /* Opcjonalnie: zaokrąglamy dolne rogi, żeby pasowało do reszty (jeśli reszta jest okrągła) */
-        border-bottom-left-radius: 12px !important;
-        border-bottom-right-radius: 12px !important;
-        
-        /* Opcjonalnie: delikatny cień wewnętrzny na dole dla głębi */
-        box-shadow: inset 0 -15px 15px -15px rgba(6, 95, 70, 0.3) !important;
-        
-        overflow: hidden !important; /* Żeby nic nie wystawało */
-    }
-    /* ---------------------------------------------------- */
-</style>
-                                
+                                    <span class="stat-label">Potencjał utracony</span>
+                                    <span class="stat-value" id="successRate">0%</span>
+                                </div>
                                 <div class="stat-row">
                                     <span class="stat-label">Utracona wartość</span>
                                     <span class="stat-value success" id="savedRevenue">0 zł</span>
@@ -541,595 +299,115 @@
             </div>
         </div>
     </div>
-    
-    
+
     <div id="loading-overlay" class="loading-overlay">
         <div class="loading-content">
             <div class="loading-spinner"></div>
-            <p>Inicjalizacja dashboardu...</p>
-        </div>
-    </div>
-    
-    <div id="product-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Podgląd produktu</h3>
-                <button class="modal-close">×</button>
-            </div>
-            <div class="modal-body" id="product-preview">
-                </div>
+            <p>Inicjalizacja panelu…</p>
         </div>
     </div>
 
     <div class="toast-container" id="toastContainer"></div>
 
     <section class="sales-arguments">
-    <div class="arguments-container">
-        <div class="arguments-header">
-            <h2>How LDI works</h2>
-            <p style="font-size: 15px; color: #9ca3af; margin-top: 8px; font-weight: 400;">Lost Demand Intelligence — a search analytics engine built for e-commerce</p>
+        <div class="arguments-container">
+            <div class="arguments-header">
+                <h2>How LDI works</h2>
+                <p>Lost Demand Intelligence — a search analytics engine built for e-commerce</p>
+            </div>
+
+            <div class="advantage-grid">
+                <div class="advantage-item">
+                    <div class="advantage-content">
+                        <h4>Real-time intent classification</h4>
+                        <p>Every "no results" event is classified before the user presses Enter. The engine separates typos from genuine B2B queries — queries that signal missing inventory, not broken UX.</p>
+                    </div>
+                </div>
+
+                <div class="advantage-item">
+                    <div class="advantage-content">
+                        <h4>Gold Signal detection</h4>
+                        <p>When a user searches for a product that doesn't exist in the catalog, then buys an alternative anyway — that's a Gold Signal. Confirmed purchase intent on an untracked product. The highest-value training signal in the system.</p>
+                    </div>
+                </div>
+
+                <div class="advantage-item">
+                    <div class="advantage-content">
+                        <h4>Domain generalization</h4>
+                        <p>The same engine runs on automotive parts and consumer electronics — only the domain knowledge layer (brands, categories, feature extractor) gets rebuilt per vertical, which is real work, not a zero-effort transfer. 91/100 on automotive (the original domain), 94/105 on electronics (the second one) — both measured 23.09.2026, <a href="/testy">full results</a>.</p>
+                    </div>
+                </div>
+
+                <div class="advantage-item">
+                    <div class="advantage-content">
+                        <h4>Structured output for fine-tuning</h4>
+                        <p>Every query is stored as a labeled record: intent confidence, semantic validity flag, reward score, Gold/Positive/Negative classification. Ready to export as JSONL fine-tuning data.</p>
+                    </div>
+                </div>
+
+                <div class="advantage-item">
+                    <div class="advantage-content">
+                        <h4>Weekly intelligence report</h4>
+                        <p>Not raw logs. A structured PDF report: top missing products by search volume and estimated revenue impact, with prioritized restocking recommendations. Decision-ready output.</p>
+                    </div>
+                </div>
+
+                <div class="advantage-item">
+                    <div class="advantage-content">
+                        <h4>Stack</h4>
+                        <p>Python · Flask · SQLite · WebSocket · custom semantic validation pipeline · reward scoring engine · JSONL fine-tuning export · real-time debug dashboard. Built and maintained by one engineer.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prior-work" style="margin-top: 40px; padding: 28px; border-radius: 12px;">
+                <h3 style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 14px; font-weight: 600;">Prior work — Skankran</h3>
+                <p style="font-size: 14.5px; line-height: 1.7; max-width: 680px;">
+                    Before LDI: built Skankran from scratch with no prior programming experience — a water quality analysis platform integrated with the Google Gemini API and grounded in WHO/EPA documentation.First platform of its kind in Poland. That project is what led to this one.
+                </p>
+            </div>
+
+            <div style="margin-top: 40px; text-align: center; padding-bottom: 8px;">
+                <p class="contact-cta" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;">Interested in the architecture or a conversation?</p>
+                <a href="mailto:{{ contact_email }}" class="contact-link">{{ contact_email }}</a>
+            </div>
         </div>
+    </section>
 
-        <div class="advantage-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 32px;">
+    <script data-cfasync="false" src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 
-            <div class="advantage-item" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 24px;">
-                <div class="advantage-content">
-                    <h4 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 10px; font-weight: 600;">Real-time intent classification</h4>
-                    <p style="font-size: 15px; line-height: 1.65; color: #e5e7eb;">Every "no results" event is classified before the user presses Enter. The engine separates typos from genuine B2B queries — queries that signal missing inventory, not broken UX.</p>
-                </div>
-            </div>
+    <!-- SOURCE DETECTION - ELEKTRO -->
+    <script>
+        window.BOT_SOURCE = 'elektro';
+    </script>
 
-            <div class="advantage-item" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 24px;">
-                <div class="advantage-content">
-                    <h4 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 10px; font-weight: 600;">Gold Signal detection</h4>
-                    <p style="font-size: 15px; line-height: 1.65; color: #e5e7eb;">When a user searches for a product that doesn't exist in the catalog, then buys an alternative anyway — that's a Gold Signal. Confirmed purchase intent on an untracked product. The highest-value training signal in the system.</p>
-                </div>
-            </div>
+    <script src="{{ url_for('static', filename='script_elektro.js') }}?v=2.0" defer></script>
+    <script src="{{ url_for('static', filename='dashboard.js') }}?v=2.0" defer></script>
 
-            <div class="advantage-item" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 24px;">
-                <div class="advantage-content">
-                    <h4 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 10px; font-weight: 600;">Domain generalization</h4>
-                    <p style="font-size: 15px; line-height: 1.65; color: #e5e7eb;">The same engine runs on automotive parts and consumer electronics without retraining the underlying model — only the domain knowledge layer (brands, categories, feature extractor) gets rebuilt per vertical, not a zero-effort transfer. 91/100 correct classifications on the automotive domain — 91% accuracy on a new vertical.</p>
-                </div>
-            </div>
+    <script>
+        // Status połączenia — bez zmian funkcjonalnych
+        window.addEventListener('load', function() {
+            const status = document.getElementById('connectionStatus');
+            if (!status) return;
 
-            <div class="advantage-item" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 24px;">
-                <div class="advantage-content">
-                    <h4 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 10px; font-weight: 600;">Structured output for fine-tuning</h4>
-                    <p style="font-size: 15px; line-height: 1.65; color: #e5e7eb;">Every query is stored as a labeled record: intent confidence, semantic validity flag, reward score, Gold/Positive/Negative classification. Ready to export as JSONL fine-tuning data.</p>
-                </div>
-            </div>
+            setTimeout(() => {
+                if (window.tacticalDashboard && window.tacticalDashboard.socket) {
+                    status.innerHTML = '<i class="fas fa-wifi"></i><span>Połączony</span>';
+                    status.classList.add('connected');
+                } else {
+                    status.innerHTML = '<i class="fas fa-wifi-slash"></i><span>Rozłączony</span>';
+                    status.classList.add('disconnected');
+                }
+            }, 2000);
+        });
+    </script>
 
-            <div class="advantage-item" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 24px;">
-                <div class="advantage-content">
-                    <h4 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 10px; font-weight: 600;">Weekly intelligence report</h4>
-                    <p style="font-size: 15px; line-height: 1.65; color: #e5e7eb;">Not raw logs. A structured PDF report: top missing products by search volume and estimated revenue impact, with prioritized restocking recommendations. Decision-ready output.</p>
-                </div>
-            </div>
-
-            <div class="advantage-item" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 24px;">
-                <div class="advantage-content">
-                    <h4 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; margin-bottom: 10px; font-weight: 600;">Stack</h4>
-                    <p style="font-size: 15px; line-height: 1.65; color: #e5e7eb;">Python · Flask · SQLite · WebSocket · custom semantic validation pipeline · reward scoring engine · JSONL fine-tuning export · real-time debug dashboard. Built and maintained by one engineer.</p>
-                </div>
-            </div>
+    <div class="mobile-dashboard-overlay" id="mobileDashboardOverlay">
+        <div class="mobile-dashboard-close" id="mobileDashboardClose">✕</div>
+        <div class="mobile-dashboard-content" id="mobileDashboardContent">
         </div>
-
-        <div style="margin-top: 48px; padding: 32px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px;">
-            <h3 style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em; color: #6b7280; margin-bottom: 16px; font-weight: 600;">Prior work — Skankran</h3>
-            <p style="font-size: 15px; line-height: 1.7; color: #e5e7eb; max-width: 680px;">
-                Before LDI: built Skankran from scratch in 4 months with no prior programming experience — a water quality analysis platform integrated with Google Gemini API, trained on WHO/EPA medical documentation. First platform of its kind in Poland. That project is what led to this one.
-            </p>
-        </div>
-
-        <div style="margin-top: 48px; text-align: center; padding-bottom: 16px;">
-            <p style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em; color: #6b7280; margin-bottom: 16px;">Interested in the architecture or a conversation?</p>
-            <a href="mailto:lukasz&#64;adeptai&#46;pl" style="display: inline-block; padding: 14px 32px; background: transparent; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #e5e7eb; font-size: 15px; font-weight: 500; text-decoration: none; letter-spacing: 0.02em; transition: border-color 0.2s, color 0.2s;">
-                lukasz&#64;adeptai&#46;pl
-            </a>
-        </div>
-
     </div>
-</section>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-
-<!-- 🔥 SOURCE DETECTION - ELEKTRO -->
-<script>
-    window.BOT_SOURCE = 'elektro';
-</script>
-
-<script src="{{ url_for('static', filename='script_elektro.js') }}?v=1.2" defer></script>
-<script src="{{ url_for('static', filename='dashboard.js') }}" defer></script>
-
-<script>
-    // Floating CTA funkcjonalność
-    function scrollToArguments() {
-    const salesSection = document.querySelector('.sales-arguments');
-    if (salesSection) {
-        salesSection.scrollIntoView({ 
-            behavior: 'smooth',
-            block: 'start'
-        });
-    } else {
-        window.scrollTo({
-            top: document.body.scrollHeight,
-            behavior: 'smooth'
-        });
-    }
-}
-
-    // Show/hide based on scroll position
-    window.addEventListener('scroll', () => {
-        const floatingCTA = document.getElementById('floatingCTA');
-        const salesSection = document.querySelector('.sales-arguments');
-        
-        if (floatingCTA && salesSection) {
-            const rect = salesSection.getBoundingClientRect();
-            // Hide when sales section is visible
-            if (rect.top <= window.innerHeight) {
-                floatingCTA.style.opacity = '0';
-                floatingCTA.style.pointerEvents = 'none';
-            } else {
-                floatingCTA.style.opacity = '1';
-                floatingCTA.style.pointerEvents = 'auto';
-            }
-        }
-    });
-
-    // Dashboard Connection Handler
-    window.addEventListener('load', function() {
-        const status = document.getElementById('connectionStatus');
-        if (!status) return;
-        
-        // Wait for dashboard to initialize
-        setTimeout(() => {
-            if (window.tacticalDashboard && window.tacticalDashboard.socket) {
-                status.innerHTML = '<i class="fas fa-wifi"></i><span>Połączony</span>';
-                status.classList.add('connected');
-            } else {
-                status.innerHTML = '<i class="fas fa-wifi-slash"></i><span>Rozłączony</span>';
-                status.classList.add('disconnected');
-            }
-        }, 2000);
-
-        
-    });
-</script>
-<div class="mobile-dashboard-overlay" id="mobileDashboardOverlay">
-    <div class="mobile-dashboard-close" id="mobileDashboardClose">✖️</div>
-    <div class="mobile-dashboard-content" id="mobileDashboardContent">
-        </div>
-</div>
-<script src="{{ url_for('static', filename='visitor_tracking.js') }}" defer></script>
-<style>
-/* CTA Button w headerze */
-.header-cta-button {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    color: white;
-    border-radius: 8px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-    margin-left: 12px;
-}
-
-.header-cta-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-.header-cta-button .cta-icon {
-    font-size: 18px;
-}
-
-.header-cta-button .cta-content {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    line-height: 1.2;
-}
-
-.header-cta-button .cta-small {
-    font-size: 10px;
-    opacity: 0.9;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.header-cta-button .cta-main {
-    font-size: 13px;
-    font-weight: 600;
-}
-
-/* Responsive */
-@media (max-width: 1200px) {
-    .header-cta-button .cta-small {
-        display: none;
-    }
-    .header-cta-button .cta-main {
-        font-size: 12px;
-    }
-}
-
-@media (max-width: 768px) {
-    .header-cta-button {
-        padding: 6px 12px;
-        gap: 6px;
-    }
-    .header-cta-button .cta-icon {
-        font-size: 16px;
-    }
-    .header-cta-button .cta-main {
-        font-size: 11px;
-    }
-}
-</style>
-
-
-<style>
-/* ========================================
-    VERTICAL CTA BAR - Pasek pionowy między botem a TCD
-    ======================================== */
-
-
-.vertical-cta-bar:hover {
-    width: 75px;
-    box-shadow: 
-        0 12px 32px rgba(220, 38, 38, 0.6),
-        inset 0 1px 0 rgba(255,255,255,0.2);
-    border-left-width: 4px;
-    border-right-width: 4px;
-}
-
-/* Ikony */
-.cta-icons {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    font-size: 24px;
-    margin-bottom: 8px;
-}
-
-.cta-lightning {
-    animation: pulse-glow 2s ease-in-out infinite;
-    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
-}
-
-.cta-eye {
-    animation: blink 4s ease-in-out infinite;
-}
-
-/* Tekst pionowy */
-.cta-text-vertical {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    color: white;
-    font-size: 11px;
-    font-weight: 600;
-    text-align: center;
-    line-height: 1.3;
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
-}
-
-.cta-text-vertical span {
-    white-space: nowrap;
-}
-
-.cta-divider {
-    font-size: 10px;
-    opacity: 0.5;
-    margin: 4px 0;
-}
-
-.cta-arrow {
-    margin-top: 8px;
-    font-size: 13px;
-    font-weight: 700;
-    color: #ffd700;
-    animation: bounce-arrow 2s ease-in-out infinite;
-}
-
-/* Animacje */
-@keyframes blink {
-    0%, 90%, 100% { opacity: 1; }
-    93%, 97% { opacity: 0.3; }
-}
-
-@keyframes pulse-glow {
-    0%, 100% { 
-        transform: scale(1);
-        filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
-    }
-    50% { 
-        transform: scale(1.15);
-        filter: drop-shadow(0 0 16px rgba(255, 215, 0, 0.9));
-    }
-}
-
-@keyframes bounce-arrow {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
-}
-
-/* ========================================
-    BOT RESPONSIVE - Mniejsze przyciski
-    ======================================== */
-
-/* Główne przyciski (Znajdź część, Status, etc) */
-.action-button,
-.bot-column .action-button,
-.bot-content .action-button {
-    padding: 10px 16px !important;
-    font-size: 14px !important;
-    min-height: 44px !important;
-    margin: 6px 0 !important;
-}
-
-/* Grid przycisków */
-.button-grid,
-.actions-grid {
-    gap: 8px !important;
-}
-
-/* Przyciski w footerze */
-footer button,
-.footer-actions button {
-    padding: 8px 12px !important;
-    font-size: 13px !important;
-}
-
-/* Input pole */
-#user-input {
-    font-size: 14px !important;
-    padding: 12px 16px !important;
-}
-
-/* Przyciski kategorii (Samochód, Dostawczy, etc) */
-.category-button,
-.vehicle-button {
-    padding: 12px 20px !important;
-    font-size: 14px !important;
-}
-
-/* Responsive dla małych ekranów */
-@media (max-width: 1400px) {
-    
-    
-    .cta-icons {
-        font-size: 20px;
-    }
-    
-    .cta-text-vertical {
-        font-size: 10px;
-    }
-    
-    .action-button,
-    .bot-column .action-button {
-        padding: 8px 14px !important;
-        font-size: 13px !important;
-        min-height: 40px !important;
-    }
-}
-
-@media (max-width: 1200px) {
-    
-}
-
-@media (max-width: 768px) {
-    .action-button,
-    .bot-column .action-button {
-        padding: 10px 12px !important;
-        font-size: 13px !important;
-    }
-}
-
-/* ========================================
-    ENTERPRISE CTA BUTTON - Footer Email
-    ======================================== */
-
-/* ========================================
-    MAIN CTA BUTTON - Główny przycisk w ofercie
-    ======================================== */
-
-.cta-wrapper {
-    text-align: center;
-    padding: 30px 0;
-}
-
-.enterprise-cta-main {
-    display: inline-flex;
-    align-items: center;
-    gap: 16px;
-    padding: 20px 40px;
-    background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 50%, #d32f2f 100%);
-    background-size: 200% 100%;
-    border-radius: 16px;
-    text-decoration: none;
-    color: white;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.4s ease;
-    box-shadow: 
-        0 8px 24px rgba(211, 47, 47, 0.5),
-        0 0 0 2px rgba(255, 255, 255, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    border: 2px solid rgba(255, 255, 255, 0.15);
-    animation: gentle-pulse 3s ease-in-out infinite;
-}
-
-@keyframes gentle-pulse {
-    0%, 100% {
-        box-shadow: 
-            0 8px 24px rgba(211, 47, 47, 0.5),
-            0 0 0 2px rgba(255, 255, 255, 0.1),
-            inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    }
-    50% {
-        box-shadow: 
-            0 8px 32px rgba(211, 47, 47, 0.7),
-            0 0 0 3px rgba(255, 255, 255, 0.2),
-            inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    }
-}
-
-.enterprise-cta-main::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.6s ease;
-}
-
-.enterprise-cta-main:hover::before {
-    left: 100%;
-}
-
-.enterprise-cta-main:hover {
-    transform: translateY(-4px) scale(1.02);
-    background-position: 100% 0;
-    box-shadow: 
-        0 12px 36px rgba(211, 47, 47, 0.6),
-        0 0 0 3px rgba(255, 255, 255, 0.2),
-        inset 0 2px 0 rgba(255, 255, 255, 0.3);
-}
-
-.enterprise-cta-main:active {
-    transform: translateY(-2px) scale(0.98);
-}
-
-.enterprise-cta-main .cta-icon-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.enterprise-cta-main .cta-icon {
-    font-size: 32px;
-    position: relative;
-    z-index: 2;
-    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
-    animation: icon-float 2s ease-in-out infinite;
-}
-
-@keyframes icon-float {
-    0%, 100% {
-        transform: translateY(0px);
-    }
-    50% {
-        transform: translateY(-3px);
-    }
-}
-
-.enterprise-cta-main .cta-pulse {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.4);
-    animation: pulse-ring-main 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulse-ring-main {
-    0% {
-        transform: scale(0.8);
-        opacity: 1;
-    }
-    50% {
-        transform: scale(1.4);
-        opacity: 0.5;
-    }
-    100% {
-        transform: scale(0.8);
-        opacity: 0;
-    }
-}
-
-.enterprise-cta-main .cta-title {
-    font-size: 18px;
-    font-weight: 900;
-    letter-spacing: 1px;
-    line-height: 1.2;
-    text-transform: uppercase;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.enterprise-cta-main .cta-arrow {
-    font-size: 24px;
-    font-weight: 900;
-    animation: arrow-bounce 1.5s ease-in-out infinite;
-}
-
-@keyframes arrow-bounce {
-    0%, 100% {
-        transform: translateX(0);
-    }
-    50% {
-        transform: translateX(5px);
-    }
-}
-
-.alternative-contact-cta {
-    margin-top: 16px;
-    font-size: 14px;
-    color: #6b7280;
-    line-height: 1.6;
-}
-
-.alternative-contact-cta .alt-email {
-    color: #d6cccc;
-    text-decoration: none;
-    font-weight: 700;
-    transition: all 0.2s ease;
-}
-
-.alternative-contact-cta .alt-email:hover {
-    color: #b71c1c;
-    text-decoration: underline;
-}
-
-/* Responsive dla głównego CTA */
-@media (max-width: 1200px) {
-    .enterprise-cta-main {
-        padding: 18px 35px;
-        gap: 14px;
-    }
-    
-    .enterprise-cta-main .cta-icon {
-        font-size: 28px;
-    }
-    
-    .enterprise-cta-main .cta-title {
-        font-size: 16px;
-    }
-    
-    .enterprise-cta-main .cta-arrow {
-        font-size: 22px;
-    }
-}
-
-@media (max-width: 768px) {
-    .enterprise-cta-main {
-        padding: 16px 30px;
-        gap: 12px;
-    }
-    
-    .enterprise-cta-main .cta-icon {
-        font-size: 24px;
-    }
-    
-    .enterprise-cta-main .cta-title {
-        font-size: 14px;
-        letter-spa
+    <script src="{{ url_for('static', filename='visitor_tracking.js') }}" defer></script>
+</body>
+</html>

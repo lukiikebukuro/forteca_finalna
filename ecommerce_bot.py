@@ -2269,7 +2269,7 @@ class EcommerceBot:
         return {
             'text_message': GLOBAL_WELCOME_MESSAGE,
             'buttons': [
-                {'text': '[TOOL] Znajdź część', 'action': 'search_product'}
+                {'text': '🔧 Znajdź część', 'action': 'search_product'}
             ]
         }
     
@@ -2279,7 +2279,7 @@ class EcommerceBot:
         
         if action == 'search_product':
             return {
-                'text_message': """[TOOL] **Wyszukiwarka części**
+                'text_message': """🔧 **Wyszukiwarka części**
 
 Wybierz typ pojazdu:""",
                 'buttons': [
@@ -2397,7 +2397,7 @@ Zapisaliśmy Twoje zapytanie. Powiadomimy Cię gdy produkt będzie dostępny!"""
                     products_text = "[OK] **Znaleźliśmy produkty:**\n\n"
                     for product, score in products:
                         products_text += f"**{product['name']}**\n"
-                        products_text += f"[GRAPH] Dopasowanie: {score}% | [MONEY] {product['price']:.2f} zł\n\n"
+                        products_text += f"📊 Dopasowanie: {score}% | 💰 {product['price']:.2f} zł\n\n"
                     
                     return {
                         'text_message': products_text,
@@ -2410,8 +2410,8 @@ Zapisaliśmy Twoje zapytanie. Powiadomimy Cię gdy produkt będzie dostępny!"""
                     products_text = "🤔 **Czy chodziło Ci o:**\n\n"
                     for product, score in products[:3]:
                         products_text += f"**{product['name']}**\n"
-                        products_text += f"[GRAPH] Dopasowanie: {score}% | [MONEY] {product['price']:.2f} zł\n\n"
-                    products_text += "\n[IDEA] *System automatycznie poprawił literówki*"
+                        products_text += f"📊 Dopasowanie: {score}% | 💰 {product['price']:.2f} zł\n\n"
+                    products_text += "\n💡 *System automatycznie poprawił literówki*"
                     
                     return {
                         'text_message': products_text,
@@ -2435,10 +2435,10 @@ Wpisana fraza: "{message}" """,
             else:  # NO_MATCH - PRAWDZIWY UTRACONY POPYT!
                 # NOWA obsługa dla różnych typów brakujących produktów
                 if analysis.get('suggestion_type') == 'structural_missing':
-                    message_text = f"""[SEARCH] **Produkt spoza naszej oferty**
+                    message_text = f"""🔍 **Produkt spoza naszej oferty**
 
 Szukana fraza: "{message}"
-[GRAPH] System wykrył: kategoria + nieznana marka
+📊 System wykrył: kategoria + nieznana marka
 
 ✨ **Zapisaliśmy Twoje zapytanie!** 
 Jeśli więcej osób będzie szukać tej marki, rozważymy dodanie do oferty."""
@@ -2448,7 +2448,7 @@ Jeśli więcej osób będzie szukać tej marki, rozważymy dodanie do oferty."""
                     if analysis.get('has_luxury_brand'):
                         luxury_message = "\n🏎️ **Wykryto markę premium** - zwiększony priorytet!"
                     
-                    message_text = f"""[SEARCH] **Nie mamy tego produktu w ofercie**
+                    message_text = f"""🔍 **Nie mamy tego produktu w ofercie**
 
 Szukana fraza: "{message}"{luxury_message}
 
@@ -2485,7 +2485,7 @@ Jeśli wiele osób szuka tego produktu, dodamy go do naszej oferty."""
         return {
             'text_message': 'Wybierz opcję:',
             'buttons': [
-                {'text': '[TOOL] Szukaj części', 'action': 'search_product'},
+                {'text': '🔧 Szukaj części', 'action': 'search_product'},
                 {'text': '↩️ Menu główne', 'action': 'main_menu'}
             ]
         }
@@ -2498,7 +2498,7 @@ Jeśli wiele osób szuka tego produktu, dodamy go do naszej oferty."""
                 product, score = item
                 # Usuń score, kieruj bezpośrednio do pełnej karty
                 buttons.append({
-                    'text': f"[CART] {product['name'][:45]}...",
+                    'text': f"🛒 {product['name'][:45]}...",
                     'action': f"show_full_card_{product['id']}"
                 })
         
@@ -2524,13 +2524,13 @@ Jeśli wiele osób szuka tego produktu, dodamy go do naszej oferty."""
             }
         
         return {
-            'text_message': f"""[TOOL] **{product['name']}**
+            'text_message': f"""🔧 **{product['name']}**
 
-[MONEY] **Cena:** {product['price']:.2f} zł netto
-[BOX] **Stan:** {product['stock']} szt.""",
+💰 **Cena:** {product['price']:.2f} zł netto
+📦 **Stan:** {product['stock']} szt.""",
             'buttons': [
-                {'text': f"[CART] Dodaj do koszyka", 'action': f"add_to_cart_{product['id']}"},
-                {'text': '[SEARCH] Szukaj dalej', 'action': 'search_product'},
+                {'text': f"🛒 Dodaj do koszyka", 'action': f"add_to_cart_{product['id']}"},
+                {'text': '🔍 Szukaj dalej', 'action': 'search_product'},
                 {'text': '🏠 Menu główne', 'action': 'main_menu'}
             ]
         }
@@ -2550,13 +2550,13 @@ Jeśli wiele osób szuka tego produktu, dodamy go do naszej oferty."""
             }
         
         return {
-            'text_message': f"""[TOOL] {product['name']}
+            'text_message': f"""🔧 {product['name']}
 
-[MONEY] Cena: {product['price']:.2f} zł netto
-[BOX] Stan: {product['stock']} szt.""",
+💰 Cena: {product['price']:.2f} zł netto
+📦 Stan: {product['stock']} szt.""",
             'buttons': [
-                {'text': '[CART] Dodaj do koszyka', 'action': f"add_to_cart_{product['id']}"},
-                {'text': '[SEARCH] Szukaj dalej', 'action': 'search_product'},
+                {'text': '🛒 Dodaj do koszyka', 'action': f"add_to_cart_{product['id']}"},
+                {'text': '🔍 Szukaj dalej', 'action': 'search_product'},
                 {'text': '🏠 Menu główne', 'action': 'main_menu'}
             ]
         }
@@ -2602,7 +2602,7 @@ Jeśli wiele osób szuka tego produktu, dodamy go do naszej oferty."""
             'text_message': f"""[OK] **Dodano do koszyka!**""",
             'cart_updated': True,
             'buttons': [
-                {'text': '[SEARCH] Kontynuuj zakupy', 'action': 'search_product'},
+                {'text': '🔍 Kontynuuj zakupy', 'action': 'search_product'},
                 {'text': '↩️ Menu główne', 'action': 'main_menu'}
             ]
         }

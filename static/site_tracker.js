@@ -7,7 +7,8 @@
     'use strict';
 
     var visitId = 'sv_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9);
-    var pagePath = window.location.pathname;
+    // Dwie domeny, jedna baza: ścieżki z domeny LDI dostają prefiks, żeby "/" portfolio i "/" LDI się nie zlały
+    var pagePath = (window.location.hostname.indexOf('utraconypopyt') !== -1 ? '[LDI]' : '') + window.location.pathname;
     var startTime = Date.now();
     var geoData = { organization: null, city: null, country: null };
 

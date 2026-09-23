@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Sedno Tech">
+  <rect width="64" height="64" rx="14" fill="#141a2e"/>
+  <text x="15" y="45" font-family="Georgia, 'Source Serif 4', serif" font-size="38" font-weight="600" fill="#faf7f2">s</text>
+  <circle cx="45" cy="40" r="5.5" fill="#c2410c"/>
+</svg>

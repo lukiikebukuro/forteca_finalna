@@ -1,0 +1,1377 @@
+/* ============================================================================
+   ldi_redesign.css — REDESIGN LIVE DEMO LDI (Moto + Elektronika), 2026-09
+   ============================================================================
+   Ładowany w demo_page.html i demo_page_elektro.html PO unified_style.css.
+   Nie wymaga edycji unified_style.css — zmienne w :root mają !important, więc
+   przebijają stary globalny nadpis "OPERACJA BŁĘKITNA STAL".
+   Pozostałe strony serwisu (p1/p2/p3 itd.) tego pliku nie ładują = zero wpływu.
+   ============================================================================ */
+
+:root {
+    /* === REDESIGN 2026-08: paleta z landing page (ldi_readme) ===
+       miedź #c2410c / #ea580c, złoto #eab308, off-white #faf7f2, slate ink.
+       --bot-primary-color jest teraz MIEDZIĄ, nie czerwienią i nie błękitem. */
+    --bot-primary-color: #c2410c !important;
+    --bot-secondary-color: #ea580c !important;
+    --bot-accent-color: #eab308 !important;
+    --bot-danger-color: #b42318 !important;
+    --bot-warning-color: #d97706 !important;
+
+    /* akcent per tryb — nadpisywany w <style> template'u (moto/elektro) */
+    --mode-accent: #c2410c !important;
+    --mode-accent-soft: rgba(194, 65, 12, 0.10) !important;
+
+    /* linie i powierzchnie (ciepłe) */
+    --surface: #ffffff !important;
+    --surface-2: #faf7f2 !important;
+    --surface-3: #f5f1ea !important;
+    --line: #e6e0d6 !important;
+    --line-soft: #f0ebe3 !important;
+    --ink: #0f172a !important;
+    --ink-2: #475569 !important;
+    --ink-3: #64748b !important;
+    --ink-4: #94a3b8 !important;
+
+    --bot-white: #ffffff !important;
+    --bot-gray-50: #f9fafb !important;
+    --bot-gray-100: #f3f4f6 !important;
+    --bot-gray-200: #e5e7eb !important;
+    --bot-gray-300: #d1d5db !important;
+    --bot-gray-400: #9ca3af !important;
+    --bot-gray-500: #6b7280 !important;
+    --bot-gray-600: #4b5563 !important;
+    --bot-gray-700: #374151 !important;
+    --bot-gray-800: #1f2937 !important;
+    --bot-gray-900: #111827 !important;
+
+    /* PANEL ANALITYCZNY — było ciemne, teraz jasne (ta sama "bajka" co lewa strona) */
+    --dash-bg-primary: #faf7f2 !important;
+    --dash-bg-secondary: #ffffff !important;
+    --dash-bg-tertiary: #ffffff !important;
+    --dash-bg-glass: rgba(255, 255, 255, 0.85) !important;
+    --dash-bg-glass-light: rgba(255, 255, 255, 0.6) !important;
+
+    --dash-accent-primary: #c2410c !important;
+    --dash-accent-secondary: #9a3412 !important;
+    --dash-accent-danger: #b42318 !important;
+    --dash-accent-warning: #d97706 !important;
+    --dash-accent-success: #15803d !important;
+
+    --dash-text-primary: #0f172a !important;
+    --dash-text-secondary: #64748b !important;
+    --dash-text-muted: #94a3b8 !important;
+    --dash-text-inverse: #ffffff !important;
+
+    --dash-gradient-primary: linear-gradient(90deg, #c2410c, #eab308) !important;
+    --dash-gradient-danger: linear-gradient(90deg, #b42318, #ea580c) !important;
+    --dash-gradient-warning: linear-gradient(90deg, #d97706, #eab308) !important;
+    --dash-gradient-success: linear-gradient(90deg, #15803d, #65a30d) !important;
+    --dash-gradient-premium: linear-gradient(90deg, #c2410c, #eab308) !important;
+
+    --shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+    --shadow-medium: 0 4px 16px rgba(15, 23, 42, 0.06) !important;
+    --shadow-hard: 0 10px 32px rgba(15, 23, 42, 0.08) !important;
+    --shadow-glow: 0 0 0 3px rgba(194, 65, 12, 0.12) !important;
+
+    --transition-fast: 0.2s cubic-bezier(0.4, 0.0, 0.2, 1) !important;
+    --transition-smooth: 0.3s cubic-bezier(0.4, 0.0, 0.2, 1) !important;
+    --transition-slow: 0.5s cubic-bezier(0.4, 0.0, 0.2, 1) !important;
+
+    --font-primary: 'Inter', 'Segoe UI', system-ui, sans-serif !important;
+    --font-display: 'Source Serif 4', Georgia, 'Times New Roman', serif !important;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important;
+
+    --container-max: 1200px !important;
+    --border-radius: 8px !important;
+    --border-radius-lg: 12px !important;
+    --dash-bg-primary: #faf7f2 !important;
+    --dash-bg-secondary: #ffffff !important;
+    --dash-bg-tertiary: #ffffff !important;
+    --dash-bg-glass: rgba(255, 255, 255, 0.85) !important;
+    --dash-bg-glass-light: rgba(255, 255, 255, 0.6) !important;
+    --dash-accent-primary: #c2410c !important;
+    --dash-accent-secondary: #9a3412 !important;
+    --dash-accent-danger: #b42318 !important;
+    --dash-accent-warning: #d97706 !important;
+    --dash-accent-success: #15803d !important;
+    --dash-text-primary: #0f172a !important;
+    --dash-text-secondary: #64748b !important;
+    --dash-text-muted: #94a3b8 !important;
+    --dash-text-inverse: #ffffff !important;
+    --dash-gradient-primary: linear-gradient(90deg, #c2410c, #eab308) !important;
+    --dash-gradient-danger: linear-gradient(90deg, #b42318, #ea580c) !important;
+    --dash-gradient-warning: linear-gradient(90deg, #d97706, #eab308) !important;
+    --dash-gradient-success: linear-gradient(90deg, #15803d, #65a30d) !important;
+    --dash-gradient-premium: linear-gradient(90deg, #c2410c, #eab308) !important;
+    --shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+    --shadow-medium: 0 4px 16px rgba(15, 23, 42, 0.06) !important;
+    --shadow-hard: 0 10px 32px rgba(15, 23, 42, 0.08) !important;
+    --shadow-glow: 0 0 0 3px rgba(194, 65, 12, 0.12) !important;
+    --font-display: 'Source Serif 4', Georgia, 'Times New Roman', serif !important;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important;
+}
+
+body {
+    background: var(--surface-2) !important;
+    background-image: none !important;
+    color: var(--ink);
+}
+a { color: var(--bot-primary-color); text-decoration: none; }
+a:hover { color: #9a3412; }
+
+/* stary globalny nadpis chatu na niebiesko (unified_style.css) — neutralizacja */
+.user-message .message-avatar { background: var(--surface-3) !important; }
+
+/* stare LATARNIA / SZAFIR I DIAMENT na .header-cta-link — wyłączenie animacji */
+.header-cta-link, .header-cta-link::before, .header-cta-link::after { animation: none !important; }
+.header-cta-link::before, .header-cta-link::after { display: none !important; content: none !important; }
+
+/* martwy wykres — kontener usunięty z HTML, na wszelki wypadek */
+.chart-panel { display: none !important; }
+
+/* ============================================================================
+   14. WARSTWA REDESIGNU — 2026-08
+   ============================================================================
+   ⚠️ DLA CC: TO JEST BLOK DO WKLEJENIA NA SAMYM KOŃCU static/unified_style.css.
+   Wygrywa kaskadę świadomie (jest ostatni + !important tam gdzie musi przebić
+   wcześniejsze "operacje"). Nie przesuwaj go wyżej.
+
+   Co robi:
+   · jasny motyw na CAŁYM ekranie (koniec dwóch stylów zlepionych razem)
+   · paleta z landing page: miedź #c2410c, złoto #eab308, off-white #faf7f2
+   · akcent per tryb przez --mode-accent (moto: ceglana czerwień, elektro: zieleń)
+   · nowe komponenty: segmented control trybów, chipy scenariuszy, status-dot,
+     empty state panelu analitycznego
+   · zero emoji-ikon (SVG inline w templatach), zero pulsujących przycisków
+
+   Nazwy klas 🔒 z kontraktu JS (.feed-*, .metric-card.*, .action-btn,
+   .suggestion-*, .typing-indicator, .results-*-confidence) są ZACHOWANE 1:1 —
+   zmieniony jest tylko ich wygląd.
+   ============================================================================ */
+
+/* --- 14.1 typografia --------------------------------------------------- */
+.logo-text h1,
+.dashboard-title,
+.panel-title,
+.feed-header h3,
+.arguments-header h2 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+}
+.metric-number .count,
+.metric-value,
+.stat-value,
+.feed-timestamp,
+.feed-value,
+.chips-label {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+}
+
+/* --- 14.2 szkielet ----------------------------------------------------- */
+.demo-container { background: var(--surface-2) !important; }
+.bot-column { background: var(--surface) !important; }
+.dashboard-column {
+    background: var(--surface-2) !important;
+    color: var(--ink) !important;
+    border-left: 1px solid var(--line) !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+}
+.resize-handle {
+    width: 5px !important;
+    background: var(--line-soft) !important;
+    box-shadow: none !important;
+}
+.resize-handle:hover { width: 5px !important; background: var(--bot-primary-color) !important; box-shadow: none !important; }
+.resize-grip { background: var(--ink-4) !important; height: 26px !important; opacity: 0.45; }
+.resize-grip::before, .resize-grip::after { display: none !important; }
+
+.loading-overlay { background: rgba(250, 247, 242, 0.94) !important; }
+.loading-content { color: var(--ink-3) !important; }
+.loading-spinner { border-color: var(--line) !important; border-top-color: var(--bot-primary-color) !important; }
+
+/* status połączenia — dyskretna pastylka, nie zielony blok */
+.connection-status {
+    top: auto !important;
+    bottom: 14px !important;
+    right: 14px !important;
+    background: var(--surface) !important;
+    border: 1px solid var(--line) !important;
+    color: var(--ink-3) !important;
+    font-size: 11.5px !important;
+    font-weight: 500 !important;
+    padding: 6px 12px !important;
+    border-radius: 999px !important;
+    box-shadow: var(--shadow-soft) !important;
+    backdrop-filter: none !important;
+}
+.connection-status i { color: var(--dash-accent-success); font-size: 10px; }
+.connection-status.disconnected { background: var(--surface) !important; border-color: #f0d3cf !important; color: var(--dash-accent-danger) !important; }
+.connection-status.disconnected i { color: var(--dash-accent-danger); }
+
+/* --- 14.3 pasek trybu + segmented control ------------------------------ */
+.mode-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 20px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--line);
+}
+.mode-bar-brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+}
+.mode-bar-brand strong { color: var(--ink); font-weight: 600; letter-spacing: 0.04em; }
+
+.mode-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    background: var(--surface-3);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+}
+.mode-seg {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--ink-3);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.16s ease, background 0.16s ease;
+}
+.mode-seg:hover { color: var(--ink); }
+.mode-seg[aria-current="page"] {
+    background: var(--surface);
+    color: var(--ink);
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.07);
+    cursor: default;
+}
+.mode-seg svg { width: 14px; height: 14px; flex-shrink: 0; }
+.mode-seg-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--mode-accent); flex-shrink: 0; }
+.mode-seg:not([aria-current]) .mode-seg-dot { background: var(--ink-4); }
+
+/* --- 14.4 nagłówek aplikacji ------------------------------------------ */
+.app-header {
+    background: var(--surface) !important;
+    border-bottom: 1px solid var(--line) !important;
+    box-shadow: none !important;
+    padding: 14px 20px !important;
+}
+.header-content { max-width: none !important; gap: 16px; }
+.logo-icon {
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--mode-accent-soft) !important;
+    color: var(--mode-accent);
+    border: 1px solid var(--line) !important;
+    border-radius: 9px !important;
+    font-size: 0 !important;
+    animation: none !important;
+    flex-shrink: 0;
+}
+.logo-icon svg { width: 18px; height: 18px; }
+.logo-text h1 {
+    font-size: 19px !important;
+    font-weight: 600 !important;
+    color: var(--ink) !important;
+    text-shadow: none !important;
+    line-height: 1.15;
+}
+.logo-subtitle {
+    font-size: 11px !important;
+    font-style: normal !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--ink-4) !important;
+    margin-top: 3px !important;
+}
+.header-right { gap: 14px !important; }
+.header-badges { gap: 6px !important; }
+.tech-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 11px;
+    border-radius: 7px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    background: var(--surface-2) !important;
+    border: 1px solid var(--line) !important;
+    color: var(--ink-2) !important;
+    white-space: nowrap;
+}
+.tech-badge svg { width: 13px; height: 13px; opacity: 0.75; }
+.badge-blue, .badge-green, .badge-gray {
+    background: var(--surface-2) !important;
+    border-color: var(--line) !important;
+    color: var(--ink-2) !important;
+}
+.badge-green svg { color: var(--dash-accent-success); opacity: 1; }
+.badge-blue svg { color: var(--bot-primary-color); opacity: 1; }
+
+/* --- 14.5 okno chatu -------------------------------------------------- */
+.main-content { padding: 20px !important; padding-top: 20px !important; background: var(--surface-2); }
+.chat-interface {
+    background: var(--surface) !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 14px !important;
+    box-shadow: var(--shadow-medium) !important;
+    overflow: hidden !important;
+}
+/* jasna belka chatu + kreska w kolorze trybu (zamiast pełnego gradientu) */
+.chat-header {
+    background: var(--surface) !important;
+    color: var(--ink) !important;
+    border-bottom: 1px solid var(--line) !important;
+    border-top: 2px solid var(--mode-accent) !important;
+    padding: 13px 18px !important;
+    box-shadow: none !important;
+}
+.chat-status { gap: 10px !important; font-size: 13px; color: var(--ink-2); }
+.chat-status strong { color: var(--ink); font-weight: 600; }
+/* status-dot: dyskretny puls w kolorze miedzi */
+.status-indicator {
+    width: 7px !important; height: 7px !important;
+    background: var(--bot-primary-color) !important;
+    box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.14) !important;
+    animation: sys-dot-pulse 2.4s ease-in-out infinite !important;
+}
+@keyframes sys-dot-pulse {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.14); opacity: 1; }
+    50%      { box-shadow: 0 0 0 6px rgba(194, 65, 12, 0.04); opacity: 0.75; }
+}
+.sys-status { display: flex; align-items: center; gap: 9px; font-size: 12.5px; color: var(--ink-3); }
+.sys-status .sys-sep { color: var(--line); }
+.sys-status .sys-latency { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-4); }
+
+.reset-btn {
+    background: var(--surface) !important;
+    border: 1px solid var(--line) !important;
+    color: var(--ink-2) !important;
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
+    padding: 7px 12px !important;
+    border-radius: 7px !important;
+    min-height: 34px !important;
+}
+.reset-btn { white-space: nowrap; }
+.reset-btn:hover { background: var(--surface-3) !important; color: var(--ink) !important; transform: none !important; }
+.reset-btn svg { width: 13px; height: 13px; }
+.cart-counter { background: var(--surface-3) !important; color: var(--ink-2) !important; font-size: 12.5px; }
+
+.messages-container { background: var(--surface) !important; padding: 22px !important; }
+.bot-message .message-content {
+    background: var(--surface-2) !important;
+    border: 1px solid var(--line) !important;
+    box-shadow: none !important;
+    color: var(--ink) !important;
+    border-radius: 14px 14px 14px 5px !important;
+}
+.user-message .message-content {
+    background: var(--ink) !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 14px 14px 5px 14px !important;
+}
+.bot-message .message-avatar {
+    background: var(--mode-accent-soft) !important;
+    color: var(--mode-accent);
+    border: 1px solid var(--line);
+    box-shadow: none !important;
+    font-size: 0 !important;
+    width: 34px !important; height: 34px !important;
+}
+.bot-message .message-avatar svg { width: 16px; height: 16px; }
+.user-message .message-avatar {
+    background: var(--surface-3) !important;
+    color: var(--ink-3);
+    box-shadow: none !important;
+    width: 34px !important; height: 34px !important;
+}
+.message-content { font-size: 14px !important; }
+.message.error .message-content {
+    background: #fdf4f3 !important;
+    border-color: #f0d3cf !important;
+    color: #8f2018 !important;
+}
+.typing-indicator .message-content { background: var(--surface-2) !important; border-color: var(--line) !important; }
+.typing-dots span { background: var(--ink-4) !important; }
+.product-card { background: var(--surface-2) !important; border-color: var(--line) !important; }
+
+/* --- 14.6 input, przyciski akcji, chipy scenariuszy -------------------- */
+.input-section {
+    background: var(--surface) !important;
+    border-top: 1px solid var(--line) !important;
+    padding: 16px 18px !important;
+}
+.action-btn {
+    background: var(--surface) !important;
+    border: 1px solid var(--line) !important;
+    color: var(--ink-2) !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    border-radius: 8px !important;
+    min-width: 0 !important;
+    padding: 9px 14px !important;
+}
+.action-btn:hover {
+    background: var(--surface-2) !important;
+    border-color: var(--bot-primary-color) !important;
+    color: var(--bot-primary-color) !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+.action-btn:focus { box-shadow: var(--shadow-glow) !important; }
+
+.input-group input {
+    border: 1px solid var(--line) !important;
+    border-radius: 9px !important;
+    font-size: 14px !important;
+    padding: 11px 14px !important;
+    color: var(--ink) !important;
+    background: var(--surface) !important;
+}
+.input-group input:focus { border-color: var(--bot-primary-color) !important; box-shadow: var(--shadow-glow) !important; }
+.send-btn {
+    background: var(--bot-primary-color) !important;
+    color: #fff !important;
+    border: 1px solid var(--bot-primary-color) !important;
+    border-radius: 9px !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    padding: 11px 18px !important;
+}
+.send-btn:hover { background: #9a3412 !important; border-color: #9a3412 !important; transform: none !important; box-shadow: none !important; }
+.send-btn:focus { box-shadow: var(--shadow-glow) !important; }
+.send-btn svg { width: 15px; height: 15px; }
+.input-hint { color: var(--ink-4) !important; font-size: 11.5px !important; margin-top: 9px !important; }
+.input-hint svg { width: 12px; height: 12px; }
+
+/* CHIPY SCENARIUSZY — zamiast ściany tekstu w dymku bota.
+   ⚠️ WYGLĄD ONLY. Wpięcie (klik → wstaw do #user-input → submit #message-form)
+   robi CC w script.js / script_elektro.js. Patrz notatka na końcu sekcji. */
+.scenario-block { margin-bottom: 12px; }
+.chips-label {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    margin-bottom: 9px;
+}
+.chips-label::after { content: ""; flex: 1; height: 1px; background: var(--line-soft); }
+.scenario-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.chip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 13px !important;
+    min-height: 0 !important;
+    background: var(--surface) !important;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-family: var(--font-primary);
+    font-size: 12.5px !important;
+    font-weight: 500;
+    color: var(--ink-2) !important;
+    cursor: pointer;
+    transition: border-color 0.16s ease, color 0.16s ease, background 0.16s ease;
+}
+.chip { white-space: nowrap; min-height: 34px; }
+.chip:hover {
+    background: var(--mode-accent-soft) !important;
+    border-color: var(--bot-primary-color);
+    color: var(--bot-primary-color) !important;
+}
+.chip:focus-visible { outline: none; box-shadow: var(--shadow-glow); }
+.chip.chip-noise { color: var(--ink-4) !important; border-style: dashed; }
+/* tooltip z wyjaśnieniem "dlaczego to nie istnieje" */
+.chip[data-tip]::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(3px);
+    width: max-content;
+    max-width: 230px;
+    padding: 7px 10px;
+    background: var(--ink);
+    color: #fff;
+    font-size: 11.5px;
+    font-weight: 400;
+    line-height: 1.45;
+    white-space: normal;
+    text-align: left;
+    border-radius: 7px;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.16);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.16s ease, transform 0.16s ease;
+    z-index: 60;
+}
+.chip[data-tip]:hover::after,
+.chip[data-tip]:focus-visible::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* dropdown podpowiedzi */
+.suggestions-dropdown { border: 1px solid var(--line) !important; border-radius: 10px !important; box-shadow: var(--shadow-hard) !important; }
+.suggestion-item { border-bottom-color: var(--line-soft) !important; }
+.suggestion-item:hover, .suggestion-item:focus {
+    background: var(--surface-2) !important;
+    border-left: 2px solid var(--bot-primary-color) !important;
+    padding-left: 14px !important;
+}
+.suggestion-product-code { color: var(--bot-primary-color) !important; }
+.suggestion-price { color: var(--ink) !important; font-family: var(--font-mono); }
+.stock-available { background: #eef7f0 !important; color: #15803d !important; }
+.stock-limited { background: #fdf6e7 !important; color: #a16207 !important; }
+.stock-out { background: #fdf1f0 !important; color: var(--dash-accent-danger) !important; }
+.score-high { background: #15803d !important; }
+.score-medium { background: var(--bot-warning-color) !important; }
+.score-low { background: var(--ink-4) !important; }
+.highlight-match { background: linear-gradient(180deg, transparent 60%, rgba(234, 179, 8, 0.45) 60%) !important; }
+.faq-suggestion { border-left-color: var(--bot-accent-color) !important; background: #fdfaf1 !important; }
+.suggestions-header { background: var(--surface-2) !important; border-bottom: 1px solid var(--line) !important; color: var(--ink-2) !important; font-size: 12px; }
+.suggestions-footer { background: var(--surface-2) !important; border-top: 1px solid var(--line) !important; color: var(--ink-4) !important; font-style: normal !important; font-size: 11.5px; }
+.results-high-confidence { border-left: 3px solid var(--dash-accent-success) !important; }
+.results-medium-confidence { border-left: 3px solid var(--dash-accent-warning) !important; }
+.results-low-confidence { border-left: 3px solid var(--ink-4) !important; }
+.results-no-match { border-left: 3px solid var(--dash-accent-danger) !important; }
+.lost-demand-form { background: var(--surface-2) !important; border-color: var(--line) !important; }
+.lost-demand-form button { background: var(--bot-primary-color) !important; }
+.lost-demand-form button:hover { background: #9a3412 !important; }
+.report-missing-btn { background: var(--bot-primary-color) !important; }
+.report-missing-btn:hover { background: #9a3412 !important; }
+.no-results-cta { background: var(--mode-accent-soft) !important; border-color: var(--line) !important; }
+.no-results-tips { background: var(--surface-2) !important; }
+
+/* --- 14.7 panel analityczny (jasny) ----------------------------------- */
+.dashboard-header {
+    background: var(--surface) !important;
+    color: var(--ink) !important;
+    border-bottom: 1px solid var(--line) !important;
+    padding: 14px 16px !important;
+}
+.dashboard-title { display: flex; align-items: center; gap: 9px; font-size: 15px !important; font-weight: 600; color: var(--ink) !important; }
+.dashboard-title svg { width: 15px; height: 15px; color: var(--bot-primary-color); }
+.collapse-btn {
+    background: var(--surface) !important;
+    border: 1px solid var(--line) !important;
+    color: var(--ink-3) !important;
+    border-radius: 7px !important;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 !important;
+    min-height: 0 !important;
+}
+.collapse-btn:hover { background: var(--surface-3) !important; color: var(--ink) !important; transform: none !important; }
+
+.dashboard-metrics { background: transparent !important; padding: 14px 14px 6px !important; gap: 8px !important; }
+.metric-card {
+    background: var(--surface) !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 11px !important;
+    padding: 12px !important;
+    gap: 10px !important;
+    align-items: flex-start !important;
+    box-shadow: var(--shadow-soft);
+}
+.metric-card::before { display: none !important; }
+.metric-card:hover { transform: none !important; box-shadow: var(--shadow-medium) !important; border-color: var(--line) !important; }
+.metric-icon {
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 7px;
+    background: var(--surface-3);
+    color: var(--ink-3);
+    font-size: 0 !important;
+    filter: none !important;
+    flex-shrink: 0;
+}
+.metric-icon svg { width: 14px; height: 14px; }
+.metric-card.found-products .metric-icon { background: #eef7f0; color: #15803d; }
+.metric-card.lost-opportunities .metric-icon { background: rgba(194, 65, 12, 0.09); color: var(--bot-primary-color); }
+.metric-card.filtered-out .metric-icon { background: var(--surface-3); color: var(--ink-3); }
+.metric-label {
+    font-size: 9.5px !important;
+    letter-spacing: 0.09em !important;
+    color: var(--ink-4) !important;
+    font-weight: 600 !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    line-height: 1.3;
+}
+.metric-number .count { font-size: 22px !important; font-weight: 600 !important; color: var(--ink) !important; letter-spacing: -0.02em; }
+.metric-number .unit { font-size: 10.5px !important; color: var(--ink-4) !important; }
+.metric-value { font-size: 12px !important; color: var(--bot-primary-color) !important; font-weight: 600 !important; }
+.metric-card.filtered-out { grid-column: span 2; }
+.metric-card.filtered-out .metric-data { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; width: 100%; }
+.metric-card.filtered-out .metric-label { margin-bottom: 0 !important; }
+.metric-card.filtered-out .metric-number { margin-bottom: 0 !important; }
+
+/* --- 14.8 Podgląd na żywo (live feed) -------------------------------- */
+.dashboard-feed {
+    background: var(--surface) !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 11px !important;
+    margin: 8px 14px 14px !important;
+    box-shadow: var(--shadow-soft);
+}
+.feed-header { background: transparent !important; border-bottom: 1px solid var(--line-soft) !important; padding: 11px 13px !important; }
+.feed-header h3 { font-size: 13.5px !important; font-weight: 600; color: var(--ink) !important; gap: 8px !important; }
+.feed-header h3 svg { width: 14px; height: 14px; color: var(--bot-primary-color); }
+.feed-control-btn {
+    background: transparent !important;
+    border: 1px solid var(--line) !important;
+    color: var(--ink-4) !important;
+    border-radius: 6px !important;
+    width: 26px; height: 26px;
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 0 !important;
+    min-height: 0 !important;
+}
+.feed-control-btn:hover { background: var(--surface-3) !important; color: var(--ink-2) !important; border-color: var(--line) !important; }
+.feed-control-btn svg { width: 12px; height: 12px; }
+.feed-content { padding: 10px !important; background: transparent !important; overflow-x: hidden !important; }
+.feed-content::-webkit-scrollbar-track { background: transparent !important; }
+.feed-content::-webkit-scrollbar-thumb { background: var(--line) !important; }
+
+.feed-item {
+    background: var(--surface-2) !important;
+    border: 1px solid var(--line-soft) !important;
+    border-left: 2px solid var(--line) !important;
+    border-radius: 9px !important;
+    padding: 10px 12px !important;
+    margin-bottom: 7px !important;
+    animation: slideInFeed 0.25s ease-out !important;
+    box-shadow: none !important;
+}
+.feed-item:hover { transform: none !important; background: var(--surface-3) !important; }
+.feed-timestamp { color: var(--ink-4) !important; font-size: 10.5px !important; letter-spacing: 0.02em; }
+.feed-query { color: var(--ink) !important; font-size: 14px !important; font-weight: 600 !important; font-family: var(--font-primary); }
+.feed-visitor-info { color: var(--ink-3) !important; font-size: 11px !important; font-weight: 400 !important; }
+.feed-details { color: var(--ink-3) !important; }
+.feed-classification {
+    padding: 4px 10px !important;
+    border-radius: 999px !important;
+    border: 1px solid !important;
+    font-size: 10.5px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.06em !important;
+    animation: none !important;
+    box-shadow: none !important;
+    white-space: nowrap !important;
+}
+.feed-classification.found-products { color: #15803d !important; border-color: #cfe6d6 !important; background: #f2f9f4 !important; }
+.feed-classification.lost-opportunities { color: #a1301c !important; border-color: #f0d6cd !important; background: #fdf4f1 !important; font-weight: 600 !important; }
+.feed-classification.filtered-out { color: var(--ink-3) !important; border-color: var(--line) !important; background: var(--surface-3) !important; }
+.feed-value {
+    color: var(--ink) !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    border-top: 1px solid var(--line-soft) !important;
+    padding-top: 7px !important;
+    margin-top: 7px !important;
+}
+.feed-placeholder { color: var(--ink-4) !important; height: auto !important; padding: 34px 20px !important; gap: 10px !important; text-align: center; }
+.feed-placeholder i, .feed-placeholder svg { animation: none !important; opacity: 0.5 !important; width: 20px; height: 20px; font-size: 18px !important; }
+.feed-placeholder span { font-size: 12.5px !important; line-height: 1.5; max-width: 210px; }
+
+/* EMPTY STATE panelu — "0 zł" wygląda jak błąd. Dopóki brak zapytań,
+   metryki + statystyki są przygaszone i pod nimi jest zaproszenie.
+   ⚠️ Klasa .is-empty na #dashboardColumn — do zdjęcia przez CC po pierwszym
+   zdarzeniu (stats_update / live_feed_update) w dashboard.js. */
+.dashboard-column.is-empty .metric-value { color: var(--copper) !important; }
+.dashboard-column.is-empty .metric-value { display: none !important; }
+.panel-empty {
+    margin: 0 14px 14px;
+    padding: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    background: var(--surface);
+    border: 1px dashed var(--line);
+    border-radius: 11px;
+}
+.dashboard-column:not(.is-empty) .panel-empty { display: none; }
+.panel-empty svg { width: 16px; height: 16px; color: var(--bot-primary-color); flex-shrink: 0; margin-top: 1px; }
+.panel-empty p { font-size: 12.5px; line-height: 1.55; color: var(--ink-2); margin: 0; }
+.panel-empty p span { display: block; color: var(--ink-4); font-size: 11.5px; margin-top: 3px; }
+
+/* --- 14.9 statystyki (wykres usunięty, panel na pełną szerokość) ------ */
+.dashboard-analytics { margin: 0 14px 14px !important; }
+.analytics-grid { grid-template-columns: 1fr !important; }
+.stats-panel, .chart-panel {
+    background: var(--surface) !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 11px !important;
+    box-shadow: var(--shadow-soft);
+}
+.panel-title {
+    background: transparent !important;
+    border-bottom: 1px solid var(--line-soft) !important;
+    color: var(--ink) !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    padding: 11px 13px !important;
+    gap: 8px !important;
+}
+.panel-title svg { width: 14px; height: 14px; color: var(--bot-primary-color); }
+.stats-list { padding: 4px 13px 8px !important; }
+.stat-row { border-bottom: 1px solid var(--line-soft) !important; padding: 10px 0 !important; }
+.stat-label { font-size: 12.5px !important; color: var(--ink-3) !important; }
+.stat-value { font-size: 14px !important; font-weight: 600 !important; color: var(--ink) !important; }
+.stat-value.success, .stat-value.positive { color: var(--bot-primary-color) !important; }
+
+/* --- 14.10 sekcja "Jak działa LDI" (jasna) ---------------------------- */
+.sales-arguments {
+    background: var(--surface-2) !important;
+    border-top: 1px solid var(--line);
+    color: var(--ink) !important;
+    padding: 72px 0 !important;
+    margin-top: 0 !important;
+}
+.sales-arguments::before { display: none !important; }
+.arguments-header { text-align: left !important; margin-bottom: 40px !important; }
+.arguments-header h2 {
+    font-size: 38px !important;
+    font-weight: 600 !important;
+    background: none !important;
+    -webkit-text-fill-color: var(--ink) !important;
+    color: var(--ink) !important;
+    line-height: 1.1 !important;
+    letter-spacing: -0.02em;
+}
+.arguments-header p { color: var(--ink-3) !important; }
+.advantage-grid { gap: 1px !important; margin-top: 40px !important; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.advantage-item {
+    display: block !important;
+    background: var(--surface) !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 26px !important;
+}
+.advantage-item:hover { transform: none !important; box-shadow: none !important; background: var(--surface-2) !important; }
+.advantage-content h4 {
+    color: var(--ink-4) !important;
+    font-family: var(--font-primary) !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase;
+    text-shadow: none !important;
+    margin-bottom: 12px !important;
+}
+.advantage-content p {
+    color: var(--ink-2) !important;
+    font-size: 14.5px !important;
+    line-height: 1.65 !important;
+    text-shadow: none !important;
+}
+.advantage-content p strong { color: var(--ink) !important; text-shadow: none !important; }
+.sales-arguments .prior-work { background: var(--surface) !important; border: 1px solid var(--line) !important; }
+.sales-arguments .prior-work h3 { color: var(--ink-4) !important; }
+.sales-arguments .prior-work p { color: var(--ink-2) !important; }
+.sales-arguments .contact-cta { color: var(--ink-4) !important; }
+.sales-arguments .contact-link {
+    display: inline-block;
+    padding: 13px 30px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: var(--surface);
+    color: var(--ink) !important;
+    font-size: 14.5px;
+    font-weight: 500;
+    text-decoration: none;
+}
+.sales-arguments .contact-link:hover { border-color: var(--bot-primary-color); color: var(--bot-primary-color) !important; }
+
+/* toasty */
+.toast { background: var(--surface) !important; border: 1px solid var(--line) !important; border-left: 3px solid var(--bot-primary-color) !important; box-shadow: var(--shadow-hard) !important; backdrop-filter: none !important; }
+.toast.success { border-left-color: var(--dash-accent-success) !important; }
+.toast.error { border-left-color: var(--dash-accent-danger) !important; }
+.toast.warning { border-left-color: var(--dash-accent-warning) !important; }
+
+/* mobilny dashboard */
+.mobile-dashboard-toggle {
+    background: var(--surface) !important;
+    color: var(--ink) !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 999px !important;
+    box-shadow: var(--shadow-medium) !important;
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
+    min-height: 44px !important;
+}
+.mobile-dashboard-toggle:hover { background: var(--surface-3) !important; color: var(--ink) !important; transform: none !important; }
+.mobile-dashboard-overlay { background: rgba(15, 23, 42, 0.35) !important; }
+.mobile-dashboard-content { background: var(--surface-2) !important; color: var(--ink) !important; }
+.mobile-dashboard-close { background: var(--surface) !important; color: var(--ink) !important; border: 1px solid var(--line) !important; box-shadow: var(--shadow-medium); }
+
+/* --- 14.11 RWD: panel analityczny zwija się POD spód, nie ucina ------- */
+/* 13" laptopy i węższe okna: kolumny jedna pod drugą, pełna czytelność feedu */
+@media (max-width: 1280px) {
+    .demo-container { flex-direction: column !important; height: auto !important; min-height: 100vh !important; overflow: visible !important; }
+    .bot-column { width: 100% !important; height: auto !important; min-height: 72vh !important; order: 1 !important; overflow: visible !important; border-bottom: 1px solid var(--line) !important; }
+    .dashboard-column {
+        width: 100% !important; max-width: none !important; min-width: 0 !important;
+        height: auto !important; order: 2 !important; overflow: visible !important;
+        border-left: none !important; border-top: 1px solid var(--line) !important;
+    }
+    .resize-handle { display: none !important; }
+    .dashboard-metrics { grid-template-columns: repeat(3, 1fr) !important; }
+    .metric-card.filtered-out { grid-column: auto !important; }
+    .metric-card.filtered-out .metric-data { display: block; }
+    .dashboard-feed { min-height: 0 !important; }
+    .feed-content { height: auto !important; max-height: 340px !important; min-height: 0 !important; }
+    .chat-interface { height: auto !important; min-height: 560px !important; max-height: none !important; }
+    .mobile-dashboard-toggle { display: none !important; }
+}
+@media (max-width: 900px) {
+    .mode-bar { flex-wrap: wrap; gap: 10px; }
+    .header-content { flex-wrap: wrap !important; gap: 12px; }
+    .header-badges { flex-wrap: wrap; }
+    .dashboard-metrics { grid-template-columns: 1fr 1fr !important; }
+    .metric-card.filtered-out { grid-column: span 2 !important; }
+    .arguments-header h2 { font-size: 30px !important; }
+    .advantage-grid { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 768px) {
+    /* wcześniejsze bloki chowały #dashboardColumn na mobile — my go pokazujemy,
+       bo zwijanie pod spód jest teraz podstawowym zachowaniem */
+    .dashboard-column { display: flex !important; }
+    .bot-column { min-height: 0 !important; }
+    .feed-content { max-height: none !important; padding: 10px !important; }
+    .dashboard-analytics { display: block !important; }
+    .metric-card { flex-direction: row !important; text-align: left !important; padding: 12px !important; gap: 10px !important; }
+    .metric-number .count { font-size: 20px !important; }
+    .chip { min-height: 36px; }
+    .action-btn { min-width: 0 !important; }
+}
+
+/* ============================================================================
+   ⚠️ NOTATKA HANDOFF DLA CC — 2 rzeczy wymagają JS, NIE zrobione tutaj:
+
+   (7) CHIPY SCENARIUSZY. Markup jest w templatach: .scenario-chips > button.chip
+       z data-query="iPhone 13 pink". Wpięcie (jeden listener, ten sam handler
+       co ręczny submit — bez duplikowania logiki):
+
+         document.querySelectorAll('.scenario-chips .chip').forEach(chip => {
+           chip.addEventListener('click', () => {
+             const input = document.getElementById('user-input');
+             input.value = chip.dataset.query;
+             input.dispatchEvent(new Event('input', { bubbles: true }));
+             document.getElementById('message-form')
+               .dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+           });
+         });
+
+       (#message-form ma listener 'submit' → this.sendTextMessage() w script.js:123
+       i script_elektro.js:123 — dispatch trafia dokładnie w niego.)
+
+   (10) EMPTY STATE. #dashboardColumn startuje z klasą "is-empty" (w HTML).
+       Po pierwszym zdarzeniu stats_update / live_feed_update w dashboard.js:
+         document.getElementById('dashboardColumn')?.classList.remove('is-empty');
+       Dopóki klasa jest, liczby są przygaszone, "0 zł" ukryte, a pod metrykami
+       widać .panel-empty ("Wpisz frazę, aby zobaczyć analitykę intencji").
+
+   Dodatkowo: ściana tekstu "SCENARIUSZE TESTOWE" w pierwszym dymku bota jest
+   generowana SERWEROWO (nie w script.js) — skrócenie jej do 2-3 zdań to zmiana
+   po stronie backendu Flask. Chipy już przenoszą tę treść pod input.
+   ============================================================================ */
+
+
+/* ============================================================================
+   14.12 PASS KONTRASTU I GŁĘBI — 2026-09
+   ============================================================================
+   Poprawka po pierwszej iteracji: było za płasko i za blado.
+   Ta sama paleta, mocniej użyta:
+   · prawa kolumna dostaje ciemniejsze, piaskowo-taupe tło → dwie wyraźne strefy
+   · liczby w metrykach i statystykach: duże, 600, miedź/złoto zamiast szarości
+   · karty realnie unoszą się nad tłem (cień + jaśniejsza powierzchnia)
+   · przyciski wypełnione miedzią zamiast obrysu
+   · miedź jako powierzchnia, nie tylko kreska (nagłówek panelu, pasek trybu)
+   Blok jest PO sekcji 14 i celowo ją nadpisuje.
+   ============================================================================ */
+
+:root {
+    --panel-bg: #ede6db;        /* prawa kolumna — wyraźnie ciemniejsza od #fff */
+    --panel-bg-deep: #e3dace;   /* nagłówek / rynny panelu */
+    --panel-card: #fffdf9;      /* karty unoszące się nad panelem */
+    --panel-line: #d8cfc0;
+    --copper: #c2410c;
+    --copper-deep: #9a3412;
+    --gold: #a16207;
+}
+
+/* --- strefy: lewa jasna, prawa ciemniejsza ---------------------------- */
+.dashboard-column {
+    background: var(--panel-bg) !important;
+    border-left: 1px solid #cfc5b4 !important;
+    box-shadow: inset 7px 0 18px -14px rgba(60, 40, 20, 0.45) !important;
+}
+.dashboard-header {
+    background: var(--panel-bg-deep) !important;
+    border-bottom: 1px solid #cfc5b4 !important;
+}
+.dashboard-title { color: #3b2c1c !important; }
+.dashboard-title svg { color: var(--copper) !important; }
+.collapse-btn {
+    background: rgba(255, 255, 255, 0.7) !important;
+    border-color: var(--panel-line) !important;
+    color: #6b5844 !important;
+}
+.collapse-btn:hover { background: #fff !important; color: var(--copper) !important; }
+.resize-handle { background: #ded5c6 !important; }
+
+/* --- karty metryk: unoszą się --------------------------------------- */
+.metric-card {
+    background: var(--panel-card) !important;
+    border: 1px solid #e0d7c8 !important;
+    border-radius: 12px !important;
+    padding: 14px !important;
+    box-shadow: 0 1px 2px rgba(74, 52, 28, 0.06),
+                0 6px 14px -4px rgba(74, 52, 28, 0.16),
+                0 14px 28px -12px rgba(74, 52, 28, 0.20) !important;
+    transition: transform 0.18s ease, box-shadow 0.18s ease !important;
+}
+.metric-card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 2px 4px rgba(74, 52, 28, 0.07),
+                0 10px 20px -4px rgba(74, 52, 28, 0.20),
+                0 22px 40px -14px rgba(74, 52, 28, 0.24) !important;
+}
+/* ikony na wypełnieniu, nie na szarości */
+.metric-card .metric-icon { border: none !important; }
+.metric-card.found-products .metric-icon { background: #15803d !important; color: #fff !important; }
+.metric-card.lost-opportunities .metric-icon { background: var(--copper) !important; color: #fff !important; }
+.metric-card.filtered-out .metric-icon { background: var(--gold) !important; color: #fff !important; }
+
+/* --- liczby: pierwsze co widać -------------------------------------- */
+.metric-number .count {
+    font-size: 30px !important;
+    font-weight: 600 !important;
+    color: var(--copper) !important;
+    line-height: 1.05 !important;
+    letter-spacing: -0.03em !important;
+}
+.metric-card.found-products .metric-number .count { color: #15803d !important; }
+.metric-card.filtered-out .metric-number .count { color: var(--gold) !important; }
+.metric-number .unit { font-size: 10.5px !important; color: #8a7a66 !important; }
+.metric-label { color: #7a6a56 !important; font-weight: 600 !important; }
+.metric-value {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: var(--copper-deep) !important;
+    margin-top: 2px !important;
+}
+
+.stat-row { border-bottom-color: #ece5da !important; }
+.stat-label { color: #6b5844 !important; }
+.stat-value {
+    font-size: 22px !important;
+    font-weight: 600 !important;
+    color: var(--copper) !important;
+    letter-spacing: -0.02em !important;
+}
+.stat-value.success, .stat-value.positive { color: var(--copper-deep) !important; }
+/* (przygaszenie usunięte — patrz 14.13) */
+
+/* panele feedu i statystyk też unoszą się nad ciemniejszym tłem */
+.dashboard-feed, .stats-panel {
+    background: var(--panel-card) !important;
+    border: 1px solid #e0d7c8 !important;
+    box-shadow: 0 1px 2px rgba(74, 52, 28, 0.05),
+                0 8px 18px -6px rgba(74, 52, 28, 0.16) !important;
+}
+.panel-title, .feed-header { border-bottom-color: #efe8dd !important; }
+.panel-title, .feed-header h3 { color: #3b2c1c !important; }
+.panel-title svg, .feed-header h3 svg { color: var(--copper) !important; }
+.feed-item { background: #faf6ef !important; border-color: #ece4d7 !important; border-left-color: #d8cfc0 !important; }
+.feed-item:hover { background: #f5efe5 !important; }
+.feed-classification.lost-opportunities { border-left-color: var(--copper) !important; }
+.feed-value { color: var(--copper-deep) !important; font-size: 14px !important; }
+.panel-empty { background: rgba(255, 253, 249, 0.75) !important; border-color: #d3c9b8 !important; }
+.panel-empty p { color: #5c4b38 !important; }
+
+/* --- przyciski: wypełnienie miedzią --------------------------------- */
+.send-btn, .send-btn:link, .send-btn:visited {
+    background: var(--copper) !important;
+    border-color: var(--copper) !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    padding: 12px 22px !important;
+    box-shadow: 0 1px 2px rgba(122, 45, 8, 0.2),
+                0 6px 14px -4px rgba(194, 65, 12, 0.45) !important;
+}
+.send-btn:hover {
+    background: var(--copper-deep) !important;
+    border-color: var(--copper-deep) !important;
+    box-shadow: 0 2px 4px rgba(122, 45, 8, 0.22),
+                0 10px 20px -5px rgba(194, 65, 12, 0.5) !important;
+}
+.header-cta-link,
+.header-right .header-badges .header-cta-link {
+    background: var(--copper) !important;
+    border-color: var(--copper) !important;
+    color: #fff !important;
+    padding: 10px 18px !important;
+    font-size: 13px !important;
+    box-shadow: 0 1px 2px rgba(122, 45, 8, 0.18),
+                0 6px 14px -5px rgba(194, 65, 12, 0.45) !important;
+}
+.header-cta-link:hover,
+.header-right .header-badges .header-cta-link:hover {
+    background: var(--copper-deep) !important;
+    border-color: var(--copper-deep) !important;
+    box-shadow: 0 2px 4px rgba(122, 45, 8, 0.2),
+                0 10px 20px -6px rgba(194, 65, 12, 0.5) !important;
+}
+.action-btn {
+    background: var(--copper) !important;
+    border-color: var(--copper) !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    box-shadow: 0 1px 2px rgba(122, 45, 8, 0.18),
+                0 5px 12px -4px rgba(194, 65, 12, 0.4) !important;
+}
+.action-btn:hover { background: var(--copper-deep) !important; border-color: var(--copper-deep) !important; color: #fff !important; }
+.report-missing-btn, .lost-demand-form button { box-shadow: 0 5px 12px -4px rgba(194, 65, 12, 0.45) !important; }
+
+/* --- miedź jako powierzchnia, nie tylko kreska ----------------------- */
+.mode-bar {
+    background: linear-gradient(90deg, #3b2c1c 0%, #5a3a1c 100%);
+    border-bottom: 1px solid #2c2013;
+}
+.mode-bar-brand { color: rgba(255, 244, 230, 0.6); }
+.mode-bar-brand strong { color: #fdf6ec; }
+.mode-switch { background: rgba(0, 0, 0, 0.22); border-color: rgba(255, 233, 210, 0.16); }
+.mode-seg { color: rgba(255, 240, 225, 0.62); }
+.mode-seg:hover { color: #fff; }
+.mode-seg[aria-current="page"] {
+    background: var(--copper);
+    color: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+.mode-seg[aria-current="page"] .mode-seg-dot { background: var(--gold); }
+.mode-seg:not([aria-current]) .mode-seg-dot { background: rgba(255, 233, 210, 0.35); }
+
+/* pasek chatu: miedziana krawędź grubiej + ciepłe tło */
+.chat-header {
+    background: linear-gradient(180deg, #fffdf9, #f9f4ec) !important;
+    border-top: 3px solid var(--mode-accent) !important;
+}
+.chat-interface {
+    border-color: #e2d9ca !important;
+    box-shadow: 0 2px 4px rgba(74, 52, 28, 0.05),
+                0 16px 40px -14px rgba(74, 52, 28, 0.22) !important;
+}
+.logo-icon {
+    background: var(--mode-accent) !important;
+    color: #fff !important;
+    border: none !important;
+    box-shadow: 0 4px 10px -3px rgba(194, 65, 12, 0.45) !important;
+}
+.bot-message .message-avatar {
+    background: var(--mode-accent) !important;
+    color: #fff !important;
+    border: none !important;
+}
+.bot-message .message-content { background: #f9f4ec !important; border-color: #e7ddcd !important; }
+
+.chips-label { color: #8a7358 !important; }
+.chip { border-color: #ddd3c3 !important; color: #5c4b38 !important; }
+.chip:hover {
+    background: var(--copper) !important;
+    border-color: var(--copper) !important;
+    color: #fff !important;
+}
+.chip.chip-noise { color: #9c8c76 !important; }
+
+/* sekcja "How LDI works" — nagłówek w miedzi */
+.arguments-header h2 { color: #2a1e12 !important; -webkit-text-fill-color: #2a1e12 !important; }
+.advantage-content h4 { color: var(--copper) !important; }
+.sales-arguments .contact-link {
+    background: var(--copper) !important;
+    border-color: var(--copper) !important;
+    color: #fff !important;
+    box-shadow: 0 6px 16px -5px rgba(194, 65, 12, 0.45);
+}
+.sales-arguments .contact-link:hover { background: var(--copper-deep) !important; border-color: var(--copper-deep) !important; color: #fff !important; }
+
+@media (max-width: 1280px) {
+    .dashboard-column { box-shadow: inset 0 7px 18px -14px rgba(60, 40, 20, 0.45) !important; border-top: 1px solid #cfc5b4 !important; }
+}
+
+
+
+/* ============================================================================
+   14.13 CHIPY LŻEJSZE + PANEL Z CHARAKTEREM — 2026-09
+   ============================================================================
+   · chipy schodzą do roli podpowiedzi formatu wpisu (mniejsze, cichsze)
+   · prawa kolumna: ciemne, ciepłe tło (ciemny brąz) — realna druga strefa,
+     karty na jasnej powierzchni unoszą się nad nim mocnym cieniem
+   · liczby jeszcze większe, miedź/złoto, nigdy szare
+   · pusty stan "Podgląd na żywo" — dopracowany placeholder zamiast spinnera
+   Blok jest PO 14.12 i celowo ją nadpisuje.
+   ============================================================================ */
+
+/* --- 1. chipy: podpowiedź formatu, nie główny element ---------------- */
+.scenario-block { margin-bottom: 10px !important; }
+.chips-label {
+    font-size: 9.5px !important;
+    letter-spacing: 0.12em !important;
+    color: #7c6b57 !important;
+    margin-bottom: 7px !important;
+}
+.scenario-chips { gap: 5px !important; }
+.chip {
+    padding: 4px 10px !important;
+    min-height: 26px !important;
+    font-size: 11.5px !important;
+    font-weight: 400 !important;
+    border-radius: 6px !important;
+    background: #f7f3ec !important;
+    border-color: #e7dfd2 !important;
+    color: #7c6b57 !important;
+    box-shadow: none !important;
+}
+.chip:hover {
+    background: #fff !important;
+    border-color: var(--copper) !important;
+    color: var(--copper) !important;
+}
+.chip.chip-noise { color: #7c6b57 !important; border-style: dashed !important; }
+
+/* --- 2. prawa kolumna: ciemna, ciepła strefa ------------------------- */
+/* GRANAT / INDYGO — panel jest wspólny dla obu trybów (Moto=czerwień,
+   Elektronika=zieleń), więc neutralny granat nie koliduje z żadnym z nich,
+   a ze złotem #eab308 czyta się jako premium analityka, nie jako wojsko. */
+.dashboard-column {
+    background: #141a2e !important;
+    border-left: 1px solid #080c18 !important;
+    color: #e6eaf5 !important;
+    box-shadow: inset 10px 0 26px -18px rgba(0, 0, 0, 0.9) !important;
+}
+.dashboard-header {
+    background: #0e1322 !important;
+    border-bottom: 1px solid rgba(200, 215, 255, 0.10) !important;
+}
+.dashboard-title { color: #f2f5fd !important; }
+.dashboard-title svg { color: #eab308 !important; }
+.collapse-btn {
+    background: rgba(214, 226, 255, 0.08) !important;
+    border-color: rgba(200, 215, 255, 0.18) !important;
+    color: #b9c4dd !important;
+}
+.collapse-btn:hover { background: rgba(214, 226, 255, 0.16) !important; color: #fff !important; }
+.resize-handle { background: #c9d0e0 !important; }
+.dashboard-content { background: transparent !important; }
+.feed-content::-webkit-scrollbar-thumb { background: rgba(200, 215, 255, 0.20) !important; }
+
+/* --- 3. karty i panele: unoszą się nad ciemnym tłem ------------------ */
+.metric-card, .dashboard-feed, .stats-panel {
+    background: #fffdf9 !important;
+    border: 1px solid rgba(200, 215, 255, 0.12) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.30),
+                0 12px 24px -8px rgba(0, 0, 0, 0.45),
+                0 26px 48px -18px rgba(0, 0, 0, 0.55) !important;
+}
+.metric-card:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.32),
+                0 18px 32px -8px rgba(0, 0, 0, 0.5),
+                0 36px 60px -20px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* --- 4. liczby: duże, miedź/złoto ----------------------------------- */
+.metric-number .count { font-size: 34px !important; }
+.metric-card.filtered-out .metric-number .count { color: #a16207 !important; }
+.metric-number .unit { color: #6f5d47 !important; }
+.metric-label { color: #6b5844 !important; }
+.stat-value { font-size: 26px !important; color: var(--copper) !important; }
+.stat-value.success, .stat-value.positive { color: #a16207 !important; }
+/* Empty state NIE przygasza liczb — zera mają być miedziane/złote jak reszta
+   (przygaszenie z 14.12/14.13 dawało dokładnie ten "szary placeholder", który
+   miał zniknąć). Pustkę komunikuje wyłącznie blok .panel-empty pod metrykami. */
+.dashboard-column.is-empty .metric-number .count { color: var(--copper) !important; }
+.dashboard-column.is-empty .metric-card.found-products .metric-number .count { color: #15803d !important; }
+.dashboard-column.is-empty .metric-card.filtered-out .metric-number .count { color: #a16207 !important; }
+.dashboard-column.is-empty .stat-value { color: var(--copper) !important; }
+.dashboard-column.is-empty .stat-value.success,
+.dashboard-column.is-empty .stat-value.positive { color: #a16207 !important; }
+
+.panel-empty {
+    background: rgba(214, 226, 255, 0.05) !important;
+    border: 1px dashed rgba(200, 215, 255, 0.24) !important;
+}
+.panel-empty svg { color: #eab308 !important; }
+.panel-empty p { color: #eef1fa !important; }
+.panel-empty p span { color: rgba(226, 232, 246, 0.80) !important; }
+
+/* --- 5. pusty stan "Podgląd na żywo" -------------------------------- */
+.feed-placeholder {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 34px 22px 30px !important;
+    gap: 0 !important;
+}
+.feed-radar {
+    position: relative;
+    width: 76px; height: 76px;
+    border-radius: 50%;
+    margin-bottom: 18px;
+    background:
+        radial-gradient(circle, rgba(234, 179, 8, 0.14) 0%, transparent 62%),
+        conic-gradient(from 0deg, rgba(194, 65, 12, 0.32), transparent 78%);
+    border: 1px solid #e7dccb;
+    animation: feed-radar-spin 3.6s linear infinite;
+}
+.feed-radar::before, .feed-radar::after {
+    content: "";
+    position: absolute;
+    border: 1px solid #ece3d4;
+    border-radius: 50%;
+}
+.feed-radar::before { inset: 15px; }
+.feed-radar::after { inset: 29px; border-color: #c2410c; opacity: 0.5; }
+@keyframes feed-radar-spin { to { transform: rotate(360deg); } }
+.feed-placeholder-title {
+    font-family: var(--font-display);
+    font-size: 15px !important;
+    font-weight: 600;
+    color: #3b2c1c !important;
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+}
+.feed-placeholder span {
+    font-size: 12.5px !important;
+    line-height: 1.55;
+    color: #6b5844 !important;
+    max-width: 220px;
+}
+.feed-placeholder-meta {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 16px;
+    padding: 5px 12px;
+    border: 1px solid #ece3d4;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #6b5844;
+    white-space: nowrap;
+}
+.feed-placeholder-meta::before {
+    content: "";
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #c2410c;
+    animation: sys-dot-pulse 2.4s ease-in-out infinite;
+}
+/* fallback gdy dashboard.js wstrzyknie stary placeholder z ikoną FA */
+.feed-placeholder i { color: #c2410c !important; opacity: 0.8 !important; font-size: 22px !important; margin-bottom: 12px; }
+
+@media (max-width: 1280px) {
+    .dashboard-column { box-shadow: inset 0 10px 26px -18px rgba(0, 0, 0, 0.9) !important; border-top: 1px solid #080c18 !important; }
+}
+
+
+/* --- 14.14 wiadomość powitalna: zachęta + lista marek ---------------
+   ⚠️ DLA CC: treść pierwszego dymka leci z backendu Flask (nie ze script.js).
+   Markup do wstawienia po stronie serwera — klasy poniżej stylują go sam z siebie:
+     <strong>…nagłówek…</strong>
+     <p>…</p>
+     <p class="welcome-invite">…zachęta do testowania…</p>
+     <div class="welcome-brands">
+       <span class="welcome-brands-label">W katalogu demo</span>
+       <div class="welcome-brand-list"><span>BMW</span><span>Audi</span>…</div>
+     </div>
+   Dopóki backend tego nie oddaje, dymek renderuje się jak dotąd — reguły są
+   nieszkodliwe. Podgląd docelowego wyglądu: preview_moto.html. */
+.message-content.welcome strong {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 15.5px;
+    font-weight: 600;
+    color: #2a1e12;
+    margin-bottom: 7px;
+    letter-spacing: -0.01em;
+}
+.message-content.welcome p { margin: 0 0 8px; }
+.message-content.welcome p:last-of-type { margin-bottom: 0; }
+.message-content.welcome .welcome-invite { color: #5c4b38; }
+.welcome-brands {
+    margin-top: 13px;
+    padding-top: 12px;
+    border-top: 1px solid #e7ddcd;
+}
+.welcome-brands-label {
+    display: block;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #7c6b57;
+    margin-bottom: 8px;
+}
+.welcome-brand-list { display: flex; flex-wrap: wrap; gap: 5px 6px; }
+.welcome-brand-list span {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: #7c6b57;
+    padding: 2px 8px;
+    background: #fffdf9;
+    border: 1px solid #e7dfd2;
+    border-radius: 5px;
+    white-space: nowrap;
+}
+
+/* --- 14.15 dymek powitalny mieści się bez przewijania ---------------- */
+.messages-container { overflow-y: auto !important; }
+.message-content.welcome {
+    max-height: none !important;
+    overflow: visible !important;
+}
+.message-content.welcome p { margin-bottom: 6px; font-size: 13.5px; line-height: 1.5; }
+.message-content.welcome strong { margin-bottom: 5px; }
+.welcome-brands { margin-top: 10px; padding-top: 9px; }
+.welcome-brand-list { gap: 4px 5px; }
+.welcome-brand-list span { font-size: 11px; padding: 1px 7px; }
+/* .message-text ma white-space: pre-wrap z bazowego CSS czatu — \n w markupie
+   powitania dawały puste linie (~50-60px martwej wysokości) */
+.message-content.welcome .message-text { white-space: normal !important; }
+/* zapas wysokości czatu na 13" (viewport ~780px): stary 75vh dawał ~585px */
+@media (min-width: 1281px) {
+    .chat-interface { height: min(84vh, 760px) !important; min-height: 600px !important; max-height: none !important; }
+    .messages-container { padding: 16px 20px !important; }
+}
+
+/* ============================================================================
+   KONIEC PLIKU
+   ============================================================================ */

@@ -614,6 +614,24 @@ class EcommerceBot:
         
         return corrected
     
+    def normalize_brand_typos(self, query: str) -> str:
+        """
+        Poprawia literówkę w nazwie marki, której nie ma w SLANG_DICTIONARY (np. 'samsubng' -> 'samsung').
+        Ostrożnie: token >= 5 znaków, sam litery, nieznany słownikowi, ta sama pierwsza litera co marka,
+        fuzz.ratio >= 80. Krótkie marki (< 4 znaki) pomijane — za dużo fałszywych trafień.
+        """
+        knowledge = self.UNIVERSAL_ELECTRONICS_KNOWLEDGE
+        known = set(knowledge['brands']) | set(knowledge['categories']) | set(self.SLANG_DICTIONARY.values())
+        brands = [b for b in knowledge['brands'] if len(b) >= 4 and b.isalpha()]
+        fixed = []
+        for token in query.split():
+            if len(token) >= 5 and token.isalpha() and token not in known:
+                best = max(brands, key=lambda b: fuzz.ratio(token, b), default=None)
+                if best and best[0] == token[0] and fuzz.ratio(token, best) >= 80:
+                    token = best
+            fixed.append(token)
+        return ' '.join(fixed)
+
     def fix_double_letters(self, text: str) -> str:
         """
         Naprawia podwójne litery (np. 'iphonne' -> 'iphone').
@@ -1612,7 +1630,15 @@ class EcommerceBot:
         if corrected_query != query_lower:
             print(f"[ANALYZE] Typos corrected: '{query_lower}' -> '{corrected_query}'")
             query_lower = corrected_query
-        
+
+        # === PREPROCESSING - KROK 3b: Literówka w marce spoza słownika ===
+        # Bez tego "samsubng s25" nie przechodzi przez has_known_brand (dokładne dopasowanie)
+        # i ląduje w ODFILTROWANE zamiast w utraconym popycie, choć "samsung s25" działa.
+        brand_fixed = self.normalize_brand_typos(query_lower)
+        if brand_fixed != query_lower:
+            print(f"[ANALYZE] Brand typo fixed: '{query_lower}' -> '{brand_fixed}'")
+            query_lower = brand_fixed
+
         query_tokens = query_lower.split()
         
         # DEBUG
@@ -1962,7 +1988,7 @@ class EcommerceBot:
         return {
             'text_message': GLOBAL_WELCOME_MESSAGE,
             'buttons': [
-                {'text': '[PHONE] Znajdź produkt', 'action': 'search_product'}
+                {'text': '📱 Znajdź produkt', 'action': 'search_product'}
             ]
         }
     
@@ -2107,7 +2133,7 @@ class EcommerceBot:
             return {
                 'text_message': 'Menu główne',
                 'buttons': [
-                    {'text': '[PHONE] Znajdź produkt', 'action': 'search_product'}
+                    {'text': '📱 Znajdź produkt', 'action': 'search_product'}
                 ]
             }
         elif action == 'search_product':
@@ -2184,7 +2210,7 @@ class EcommerceBot:
                     products_text = "[OK] **Znaleźliśmy produkty:**\n\n"
                     for product, score in products:
                         products_text += f"**{product['name']}**\n"
-                        products_text += f"[GRAPH] Dopasowanie: {score:.0f}% | [MONEY] {product['price']:.2f} zł\n\n"
+                        products_text += f"📊 Dopasowanie: {score:.0f}% | 💰 {product['price']:.2f} zł\n\n"
                     
                     return {
                         'text_message': products_text,
@@ -2197,8 +2223,8 @@ class EcommerceBot:
                     products_text = "🤔 **Czy chodziło Ci o:**\n\n"
                     for product, score in products[:3]:
                         products_text += f"**{product['name']}**\n"
-                        products_text += f"[GRAPH] Dopasowanie: {score:.0f}% | [MONEY] {product['price']:.2f} zł\n\n"
-                    products_text += "\n[IDEA] *System automatycznie poprawił literówki*"
+                        products_text += f"📊 Dopasowanie: {score:.0f}% | 💰 {product['price']:.2f} zł\n\n"
+                    products_text += "\n💡 *System automatycznie poprawił literówki*"
                     
                     return {
                         'text_message': products_text,
@@ -2222,9 +2248,9 @@ Wpisana fraza: "{message}" """,
             else:  # NO_MATCH - UTRACONY POPYT!
                 luxury_message = ""
                 if analysis.get('has_luxury_brand'):
-                    luxury_message = "\n[TROPHY] **Wykryto markę premium** - zwiększony priorytet!"
+                    luxury_message = "\n🏆 **Wykryto markę premium** - zwiększony priorytet!"
                 
-                message_text = f"""[SEARCH] **Nie mamy tego produktu w ofercie**
+                message_text = f"""🔍 **Nie mamy tego produktu w ofercie**
 
 Szukana fraza: "{message}"{luxury_message}
 
@@ -2261,7 +2287,7 @@ Jeśli wiele osób szuka tego produktu, dodamy go do naszej oferty."""
         return {
             'text_message': 'Wybierz opcję:',
             'buttons': [
-                {'text': '[PHONE] Szukaj produktu', 'action': 'search_product'},
+                {'text': '📱 Szukaj produktu', 'action': 'search_product'},
                 {'text': '↩️ Menu główne', 'action': 'main_menu'}
             ]
         }
@@ -2273,7 +2299,7 @@ Jeśli wiele osób szuka tego produktu, dodamy go do naszej oferty."""
             if isinstance(item, tuple):
                 product, score = item
                 buttons.append({
-                    'text': f"[CART] {product['name'][:45]}...",
+                    'text': f"🛒 {product['name'][:45]}...",
                     'action': f"show_full_card_{product['id']}"
                 })
         
@@ -2302,16 +2328,16 @@ Jeśli wiele osób szuka tego produktu, dodamy go do naszej oferty."""
                 specs_text += f"* {key}: {value}\n"
         
         return {
-            'text_message': f"""[PHONE] **{product['name']}**
+            'text_message': f"""📱 **{product['name']}**
 
-[MONEY] **Cena:** {product['price']:.2f} zł
-[BOX] **Stan:** {product['stock']} szt.
+💰 **Cena:** {product['price']:.2f} zł
+📦 **Stan:** {product['stock']} szt.
 
 **Specyfikacja:**
 {specs_text if specs_text else 'Brak szczegółów'}""",
             'buttons': [
-                {'text': f"[CART] Dodaj do koszyka", 'action': f"add_to_cart_{product['id']}"},
-                {'text': '[SEARCH] Szukaj dalej', 'action': 'search_product'},
+                {'text': f"🛒 Dodaj do koszyka", 'action': f"add_to_cart_{product['id']}"},
+                {'text': '🔍 Szukaj dalej', 'action': 'search_product'},
                 {'text': '🏠 Menu główne', 'action': 'main_menu'}
             ]
         }
@@ -2366,8 +2392,8 @@ Jeśli wiele osób szuka tego produktu, dodamy go do naszej oferty."""
 {product_name}""",
             'cart_updated': True,
             'buttons': [
-                {'text': '[SEARCH] Kontynuuj zakupy', 'action': 'search_product'},
-                {'text': '[CART] Zobacz koszyk', 'action': 'view_cart'},
+                {'text': '🔍 Kontynuuj zakupy', 'action': 'search_product'},
+                {'text': '🛒 Zobacz koszyk', 'action': 'view_cart'},
                 {'text': '↩️ Menu główne', 'action': 'main_menu'}
             ]
         }

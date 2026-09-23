@@ -18,7 +18,22 @@ from logging.handlers import RotatingFileHandler
 # ========================================
 DEBUG = os.getenv('FLASK_DEBUG', 'false').lower() == 'true'
 DATABASE_URL = os.getenv('DATABASE_URL', '')
-CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'https://adeptai.pl,https://www.adeptai.pl,http://localhost:5000,http://127.0.0.1:5000').split(',')
+
+# ========================================
+# BRANDING I DOMENY — jedyne miejsce prawdy (szablony dostają to przez context_processor)
+# ========================================
+BRAND_NAME = 'Sedno Tech'
+CONTACT_EMAIL = os.getenv('CONTACT_EMAIL', 'lukasz@sedno.tech')  # placeholder do 24.09 — zmienić env na Render
+PORTFOLIO_HOST = os.getenv('PORTFOLIO_HOST', 'sedno.tech')
+LDI_HOST = os.getenv('LDI_HOST', 'utraconypopyt.pl')
+PORTFOLIO_URL = f'https://{PORTFOLIO_HOST}'
+LDI_URL = f'https://{LDI_HOST}'
+
+CORS_ORIGINS = os.getenv(
+    'CORS_ORIGINS',
+    ','.join([PORTFOLIO_URL, f'https://www.{PORTFOLIO_HOST}', LDI_URL, f'https://www.{LDI_HOST}',
+              'http://localhost:5000', 'http://127.0.0.1:5000'])
+).split(',')
 
 # ========================================
 # FLASK APP
@@ -81,7 +96,7 @@ if not DEBUG:
     file_handler.setLevel(logging.INFO)
     app.logger.addHandler(file_handler)
     app.logger.setLevel(logging.INFO)
-    app.logger.info('Adept AI Application startup')
+    app.logger.info('LDI / Sedno Tech application startup')
 
 # SocketIO
 socketio = SocketIO(app,

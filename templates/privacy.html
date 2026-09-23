@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Polityka Prywatności | Studio Adept AI</title>
+    <title>Polityka Prywatności | Sedno Tech</title>
     <style>
         * {
             margin: 0;
@@ -208,7 +208,7 @@
         <div class="privacy-card">
             <div class="header">
                 <h1>🛡️ Polityka Prywatności</h1>
-                <div class="subtitle">Studio Adept AI - Zgodność z RODO (GDPR)</div>
+                <div class="subtitle">Sedno Tech · LDI — Zgodność z RODO (GDPR)</div>
                 <div style="margin-top: 15px; color: #999; font-size: 0.9em;">
                     Ostatnia aktualizacja: {{ now.strftime('%d.%m.%Y') if now else '2025' }}
                 </div>
@@ -218,7 +218,9 @@
             <div class="section">
                 <h2><span class="icon">📋</span> Wprowadzenie</h2>
                 <p>
-                    Studio Adept AI ("my", "nas", "nasz") zobowiązuje się do ochrony prywatności użytkowników naszych systemów analitycznych. 
+                    <strong>Administratorem danych</strong> jest Łukasz Piskorski, osoba fizyczna działająca pod nazwą handlową
+                    Sedno Tech, Gorzów Wielkopolski, kontakt: <a href="mailto:{{ contact_email }}">{{ contact_email }}</a>
+                    (dalej „my”, „nas”). Zobowiązujemy się do ochrony prywatności użytkowników naszych systemów analitycznych. 
                     Niniejsza Polityka Prywatności wyjaśnia, jakie dane zbieramy, jak je wykorzystujemy i jakie prawa przysługują użytkownikom 
                     zgodnie z Rozporządzeniem o Ochronie Danych Osobowych (RODO/GDPR).
                 </p>
@@ -348,7 +350,7 @@
                 <h3>🗑️ Prawo do usunięcia ("prawo do bycia zapomnianym")</h3>
                 <p>
                     Możesz zażądać natychmiastowego usunięcia swoich danych. 
-                    Wyślij żądanie na <a href="mailto:lukasz@adeptai.pl">lukasz@adeptai.pl</a> 
+                    Wyślij żądanie na <a href="mailto:{{ contact_email }}">{{ contact_email }}</a> 
                     z identyfikatorem sesji.
                 </p>
 
@@ -425,20 +427,21 @@
                 <p><strong style="font-size: 1.2em; color: #4caf50;">NIE.</strong></p>
 
                 <p>
-                    Dane analityczne są przetwarzane wyłącznie wewnętrznie przez Studio Adept AI 
+                    Dane analityczne są przetwarzane wewnętrznie przez administratora 
                     i udostępniane klientowi (właścicielowi sklepu e-commerce) w postaci <strong>zagregowanych raportów</strong>.
                 </p>
 
                 <p><strong>Wyjątki:</strong></p>
                 <ul class="data-list">
-                    <li><strong>API geolokalizacji:</strong> Krótkotrwałe zapytanie do <code>ipapi.co</code> dla określenia miasta (IP nie jest przechowywane przez dostawcę)</li>
+                    <li><strong>API geolokalizacji:</strong> przeglądarka wysyła zapytanie do <code>ipapi.co</code>, żeby określić miasto i nazwę sieci/firmy. Dostawca otrzymuje przy tym adres IP odwiedzającego; my przechowujemy tylko wynik (miasto, organizację) i hash IP.</li>
+                    <li><strong>Czat sprzedażowy na stronie internetowej LDI</strong> (asystent odpowiadający na pytania o ofertę): treść wiadomości wpisanej w ten czat jest przesyłana do Google Gemini API w celu wygenerowania odpowiedzi. Dotyczy wyłącznie tego czatu na stronie — <strong>sam produkt LDI, instalowany w sklepie, nie wysyła danych do żadnego zewnętrznego API modeli językowych</strong>; klasyfikacja zapytań odbywa się w całości na naszym serwerze.</li>
                     <li><strong>Wymóg prawny:</strong> Jeśli organ władzy zażąda danych na podstawie obowiązującego prawa</li>
                 </ul>
 
                 <div class="info-box important">
-                    <strong>🔐 Brak integracji z Big Tech:</strong><br>
-                    Nie używamy Google Analytics, Facebook Pixel ani innych narzędzi śledzących stron trzecich. 
-                    100% przetwarzania odbywa się na naszych serwerach.
+                    <strong>🔐 Bez narzędzi śledzących stron trzecich:</strong><br>
+                    Nie używamy Google Analytics, Facebook Pixel ani podobnych narzędzi śledzących.
+                    Poza dwoma wyjątkami wymienionymi wyżej (geolokalizacja odwiedzających, czat sprzedażowy na stronie) przetwarzanie odbywa się na naszym serwerze.
                 </div>
             </div>
 
@@ -462,10 +465,10 @@
             <div class="cta-box">
                 <h3>💬 Masz pytania dotyczące prywatności?</h3>
                 <p style="margin: 15px 0;">
-                    Skontaktuj się z naszym Inspektorem Ochrony Danych (DPO):
+                    Skontaktuj się bezpośrednio z administratorem danych:
                 </p>
-                <a href="mailto:lukasz@adeptai.pl" class="btn">
-                    📧 privacy@studioadeptai.com
+                <a href="mailto:{{ contact_email }}" class="btn">
+                    📧 {{ contact_email }}
                 </a>
                 <a href="/" class="btn secondary">
                     🏠 Powrót do strony głównej
@@ -513,11 +516,11 @@
 
         <div class="footer">
             <p>
-                <strong>Studio Adept AI</strong> | Polityka Prywatności<br>
+                <strong>Sedno Tech</strong> | Polityka Prywatności<br>
                 © 2026 Wszelkie prawa zastrzeżone<br><br>
                 <a href="/">Strona główna</a> | 
                 <a href="/demo">Demo</a> | 
-                <a href="mailto:lukasz@adeptai.pl">Kontakt</a>
+                <a href="mailto:{{ contact_email }}">Kontakt</a>
             </p>
         </div>
     </div>
