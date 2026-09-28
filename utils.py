@@ -210,7 +210,7 @@ def generate_pdf_html(data):
     html += f"""</ol></div>
         <div style="margin-top: 40px; text-align: center; color: #666; font-size: 12px;">
             <p>Raport wygenerowany przez Centrum Analityczne Utraconych Okazji</p>
-            <p>Sedno Tech · LDI | {data['report_date']}</p>
+            <p>LDI · Łukasz Piskorski | {data['report_date']}</p>
         </div>
     </body></html>"""
     return html

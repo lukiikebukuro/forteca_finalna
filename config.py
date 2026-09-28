@@ -22,9 +22,11 @@ DATABASE_URL = os.getenv('DATABASE_URL', '')
 # ========================================
 # BRANDING I DOMENY — jedyne miejsce prawdy (szablony dostają to przez context_processor)
 # ========================================
-BRAND_NAME = 'Sedno Tech'
-CONTACT_EMAIL = os.getenv('CONTACT_EMAIL', 'lukasz@sedno.tech')  # placeholder do 24.09 — zmienić env na Render
-PORTFOLIO_HOST = os.getenv('PORTFOLIO_HOST', 'sedno.tech')
+BRAND_NAME = 'Łukasz Piskorski'  # bez nazwy firmy do czasu rejestracji działalności
+CONTACT_EMAIL = os.getenv('CONTACT_EMAIL', 'lukasz@piskorski.dev')
+PORTFOLIO_HOST = os.getenv('PORTFOLIO_HOST', 'piskorski.dev')
+# Stare domeny portfolio: każda ścieżka dostaje 301 na nowy adres (sedno.tech opłacone do 09.2027)
+LEGACY_PORTFOLIO_HOSTS = [h.strip() for h in os.getenv('LEGACY_PORTFOLIO_HOSTS', 'sedno.tech').split(',') if h.strip()]
 LDI_HOST = os.getenv('LDI_HOST', 'utraconypopyt.pl')
 PORTFOLIO_URL = f'https://{PORTFOLIO_HOST}'
 LDI_URL = f'https://{LDI_HOST}'
@@ -96,7 +98,7 @@ if not DEBUG:
     file_handler.setLevel(logging.INFO)
     app.logger.addHandler(file_handler)
     app.logger.setLevel(logging.INFO)
-    app.logger.info('LDI / Sedno Tech application startup')
+    app.logger.info('LDI / piskorski.dev application startup')
 
 # SocketIO
 socketio = SocketIO(app,

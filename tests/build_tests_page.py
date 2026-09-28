@@ -80,7 +80,7 @@ def section(suite, data):
 def main():
     page = open('templates/ldi_tests.html', encoding='utf-8').read()
     head = page[:page.index('<body>')]
-    head = head.replace('<title>LDI Test Suite — 91/100 — Sedno Tech</title>', '<title>LDI — wyniki testów · Sedno Tech</title>')
+    head = head.replace('<title>LDI Test Suite — 91/100 — Sedno Tech</title>', '<title>LDI — wyniki testów</title>')
     head = head.replace('<html lang="en">', '<html lang="pl">')
     moto, elektro = latest('moto'), latest('elektro')
     body = f'''<body>

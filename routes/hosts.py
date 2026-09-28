@@ -1,7 +1,8 @@
 """
 Routing po hoście: jedna aplikacja, dwie domeny.
 
-- PORTFOLIO_HOST (sedno.tech)       — portfolio: /, /anima, /ldi (opis architektury), /privacy
+- PORTFOLIO_HOST (piskorski.dev)    — portfolio: /, /anima, /ldi (opis architektury), /privacy
+- LEGACY_PORTFOLIO_HOSTS (sedno.tech) — wszystko 301: ścieżki LDI prosto na LDI_HOST, reszta na PORTFOLIO_HOST
 - LDI_HOST       (utraconypopyt.pl) — produkt LDI: strona produktu, live demo, dashboardy, logowanie
 
 Jedna usługa zamiast dwóch, bo baza to SQLite na dysku usługi: dwie usługi = dwie bazy,
@@ -12,7 +13,7 @@ Przekierowujemy tylko GET/HEAD; POST po 301 gubi body.
 """
 
 from flask import request, redirect, render_template
-from config import PORTFOLIO_HOST, LDI_HOST, PORTFOLIO_URL, LDI_URL, BRAND_NAME, CONTACT_EMAIL
+from config import PORTFOLIO_HOST, LDI_HOST, PORTFOLIO_URL, LDI_URL, BRAND_NAME, CONTACT_EMAIL, LEGACY_PORTFOLIO_HOSTS
 
 # Ścieżki, które na portfolio są przekierowywane na domenę LDI (stara ścieżka → nowa)
 LDI_PATH_MAP = {
@@ -53,6 +54,10 @@ def is_portfolio_host():
     return _host() == PORTFOLIO_HOST
 
 
+def is_legacy_portfolio_host():
+    return _host() in LEGACY_PORTFOLIO_HOSTS
+
+
 def _with_query(url):
     qs = request.query_string.decode('utf-8', 'ignore')
     return f'{url}?{qs}' if qs else url
@@ -75,6 +80,14 @@ def register_host_routing(app):
         if request.method not in ('GET', 'HEAD'):
             return None
         path = request.path.rstrip('/') or '/'
+
+        if is_legacy_portfolio_host():
+            # Stara domena portfolio: jeden skok prosto pod docelowy adres, bez łańcucha 301
+            if path in LDI_PATH_MAP:
+                return redirect(_with_query(LDI_URL + LDI_PATH_MAP[path]), code=301)
+            if path.startswith(LDI_ONLY_PREFIXES):
+                return redirect(_with_query(LDI_URL + request.path), code=301)
+            return redirect(_with_query(PORTFOLIO_URL + request.path), code=301)
 
         if is_portfolio_host():
             if path in LDI_PATH_MAP:
