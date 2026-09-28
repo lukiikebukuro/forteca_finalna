@@ -8,11 +8,13 @@ def register_blueprints(app):
     from routes.pages import pages_bp
     from routes.api import api_bp
     from routes.hosts import register_host_routing
+    from routes.demo_previews import demo_previews_bp
 
     register_host_routing(app)
 
     app.register_blueprint(bot_bp)
     app.register_blueprint(pages_bp)
     app.register_blueprint(api_bp)
+    app.register_blueprint(demo_previews_bp)
 
     print("[ROUTES] All blueprints registered")

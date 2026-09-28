@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radar B2B — podgląd · LDI</title>
+    <meta name="robots" content="noindex">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='ldi_preview.css') }}?v=1">
+</head>
+<body>
+<div class="demo-flag">DANE FIKCYJNE — firmy i wizyty są wymyślone. Klasyfikację zapytań liczy prawdziwy silnik LDI. <a href="/">← wróć do LDI</a></div>
+<div class="wrap">
+    <p class="eyebrow">P2 · podgląd dla handlowca</p>
+    <h1>Radar B2B: kto szuka teraz i czego</h1>
+    <p class="lead">Gdy na stronę wchodzi ktoś z sieci firmowej, handlowiec widzi nazwę organizacji i każde zapytanie z tej wizyty — już sklasyfikowane. W wersji na żywo nazwy firm pochodzą z sieci odwiedzających; tu są fikcyjne.</p>
+
+    <div class="stats">
+        <div class="stat"><b>{{ totals.firmy }}</b><span>rozpoznane firmy w sesji</span></div>
+        <div class="stat"><b>{{ totals.zapytania }}</b><span>zapytań w wyszukiwarce</span></div>
+        <div class="stat"><b>{{ totals.utracone }}</b><span>zapytań o to, czego sklep nie ma</span></div>
+    </div>
+
+    {% for s in sessions %}
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:baseline;">
+            <h3>{{ s.name }}{% if s.name.startswith('Firma') %} <span style="font-size:13px; color:var(--ink-2); font-family:var(--sans);">(fikcyjna)</span>{% endif %}</h3>
+            <span class="tag t-temp">{{ s.temp }}</span>
+        </div>
+        <p class="meta">{{ s.kind }} · {{ s.city }} · ostatnio {{ s.when }} · {{ s.n }} zapyt. · {{ s.lost }} o brakujące produkty</p>
+        <ul class="qlist">
+            {% for r in s.rows %}
+            <li><span>{{ r.query }}</span><span class="tag t-{{ r.label.split()[0] }}">{{ r.label }}</span></li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endfor %}
+
+    <p class="note">Temperatura zależy od liczby zapytań w wizycie (1 · 2–3 · 4+). W wersji produkcyjnej dostęp do radaru jest za logowaniem, a identyfikacja firmy działa tylko dla sieci firmowych.</p>
+    <a class="back" href="/">← Wróć do strony LDI</a>
+</div>
+</body>
+</html>

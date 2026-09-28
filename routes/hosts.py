@@ -24,6 +24,9 @@ LDI_PATH_MAP = {
     '/elektrobot-prototype': '/elektronika',
     '/ldi-tests': '/testy',
     '/ldi-landing': '/',
+    '/panel-demo': '/panel-demo',
+    '/radar-demo': '/radar-demo',
+    '/dane-demo': '/dane-demo',
 }
 
 # Ścieżki (prefiksy) żyjące wyłącznie na domenie LDI — logowanie i panele.
