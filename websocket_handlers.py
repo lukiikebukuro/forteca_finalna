@@ -20,7 +20,9 @@ def handle_connect():
     print('[WEBSOCKET] Client connected')
 
     referer = flask_request.headers.get('Referer', '')
-    is_demo_page = '/demo' in referer or '/live-demo' in referer or '/motobot-prototype' in referer or '/elektrobot-prototype' in referer
+    # Publiczne strony demo (nowe adresy od rebrandingu 09.2026 + stare, które przekierowują 301)
+    demo_paths = ('/motoryzacja', '/elektronika', '/demo', '/live-demo', '/motobot-prototype', '/elektrobot-prototype')
+    is_demo_page = any(p in referer for p in demo_paths)
 
     if not current_user.is_authenticated:
         if is_demo_page:
