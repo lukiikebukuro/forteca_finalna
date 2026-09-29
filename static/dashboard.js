@@ -705,7 +705,7 @@ class TacticalDashboard {
             liveFeed.innerHTML = '<div class="feed-placeholder">' +
                 '<div class="feed-radar" aria-hidden="true"></div>' +
                 '<div class="feed-placeholder-title">Nasłuch aktywny</div>' +
-                '<span>Każde zapytanie pojawi się tutaj w sekundę po wpisaniu — z klasyfikacją intencji i wyceną.</span>' +
+                '<span>Każde zapytanie pojawi się tutaj w sekundę po wpisaniu, z klasyfikacją intencji i wyceną.</span>' +
                 '<div class="feed-placeholder-meta">0 zdarzeń w sesji</div>' +
                 '</div>';
         }

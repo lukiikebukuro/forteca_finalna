@@ -1,5 +1,5 @@
 {
   "welcome_message_lines": [
-    "<strong>Centrum Analityczne LDI — Elektronika</strong><p>To radar, który namierza pieniądze uciekające z Twojego sklepu.</p><p class=\"welcome-invite\">Wpisz model produktu — albo kliknij scenariusz pod polem wyszukiwania.</p><div class=\"welcome-brands\"><span class=\"welcome-brands-label\">W katalogu demo</span><div class=\"welcome-brand-list\"><span>Apple</span><span>Samsung</span><span>Xiaomi</span><span>Dell</span><span>Lenovo</span><span>Asus</span><span>LG</span><span>Sony</span><span>Google</span><span>Bose</span><span>JBL</span></div></div>"
+    "<strong>Centrum Analityczne LDI: Elektronika</strong><p>To radar, który namierza pieniądze uciekające z Twojego sklepu.</p><p class=\"welcome-invite\">Wpisz model produktu albo kliknij scenariusz pod polem wyszukiwania.</p><div class=\"welcome-brands\"><span class=\"welcome-brands-label\">W katalogu demo</span><div class=\"welcome-brand-list\"><span>Apple</span><span>Samsung</span><span>Xiaomi</span><span>Dell</span><span>Lenovo</span><span>Asus</span><span>LG</span><span>Sony</span><span>Google</span><span>Bose</span><span>JBL</span></div></div>"
   ]
 }

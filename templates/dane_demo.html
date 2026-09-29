@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dane treningowe — podgląd · LDI</title>
+    <title>Dane treningowe: podgląd · LDI</title>
     <meta name="robots" content="noindex">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='ldi_preview.css') }}?v=1">
 </head>
 <body>
-<div class="demo-flag">DANE PRZYKŁADOWE — zapytania wybrane do podglądu. Klasyfikację i rekord liczy prawdziwy silnik LDI. <a href="/">← wróć do LDI</a></div>
+<div class="demo-flag">DANE PRZYKŁADOWE: zapytania wybrane do podglądu. Klasyfikację i rekord liczy prawdziwy silnik LDI. <a href="/">← wróć do LDI</a></div>
 <div class="wrap">
     <p class="eyebrow">P3 · podgląd danych</p>
     <h1>Każde zapytanie jako opisany rekord</h1>
@@ -34,7 +34,7 @@
                     <td class="mono">{{ r.level }}</td>
                     <td><span class="tag t-{{ r.label.split()[0] }}">{{ r.label }}</span></td>
                     <td class="mono">{{ '%.2f' % r.score }}</td>
-                    <td>{{ '✓' if r.ai_ready else '—' }}</td>
+                    <td>{{ '✓' if r.ai_ready else '✗' }}</td>
                 </tr>
                 {% endfor %}
                 </tbody>
@@ -43,7 +43,7 @@
         <div>
             <p class="eyebrow" style="color: var(--ink-2);">Rekord JSONL (fragment)</p>
             <pre>{{ record_json }}</pre>
-            <p class="note">Rekord zbudowany z wyniku klasyfikacji zapytania „{{ sample_query }}”. Pola interakcji (kliknięcie alternatywy, zakup) są puste, bo w podglądzie nikt nie klika — w sklepie to one podnoszą nagrodę (Gold 0.8, Platinum 1.0).</p>
+            <p class="note">Rekord zbudowany z wyniku klasyfikacji zapytania „{{ sample_query }}”. Pola interakcji (kliknięcie alternatywy, zakup) są puste, bo w podglądzie nikt nie klika. W sklepie to one podnoszą nagrodę (Gold 0.8, Platinum 1.0).</p>
         </div>
     </div>
 

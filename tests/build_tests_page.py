@@ -40,7 +40,7 @@ def section(suite, data):
         groups[-1][1].append(r)
     out = [f'''
     <div class="header">
-        <div class="header-title">LDI — {name}: wyniki testów</div>
+        <div class="header-title">LDI · {name}: wyniki testów</div>
         <div class="header-subtitle">{module} · {m['total']} scenariuszy · {len(groups)} grup</div>
         <div class="summary-score">
             <div class="score-big">{m['accuracy']:g}%</div>
@@ -80,7 +80,7 @@ def section(suite, data):
 def main():
     page = open('templates/ldi_tests.html', encoding='utf-8').read()
     head = page[:page.index('<body>')]
-    head = head.replace('<title>LDI Test Suite — 91/100 — Sedno Tech</title>', '<title>LDI — wyniki testów</title>')
+    head = head.replace('<title>LDI Test Suite — 91/100 — Sedno Tech</title>', '<title>LDI: wyniki testów</title>')
     head = head.replace('<html lang="en">', '<html lang="pl">')
     moto, elektro = latest('moto'), latest('elektro')
     body = f'''<body>

@@ -477,7 +477,7 @@
 <body>
     {% if demo_mode %}
     <div style="background:#eab308;color:#1f2937;text-align:center;padding:8px 16px;font-size:13px;font-weight:600;letter-spacing:.02em;">
-        DANE PRZYKŁADOWE — podgląd panelu właściciela sklepu. Liczby i produkty są ilustracyjne, nie pochodzą z żadnego sklepu.
+        DANE PRZYKŁADOWE: podgląd panelu właściciela sklepu. Liczby i produkty są ilustracyjne, nie pochodzą z żadnego sklepu.
         <a href="{{ ldi_url }}" style="color:#1f2937;margin-left:10px;">← wróć do LDI</a>
     </div>
     {% endif %}
@@ -513,7 +513,7 @@
             <div class="card realtime-section">
                 <div class="section-title">
                     <div class="section-icon">📊</div>
-                    {{ 'Metryki (przykładowe)' if demo_mode else 'Metryki — dziś' }}
+                    {{ 'Metryki (przykładowe)' if demo_mode else 'Metryki: dziś' }}
                     <div class="status-indicator">
                         <div class="status-dot"></div>
                         System Online
@@ -522,25 +522,25 @@
                 
                 <div class="metrics-grid">
                     <div class="metric">
-                        <div class="metric-value" id="today-queries">—</div>
+                        <div class="metric-value" id="today-queries">n/d</div>
                         <div class="metric-label">Zapytania Dziś</div>
                         <div class="metric-change neutral">dziś</div>
                     </div>
                     
                     <div class="metric">
-                        <div class="metric-value" id="week-queries">—</div>
+                        <div class="metric-value" id="week-queries">n/d</div>
                         <div class="metric-label">Zapytania Ten Tydzień</div>
                         <div class="metric-change neutral">ostatnie 7 dni</div>
                     </div>
                     
                     <div class="metric">
-                        <div class="metric-value" id="queries-in-analysis">—</div>
+                        <div class="metric-value" id="queries-in-analysis">n/d</div>
                         <div class="metric-label">Zapytania w Analizie</div>
                         <div class="metric-change neutral">Oczekujące na kurację</div>
                     </div>
                     
                     <div class="metric">
-                        <div class="metric-value" id="response-time">—</div>
+                        <div class="metric-value" id="response-time">n/d</div>
                         <div class="metric-label">Średni Czas Odpowiedzi</div>
                         <div class="metric-change neutral">średnio</div>
                     </div>

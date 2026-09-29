@@ -27,7 +27,7 @@ RADAR_SESSIONS = [
      'queries': ['olej castrol 5w30', 'filtr oleju mann', 'akumulator varta 74ah']},
     {'name': 'Firma Demo C', 'kind': 'warsztat samochodowy', 'city': 'Gdańsk', 'when': '1 godz. temu',
      'queries': ['klocki ferrari']},
-    {'name': 'Odwiedzający bez rozpoznanej firmy', 'kind': 'sieć prywatna', 'city': '—', 'when': '3 godz. temu',
+    {'name': 'Odwiedzający bez rozpoznanej firmy', 'kind': 'sieć prywatna', 'city': 'miasto nieustalone', 'when': '3 godz. temu',
      'queries': ['kanapka z serem']},
 ]
 
