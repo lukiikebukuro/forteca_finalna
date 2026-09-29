@@ -102,6 +102,20 @@
         h2 { font-family: var(--serif); font-weight: 600; font-size: clamp(1.6rem, 3vw, 2.25rem); line-height: 1.2; margin-bottom: 14px; }
         .sec-sub { color: var(--ink-2); max-width: 640px; margin-bottom: 44px; font-size: 17px; }
 
+        /* WHY LDI */
+        .zet { display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: center; background: var(--navy); color: var(--navy-ink); border-radius: 16px; padding: 30px 34px; margin-bottom: 22px; }
+        .zet-badge { font-family: var(--mono); font-weight: 600; font-size: 15px; letter-spacing: .16em; color: var(--navy); background: var(--gold); padding: 18px 22px; border-radius: 12px; text-align: center; line-height: 1.3; box-shadow: 0 10px 30px -12px rgba(234, 179, 8, .6); }
+        .zet-badge b { display: block; font-family: var(--serif); font-size: 44px; letter-spacing: .02em; line-height: 1; margin-bottom: 4px; }
+        .zet-kicker { font-family: var(--mono); font-size: 13px; letter-spacing: .14em; color: var(--gold); margin-bottom: 6px; }
+        .zet h3 { font-family: var(--serif); font-size: clamp(1.3rem, 2.4vw, 1.7rem); color: #fff; margin-bottom: 8px; line-height: 1.25; }
+        .zet p { color: var(--navy-muted); font-size: 15.5px; }
+        .zet p strong { color: #fff; }
+        .why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        .why { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 26px; }
+        .why-num { font-family: var(--mono); font-size: 12px; color: var(--copper); margin-bottom: 10px; }
+        .why h3 { font-family: var(--serif); font-size: 21px; line-height: 1.25; margin-bottom: 10px; }
+        .why p { color: var(--ink-2); font-size: 15px; }
+
         /* WHERE IT SITS */
         .flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 16px; align-items: stretch; }
         .flow-step { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
@@ -198,6 +212,8 @@
             .pilot { padding: 32px 22px; }
             .part .shot { order: 2; }
             .hero-ctas { grid-template-columns: 1fr; }
+            .zet, .why-grid { grid-template-columns: 1fr; }
+            .zet { padding: 24px 20px; }
             .lb-nav { display: none; }
         }
     </style>
@@ -211,6 +227,7 @@
             <span><span class="brand-name">LDI</span> <span class="brand-by">by Łukasz Piskorski</span></span>
         </a>
         <ul class="nav-links">
+            <li><a href="#dlaczego">Dlaczego LDI</a></li>
             <li><a href="#jak-dziala">Jak działa</a></li>
             <li><a href="#produkt">Co dostajesz</a></li>
             <li><a href="#wyniki">Wyniki</a></li>
@@ -223,7 +240,7 @@
 <header class="hero">
     <div class="wrap hero-grid">
         <div>
-            <p class="eyebrow">Lost Demand Intelligence</p>
+            <p class="eyebrow">Lost Demand Intelligence · Zero Enter Tracking</p>
             <h1>Zobacz, czego klienci szukali w Twoim sklepie — i nie znaleźli.</h1>
             <p class="lead">
                 LDI analizuje każde zapytanie wpisane w wyszukiwarkę sklepu i w czasie rzeczywistym rozdziela je na trzy grupy:
@@ -263,6 +280,43 @@
         </div>
     </div>
 </header>
+
+<section id="dlaczego">
+    <div class="wrap">
+        <p class="sec-label">Dlaczego LDI</p>
+        <h2>Widzisz to, czego inne narzędzia nie widzą</h2>
+        <p class="sec-sub">Analityka mówi, że klient wyszedł. LDI mówi, czego szukał — i robi to, zanim w ogóle zdążył wyjść.</p>
+
+        <div class="zet">
+            <div class="zet-badge"><b>ZERO</b>ENTER<br>TRACKING</div>
+            <div>
+                <p class="zet-kicker">ZERO ENTER TRACKING</p>
+                <h3>Klient nie musi nacisnąć Enter. Widzisz go i tak.</h3>
+                <p>LDI analizuje zapytanie <strong>0,8 sekundy po tym, jak klient przestanie pisać</strong> — bez klikania „Szukaj”, bez Entera.
+                Dlatego widzisz także tych, którzy wpisali, zobaczyli, że nic nie ma, i zamknęli kartę.
+                Zwykła analityka wyszukiwania tych ludzi w ogóle nie rejestruje.</p>
+            </div>
+        </div>
+
+        <div class="why-grid">
+            <div class="why">
+                <p class="why-num">01 · POPYT</p>
+                <h3>Popyt, którego nie widzi Google Analytics</h3>
+                <p>GA widzi, że klient wyszedł. LDI widzi, czego szukał, i odróżnia brak w ofercie od literówki i szumu. Dostajesz listę produktów, o które pytają klienci, a których nie masz.</p>
+            </div>
+            <div class="why">
+                <p class="why-num">02 · DANE</p>
+                <h3>Każde zapytanie buduje Twojego asystenta sprzedaży</h3>
+                <p>Każda interakcja zapisuje się jako opisany rekord — gotowy do trenowania Twojej wyszukiwarki albo chatbota sprzedażowego na wzorcach zakupowych Twoich klientów. Tego zbioru konkurencja nie ma.</p>
+            </div>
+            <div class="why">
+                <p class="why-num">03 · PRYWATNOŚĆ</p>
+                <h3>Dane nie wychodzą do chmury AI</h3>
+                <p>Klasyfikacja działa na naszym serwerze, bez zewnętrznych modeli językowych — bez kosztu za token i bez przekazywania zapytań klientów dalej. Dane osobowe (PESEL, karty, IBAN) są usuwane jeszcze w przeglądarce.</p>
+            </div>
+        </div>
+    </div>
+</section>
 
 <section class="alt" id="jak-dziala">
     <div class="wrap">
