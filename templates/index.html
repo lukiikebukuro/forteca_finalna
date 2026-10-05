@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Łukasz Piskorski — AI Systems Architect</title>
+    <title>Łukasz Piskorski, Applied AI Engineer</title>
     <meta name="description" content="I build AI systems that detect what standard analytics miss. LDI, ANIMA, Skankran.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -282,20 +282,27 @@
         }
         .project-links {
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
-            gap: 16px;
+            gap: 8px 16px;
             margin-top: auto;
             padding-top: 16px;
             border-top: 1px solid var(--border);
         }
+        /* Wąskie karty (3 w rzędzie): linki jeden pod drugim, bez kropek-separatorów */
+        .projects-grid.cols-3 .project-links {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .projects-grid.cols-3 .link-sep { display: none; }
         .project-link {
             font-size: 13px;
             color: var(--accent);
             text-decoration: none;
             font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+            display: inline-block;
+            max-width: 100%;
+            line-height: 1.45;
             transition: color 0.2s, transform 0.2s;
             position: relative;
             animation: subtle-pulse 3s ease-in-out infinite;
@@ -311,6 +318,8 @@
         }
         .project-link::after {
             content: '→';
+            display: inline-block;
+            margin-left: 6px;
             font-size: 14px;
             transition: transform 0.2s;
         }
@@ -571,10 +580,10 @@
 
     <!-- HERO -->
     <div class="hero">
-        <p class="hero-label">AI Systems Architect &amp; Founder</p>
+        <p class="hero-label">Applied AI Engineer</p>
         <h1>I build AI systems<br>that see what standard<br>tools <em>miss.</em></h1>
         <p class="hero-desc">
-            From detecting lost purchase intent in real time, to long-term memory engines for AI companions —
+            From detecting lost purchase intent in real time, to long-term memory engines for AI companions.
             I design and ship end-to-end AI systems solo, from architecture to production.
         </p>
         <a href="#work" class="hero-cta">See the work</a>
@@ -602,7 +611,7 @@
         <p class="section-label">Focus</p>
         <h2 class="section-title">What I specialize in</h2>
         <p class="focus-lead">
-            Spotting problems nobody has named yet — and turning them into working code.
+            Spotting problems nobody has named yet, and turning them into working code.
         </p>
         <div class="focus-grid">
             <div>
@@ -616,9 +625,9 @@
             <div>
                 <p class="focus-item-label">Roles I'm looking for · mid / mid+</p>
                 <div class="focus-chips">
-                    <span class="meta-chip">AI Systems Architect</span>
-                    <span class="meta-chip">R&amp;D / Applied AI Engineer</span>
-                    <span class="meta-chip">LLMOps</span>
+                    <span class="meta-chip">Applied AI Engineer</span>
+                    <span class="meta-chip">R&amp;D Engineer</span>
+                    <span class="meta-chip">LLMOps &amp; LLM Evaluation</span>
                 </div>
             </div>
         </div>
@@ -634,18 +643,18 @@
 
         <!-- GROUP 1: PRODUCTS -->
         <h3 class="group-title">Products <span class="group-count">// shipped &amp; running</span></h3>
-        <p class="group-sub">Systems solving a concrete business problem — live and open to try.</p>
+        <p class="group-sub">Systems solving a concrete business problem, live and open to try.</p>
         <div class="projects-grid">
 
             <!-- LDI -->
             <div class="project-card" style="position:relative;">
                 <p class="project-tag">Flagship · Live demo</p>
-                <h3>LDI — Lost Demand Intelligence</h3>
+                <h3>LDI: Lost Demand Intelligence</h3>
                 <p>
                     An analytics engine that classifies every e-commerce search query <strong>before the user presses Enter</strong>.
-                    It separates typos from genuine B2B intent, and detects the <strong>Gold Signal</strong> —
-                    when a user searches for an unavailable product then buys an alternative anyway.
-                    That's confirmed purchase intent on untracked inventory. The highest-value training signal in the system.
+                    It separates typos from genuine B2B intent, and detects the <strong>Gold Signal</strong>:
+                    a user searches for an unavailable product, then adds an alternative to the cart anyway.
+                    That's a strong purchase signal on inventory the shop doesn't carry. The highest-value training signal in the system.
                 </p>
                 <div class="project-meta">
                     <span class="meta-chip">Python</span>
@@ -667,16 +676,16 @@
                 <p class="project-tag">Origin Story · Public</p>
                 <h3>Skankran</h3>
                 <p>
-                    Built <strong>from zero</strong> — before I could code.
-                    Poland's first water quality analysis platform: digitized municipal water station data,
-                    trained a conversational AI on WHO/EPA medical documentation,
-                    and connected it to the Gemini API for contextual health analysis.
+                    Built <strong>from zero</strong>, before I could code.
+                    Poland's first water quality analysis platform: digitized municipal water station data
+                    and connected a Gemini-based conversational layer grounded in that data,
+                    for contextual health analysis.
                     The project that started everything.
                     <strong>If I handled government PDF chaos, your product catalog is trivial.</strong>
                 </p>
                 <div class="project-meta">
                     <span class="meta-chip">Gemini API</span>
-                    <span class="meta-chip">WHO/EPA corpus</span>
+                    <span class="meta-chip">Data-grounded chat</span>
                     <span class="meta-chip">Flask</span>
                     <span class="meta-chip">First in Poland</span>
                 </div>
@@ -689,18 +698,18 @@
 
         <!-- GROUP 2: MEMORY & RETRIEVAL -->
         <h3 class="group-title">Memory &amp; retrieval <span class="group-count">// the RAG research line</span></h3>
-        <p class="group-sub">One thread: giving AI a memory that doesn't reset — and the tools to see inside it.</p>
+        <p class="group-sub">One thread: giving AI a memory that doesn't reset, and the tools to see inside it.</p>
         <div class="projects-grid cols-3">
 
             <!-- ANIMA -->
             <div class="project-card">
                 <p class="project-tag">Innovation · Production VPS</p>
-                <h3>ANIMA — RAG Memory Engine</h3>
+                <h3>ANIMA: RAG Memory Engine</h3>
                 <p>
                     A long-term memory system for AI companions. Three-channel RAG architecture:
-                    episodic memories, behavioral character core, external knowledge — all re-ranked by
+                    episodic memories, behavioral character core, external knowledge, all re-ranked by
                     <strong>recency decay, semantic similarity, and keyword boost</strong>.
-                    Supersede logic rotates stale facts without losing history.
+                    Supersede logic overwrites short-lived memory types (emotions, preferences) instead of piling them up.
                     Powers a personal AI companion running 24/7 on a private VPS with scheduled emotional insights.
                 </p>
                 <div class="project-meta">
@@ -722,7 +731,7 @@
                 <p>
                     An early study that became the groundwork for ANIMA: keep the question fixed, vary only
                     how the supplied context is structured, and compare what the model answers.
-                    <strong>The observation:</strong> the structure of the context alone changed the answers —
+                    <strong>The observation:</strong> the structure of the context alone changed the answers,
                     which is why ANIMA treats prompt layout as part of the retrieval pipeline, not an afterthought.
                 </p>
                 <div class="project-meta">
@@ -738,17 +747,17 @@
             <!-- RAG DEBUGGER (NEW) -->
             <div class="project-card">
                 <p class="project-tag">New · Memory observability</p>
-                <h3>Amnezja — RAG Debugger</h3>
+                <h3>Amnezja: RAG Debugger</h3>
                 <p>
-                    An X-ray for AI memory. Type a query and watch <strong>every stage of retrieval</strong> —
-                    candidate pool, reranking, temporal filter, MMR, final prompt — exactly as the production
+                    An X-ray for AI memory. Type a query and watch <strong>every stage of retrieval</strong>
+                    (candidate pool, reranking, temporal filter, MMR, final prompt), exactly as the production
                     model sees it. Plus a <strong>sandbox</strong>: how the model actually responds to that
-                    context, dry-run, without touching the live system. And <strong>time-travel</strong> —
+                    context, dry-run, without touching the live system. And <strong>time-travel</strong>:
                     scrub the date forward to see what your agent will remember in 30 days.
                 </p>
                 <p>
                     Most RAG work asks <em>"why didn't it retrieve this?"</em>. The more expensive question is
-                    <strong>"why was it never stored?"</strong> — and it stays invisible until you instrument
+                    <strong>"why was it never stored?"</strong>, and it stays invisible until you instrument
                     the write path. So I did.
                 </p>
 
@@ -764,7 +773,7 @@
                     <p>
                         On the write path it answered in two seconds what had puzzled me for weeks: the most
                         important message of the year never entered memory at all, killed by a
-                        <strong>4-word minimum</strong>. A month-wide audit put a number on it —
+                        <strong>4-word minimum</strong>. A month-wide audit put a number on it:
                         <strong>41% of messages left no trace</strong>, and of those stored,
                         <strong>52% carried an expiry date</strong>.
                     </p>
@@ -777,7 +786,7 @@
                     <p>
                         Same tooling, same session: an acronym search returning <strong>zero of 60</strong>
                         matching entries, because the embedding model tokenises a three-letter project name
-                        into noise. Measured, then fixed with a lexical channel — <strong>0 → 3</strong> in the prompt.
+                        into noise. Measured, then fixed with a lexical channel: <strong>0 → 3</strong> in the prompt.
                     </p>
                 </details>
                 <div class="project-meta">
@@ -785,15 +794,14 @@
                     <span class="meta-chip">Write-path tracing</span>
                     <span class="meta-chip">Sandbox generation</span>
                     <span class="meta-chip">Time-travel</span>
-                    <span class="meta-chip">Bit-identical</span>
                     <span class="meta-chip">FastAPI</span>
                 </div>
                 <div class="project-links">
                     <a href="#contact" class="project-link">Ask me about it</a>
                     <span class="link-sep">·</span>
-                    <a href="https://myastra.pl/casestudy" class="project-link">Case study #1: the memory detox →</a>
+                    <a href="https://myastra.pl/casestudy" class="project-link">Case study #1: the memory detox</a>
                     <span class="link-sep">·</span>
-                    <a href="https://myastra.pl/casestudy2" class="project-link">Case study #2: when the memory wasn't the problem →</a>
+                    <a href="https://myastra.pl/casestudy2" class="project-link">Case study #2: when the memory wasn't the problem</a>
                 </div>
             </div>
 
@@ -810,7 +818,7 @@
             <div class="about-text">
                 <p>
                     I'm <strong>Łukasz Piskorski</strong>, based in Gorzów Wielkopolski, Poland.
-                    I design AI systems end-to-end — architecture, backend, frontend, deployment — solo.
+                    I design AI systems end-to-end (architecture, backend, frontend, deployment), solo.
                 </p>
                 <p>
                     My work starts from a problem that existing tools can't solve, and ends when the system
@@ -821,7 +829,7 @@
                     The accuracy figures on this page come from fixed test-scenario suites, not estimates.
                 </p>
                 <p>
-                    I'm open to conversations about <strong>applied R&amp;D, reliability and evaluation of AI memory</strong> —
+                    I'm open to conversations about <strong>applied R&amp;D, reliability and evaluation of AI memory</strong>,
                     and I take on <strong>audits as a service</strong>.
                 </p>
             </div>
@@ -854,8 +862,8 @@
             <div class="contact-left">
                 <h2>Let's talk about<br>a hard problem.</h2>
                 <p>
-                    If you're building something where standard AI tooling isn't enough —
-                    or you're evaluating LDI for your stack — I'd like to hear it.
+                    If you're building something where standard AI tooling isn't enough,
+                    or you're evaluating LDI for your stack, I'd like to hear it.
                 </p>
             </div>
             <div class="contact-right">
