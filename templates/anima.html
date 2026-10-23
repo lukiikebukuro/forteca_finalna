@@ -928,19 +928,22 @@ Turn ordering: signal-based, persona whose character profile
             So instead of a full BM25 index, a <strong>lexical channel</strong>: a literal <code>$contains</code>
             lookup that fires <em>only</em> when the query contains an acronym or proper noun, detected by a
             whitelist plus a "short and vowel-poor" heuristic. Result on the failing query:
-            <strong>0 → 3</strong> relevant entries in the final prompt, with the regression suite flat at
-            26/26: no cost anywhere else.
+            <strong>0 → 3</strong> relevant entries in the final prompt. The regression suite stayed flat at
+            26/26, and that became a lesson of its own: the suite counted how many memories reached the prompt,
+            not whether they were the right ones, so it could see neither this gain nor any cost. It is now one
+            of the entries in my "the measurement lies" catalogue.
         </p>
 
         <h3>Evaluation Methodology: how I measure progress</h3>
         <p>
-            On April 22, 2026, ANIMA received an independent full-stack audit against a five-dimension rubric.
-            Baseline: <strong>34/100</strong>, a system that spoke with false confidence, with DB corruption and a
-            milestone boost consuming every retrieval slot. That number is the honest starting point.
+            In spring 2026 I had the full stack reviewed by an LLM-based code audit against a five-dimension rubric.
+            It described the starting point well: a system that spoke with false confidence, with DB corruption and a
+            milestone boost consuming every retrieval slot. It also produced a score, which I deliberately do not cite:
+            it was a model's judgement, with no test set or measuring instrument behind it.
         </p>
         <p>
-            I deliberately do <strong>not</strong> publish a re-estimated "current score." A manually guessed number
-            was the exact weakness the April audit flagged: no evaluation framework. Progress is now tracked by
+            For the same reason I do <strong>not</strong> publish a "current score." A number without an instrument
+            behind it was the exact weakness that audit flagged: no evaluation framework. Progress is now tracked by
             <strong>verified operational metrics</strong> from the July 2026 detox, measured on live traffic:
         </p>
 
