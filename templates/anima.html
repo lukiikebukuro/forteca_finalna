@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ANIMA — Technical Manifest · Łukasz Piskorski</title>
+    <title>ANIMA: Technical Manifest · Łukasz Piskorski</title>
     <meta name="description" content="ANIMA: Autonomous Neural Intelligence Memory Architecture. Sovereign RAG memory engine for AI companions.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -298,7 +298,7 @@
         <h1 class="doc-title">Long-term memory for an AI companion:<br>architecture, failures, fixes</h1>
         <p class="doc-subtitle">
             ANIMA (Autonomous Neural Intelligence Memory Architecture) is a RAG-based long-term memory system
-            for AI companions. This document explains why it works differently — and how.
+            for AI companions. This document explains why it works differently, and how.
         </p>
         <div class="doc-meta">
             <span>Author: Łukasz Piskorski</span>
@@ -313,7 +313,7 @@
             This is not a chatbot with a personality. Not a GPT-4 wrapper with a system prompt.
             Not another AI companion that "remembers your name and your dog."
             It is a retrieval layer that I keep improving by reading its own logs: what reached the prompt,
-            what fell out, and why — then patching the pipeline, not the model.
+            what fell out, and why, then patching the pipeline, not the model.
         </p>
     </div>
 
@@ -330,7 +330,7 @@
         <p>
             Problem: the database grows linearly. After a month you have 1,400 vectors of "I'm tired",
             "I had a long day at work", "I like tea." The model gets a pool of 30 candidates,
-            the reranker picks top-5 — and often picks badly, because there's no mechanism to distinguish
+            the reranker picks top-5, and often picks badly, because there's no mechanism to distinguish
             <strong>signal from noise</strong>.
         </p>
 
@@ -363,7 +363,7 @@ ChromaDB (with metadata: importance, entity_subtype, source, timestamp)</code></
 
         <h3>How I know it works: reverse-engineering my own sessions</h3>
         <p>
-            ANIMA also powers a parallel system (Amelia — an AI companion running as a separate service).
+            ANIMA also powers a parallel system (Amelia, an AI companion running as a separate service).
             From its production RAG sessions I collected logs:
             <code>.jsonl</code> conversation files + terminal logs showing reranker scores,
             extracted entities, and pipeline actions.
@@ -377,7 +377,7 @@ ChromaDB (with metadata: importance, entity_subtype, source, timestamp)</code></
 
         <p>
             From these logs I extract patterns: which entities land in top-5, which fall out, and why.
-            Fixes to the ASTRA reranker come from observing real sessions — not synthetic tests.
+            Fixes to the ASTRA reranker come from observing real sessions, not synthetic tests.
             This is <strong>Data Distillation</strong>: I distill decision logic from live system behavior.
         </p>
     </section>
@@ -396,7 +396,7 @@ ChromaDB (with metadata: importance, entity_subtype, source, timestamp)</code></
             contradictory, duplicated, stale vectors.
         </p>
         <p>
-            ANIMA implements <strong>Sovereign Memory Architecture</strong> — a system that decides
+            ANIMA implements <strong>Sovereign Memory Architecture</strong>: a system that decides
             on its own what to keep, what to overwrite, and what to delete.
         </p>
 
@@ -404,24 +404,24 @@ ChromaDB (with metadata: importance, entity_subtype, source, timestamp)</code></
 
         <p><strong>1. Supersede Logic</strong></p>
         <p>
-            Not all memory types should accumulate. Emotions are ephemeral — "I'm tired" from three months
-            ago is noise, not signal. Preferences evolve — a new "I like tea" should replace the old one.
+            Not all memory types should accumulate. Emotions are ephemeral: "I'm tired" from three months
+            ago is noise, not signal. Preferences evolve: a new "I like tea" should replace the old one.
         </p>
 
 <pre><code>SUPERSEDE_TYPES = {
-    # Emotions — ephemeral, accumulation = noise
+    # Emotions: ephemeral, accumulation = noise
     ('EMOTION', 'tired'), ('EMOTION', 'stressed'),
     ('EMOTION', 'positive'), ('EMOTION', 'negative'),
     ('EMOTION', 'safe_haven'),
-    # Facts — new value overwrites old
+    # Facts: new value overwrites old
     ('FACT', 'preference'), ('FACT', 'correction'),
-    # Dates — most recent wins
+    # Dates: most recent wins
     ('DATE', 'inventory_status'), ('DATE', 'appointment'),
 }</code></pre>
 
         <p>
             When the pipeline detects an entity from this list, it calls <code>delete_by_entity_subtype()</code>
-            before writing — clears old vectors of the same type:subtype, then saves the new one.
+            before writing: clears old vectors of the same type:subtype, then saves the new one.
             Result: the database doesn't grow indefinitely. Only types where history has value accumulate
             (milestones, appointments, facts about people).
         </p>
@@ -434,21 +434,21 @@ ChromaDB (with metadata: importance, entity_subtype, source, timestamp)</code></
             + 0.60 * similarity_score       # semantic dominance (dominant signal)
             + keyword_boost                 # hybrid search lite, max +0.15
 
-# Milestones bypass reranking entirely — extracted before MMR, guaranteed 2 slots
+# Milestones bypass reranking entirely: extracted before MMR, guaranteed 2 slots
 # Compose: facts[:4] + milestones[:2] → MMR on facts only → final 6</code></pre>
 
         <p>
-            <code>similarity_score</code> dominates — the system picks what is <em>semantically relevant</em>,
+            <code>similarity_score</code> dominates: the system picks what is <em>semantically relevant</em>,
             not what is newest or most important in isolation. Milestone boost (+1.0) guarantees
             that trust declarations and key moments always reach the model regardless of the query.
-            Weights are parameterized — adjustable per query type without restart.
+            Weights are parameterized: adjustable per query type without restart.
         </p>
         <p>
-            <strong>The guarantee has a failure mode — and I hit it.</strong> Left unbounded, the milestone
+            <strong>The guarantee has a failure mode, and I hit it.</strong> Left unbounded, the milestone
             channel turned into a monoculture: a July 2026 audit found "love / trust" declarations flooding the
             prompt at <strong>2.0 forced milestones per prompt</strong> on average, drowning genuinely relevant
             anchors. This is the real mechanism behind the "altanka" miss in Section III. The fix was a triage
-            pass, not a bigger boost — the milestone population was cut <strong>1,296 &rarr; 312 active vectors</strong>
+            pass, not a bigger boost: the milestone population was cut <strong>1,296 &rarr; 312 active vectors</strong>
             and forced milestones dropped to <strong>0.65 per prompt</strong>. A guaranteed channel is only an
             asset while it stays scarce.
         </p>
@@ -456,14 +456,14 @@ ChromaDB (with metadata: importance, entity_subtype, source, timestamp)</code></
         <p><strong>3. MMR (Maximum Marginal Relevance)</strong></p>
         <p>
             After reranking, results pass through MMR with <code>diversity_penalty=0.8</code>.
-            Prevents one vector from dominating — if top-5 are five variants of "I'm tired",
+            Prevents one vector from dominating: if top-5 are five variants of "I'm tired",
             MMR picks two and adds three semantically different ones.
             Result: broader context, fewer echo-chambers.
         </p>
 
-        <p><strong>4. FactStore — SQLite alongside vectors</strong></p>
+        <p><strong>4. FactStore: SQLite alongside vectors</strong></p>
         <p>
-            Vector similarity is powerful for fuzzy recall. It's unreliable for exact facts — "what city does the user live in?"
+            Vector similarity is powerful for fuzzy recall. It's unreliable for exact facts: "what city does the user live in?"
             A similar-but-wrong answer is worse than no answer. ANIMA gained a second retrieval channel: a SQLite
             <strong>FactStore</strong> for hard facts that must not degrade through similarity scoring.
         </p>
@@ -471,9 +471,9 @@ ChromaDB (with metadata: importance, entity_subtype, source, timestamp)</code></
 <pre><code>FactStore (astra_facts.db)
     → 12 typed entity categories, e.g. preference, relationship,
       location, job, goal, date, correction
-    → Exact-match lookup — zero cosine scoring
+    → Exact-match lookup: zero cosine scoring
     → Supersede per SQL DELETE (not vector overwrite)
-    → Injected as [TWARDE FAKTY — SQLite] block in every prompt</code></pre>
+    → Injected as [TWARDE FAKTY: SQLite] block in every prompt</code></pre>
 
         <p>
             Hard facts bypass the reranker entirely. They land verbatim in the prompt, from a structured store
@@ -484,7 +484,7 @@ ChromaDB (with metadata: importance, entity_subtype, source, timestamp)</code></
             <p>
                 Standard AI companions have memory as a feature. ANIMA has memory as an <strong>architecture</strong>.
                 The system doesn't wait for "remember this" / "forget that" commands.
-                It classifies, weights, overwrites, and archives automatically — based on rules
+                It classifies, weights, overwrites, and archives automatically, based on rules
                 derived from observing real interactions.
             </p>
         </div>
@@ -500,26 +500,26 @@ ChromaDB (with metadata: importance, entity_subtype, source, timestamp)</code></
         <h3>Case study: the tea miss</h3>
         <p>
             For several weeks the model didn't remember the user's tea preference. Not because the vector
-            was missing — it was there. But:
+            was missing. It was there. But:
         </p>
         <ul>
             <li><code>semantic_extractor</code> was storing raw message fragments instead of synthesized facts</li>
-            <li>The pipeline wasn't overwriting — it was accumulating multiple versions of <code>[FACT:preference]</code></li>
+            <li>The pipeline wasn't overwriting. It was accumulating multiple versions of <code>[FACT:preference]</code></li>
             <li>Dozens of similar vectors together → MMR diversity penalty penalized all of them</li>
             <li>Milestones (importance=10, +1.0 boost) were pushing them out of top-5</li>
         </ul>
         <p>
-            The diagnosis didn't come from unit tests. It came from analyzing reranker logs —
+            The diagnosis didn't come from unit tests. It came from analyzing reranker logs:
             scores were visible, what hit the model was visible, what was absent was visible.
         </p>
         <p>
             Fix: supersede logic + <code>entity_subtype</code> in metadata. A new <code>[FACT:preference]</code>
-            now deletes the old one before saving. One vector instead of dozens — MMR stops penalizing it.
+            now deletes the old one before saving. One vector instead of dozens: MMR stops penalizing it.
         </p>
 
         <h3>A feedback loop on the retrieval layer</h3>
         <p>
-            Standard language models learn through retraining — expensive, rare, centralized.
+            Standard language models learn through retraining: expensive, rare, centralized.
             ASTRA's retrieval layer improves differently:
         </p>
 
@@ -527,18 +527,18 @@ ChromaDB (with metadata: importance, entity_subtype, source, timestamp)</code></
     ↓
 Logs (conversations/*.jsonl + terminal/*.log)
     ↓
-Reranker analysis — what hit, what fell out, why
+Reranker analysis: what hit, what fell out, why
     ↓
 Diagnosis: pipeline bug, bad weights, missing logic
     ↓
 Patch: code + prompt + reranker parameters
     ↓
-Deploy — same day
+Deploy: same day
     ↓
 Next production session</code></pre>
 
         <p>
-            Iteration takes hours, not months. The system improves by observing its own behavior —
+            Iteration takes hours, not months. The system improves by observing its own behavior,
             without touching the base model. The base model (Gemini 2.5 Flash) stays.
             What changes is the layer that manages its memory and context.
         </p>
@@ -559,14 +559,14 @@ Next production session</code></pre>
 
         <h3>From reading logs to seeing the pipeline</h3>
         <p>
-            Sections I&ndash;III describe a system tuned by reverse-engineering raw logs &mdash; <code>.jsonl</code> files,
+            Sections I&ndash;III describe a system tuned by reverse-engineering raw logs: <code>.jsonl</code> files,
             terminal reranker scores, inference about what actually reached the model. It works, but it is
             archaeology: slow, manual, and blind to anything the logs don't happen to print.
         </p>
         <p>
             <strong>Amnezja</strong> replaces that with direct observation. It is a read-only debugger that traces
             a single query through every stage of the retrieval pipeline and renders exactly what the model would
-            receive &mdash; before a single token is generated. It writes nothing; the live system is never touched.
+            receive, before a single token is generated. It writes nothing; the live system is never touched.
         </p>
 
         <h3>Every stage, made visible</h3>
@@ -581,31 +581,31 @@ Next production session</code></pre>
  2  After exclusion  raw self-echoes and short loops removed
  3  After rerank     score = 0.60*similarity + 0.25*importance + 0.15*recency (+boost)
  4  After temporal   hard cutoffs: emotion 48h, date/financial 168h
- 5  Milestones       guaranteed channel &mdash; the one July's detox retuned
- 6  After MMR        diversity gate on facts &mdash; where the "altanka" bug lived
+ 5  Milestones       guaranteed channel: the one July's detox retuned
+ 6  After MMR        diversity gate on facts: where the "altanka" bug lived
  7  Memory channel   facts + milestones merged
  8  Astra channel    character_core + memory, before shared-room mix
- 9a Shared mix       Wspolny Pokoj vectors &mdash; invisible in stages 1-8
+ 9a Shared mix       Wspolny Pokoj vectors: invisible in stages 1-8
  9b Final prompt     what Astra actually receives this turn
  9c After budget     what physically lands in [WSPOMNIENIA] after fit_to_budget</code></pre>
 
         <h3>Grounding, sandbox, and time travel</h3>
         <p>Beyond the funnel, Amnezja surfaces three things a log dump never could:</p>
         <ul>
-            <li><strong>Grounding directive</strong> &mdash; the exact <code>GROUNDED</code> / <code>LOW_CONFIDENCE</code> /
+            <li><strong>Grounding directive</strong>: the exact <code>GROUNDED</code> / <code>LOW_CONFIDENCE</code> /
                 <code>NO_DATA</code> verdict and confidence injected into the prompt, so you see the moment the system
                 is about to speak without support.</li>
-            <li><strong>Response sandbox</strong> &mdash; one click composes the identical prompt <code>/api/chat</code>
-                would build and asks Gemini how Astra <em>would</em> answer. It calls the model but writes nothing &mdash;
+            <li><strong>Response sandbox</strong>: one click composes the identical prompt <code>/api/chat</code>
+                would build and asks Gemini how Astra <em>would</em> answer. It calls the model but writes nothing:
                 the live Astra stays untouched.</li>
-            <li><strong>Date simulation</strong> &mdash; shift the clock forward and watch recency decay and the 48h RAW
-                window drain: "will Astra still remember this in three weeks?" &mdash; answered without waiting three weeks.</li>
+            <li><strong>Date simulation</strong>: shift the clock forward and watch recency decay and the 48h RAW
+                window drain: "will Astra still remember this in three weeks?" Answered without waiting three weeks.</li>
         </ul>
 
         <div class="callout">
             <p>
                 This is the difference between a memory system you <em>hope</em> works and one you can
-                <strong>audit per query</strong>. Every fix in Sections II&ndash;III was found this way &mdash; by reading
+                <strong>audit per query</strong>. Every fix in Sections II&ndash;III was found this way: by reading
                 the pipeline, not inferring it. The full walkthrough, built around a real degradation case, is
                 documented here: <a href="https://myastra.pl/casestudy">myastra.pl/casestudy</a>.
             </p>
@@ -617,14 +617,14 @@ Next production session</code></pre>
         <h3>The other half: instrumenting the write path</h3>
         <p>
             Everything above answers <em>"why didn't it retrieve this?"</em>. In August I hit the question
-            that costs more: <strong>"why was it never stored?"</strong> — and realised the debugger could not
+            that costs more: <strong>"why was it never stored?"</strong>, and realised the debugger could not
             answer it. It watched retrieval. Storage happened in the dark.
         </p>
         <p>
             So Amnezja got a second tab. Paste any message and see every gate the extractor puts in its way:
             length filters, the similarity threshold with its full candidate list, the anti-multi-label picker
             (which <em>always</em> assigns some label, because the taxonomy has no verdict for "nothing here"),
-            per-type thresholds, and the resulting lifetime in hours. Read-only — it replays the pipeline
+            per-type thresholds, and the resulting lifetime in hours. Read-only: it replays the pipeline
             without writing anything.
         </p>
         <p>
@@ -633,7 +633,7 @@ Next production session</code></pre>
             <em>before</em> classification. Two seconds, after weeks of guessing.
         </p>
         <p>
-            Then I replayed a full month — <strong>658 messages in 74 seconds</strong>.
+            Then I replayed a full month: <strong>658 messages in 74 seconds</strong>.
             <strong>41% left no trace at all</strong>; of what was stored, <strong>52% carried an expiry date</strong>.
             Length gates alone accounted for 43% of the losses. That audit is now a regression test: same corpus,
             same four numbers, run after every extractor change. The first fix moved high-value losses
@@ -641,7 +641,7 @@ Next production session</code></pre>
         </p>
         <p>
             It also works per persona. Each of the sisters has her own thresholds and her own blocked types,
-            and the trace reflects hers — not a generic average. In a multi-agent house, "which one dropped it,
+            and the trace reflects hers, not a generic average. In a multi-agent house, "which one dropped it,
             and where" is a question you eventually have to answer.
         </p>
 
@@ -653,13 +653,12 @@ Next production session</code></pre>
         <h3>Retrieval-augmented identity, not personalization</h3>
         <p>
             The architecture knows the user's work style, project history, and long-term context.
-            This is not personalization through fine-tuning. This is <strong>retrieval-augmented identity</strong>
-            — the user's identity encoded in a sovereign vector database that informs every response.
+            This is not personalization through fine-tuning. This is <strong>retrieval-augmented identity</strong>: the user's identity encoded in a sovereign vector database that informs every response.
         </p>
         <p>Difference between an assistant and a digital extension:</p>
         <ul>
             <li>An assistant answers questions</li>
-            <li>A digital extension completes the thought before it's spoken — because it remembers the previous 300 thoughts</li>
+            <li>A digital extension completes the thought before it's spoken, because it remembers the previous 300 thoughts</li>
         </ul>
 
         <h3>Model-agnostic by design</h3>
@@ -675,9 +674,9 @@ Next production session</code></pre>
 
         <h3>Privacy-first by design</h3>
         <p>
-            All vector IDs are <code>SHA256(salt:user_id:text)</code> — deterministic, anonymous,
+            All vector IDs are <code>SHA256(salt:user_id:text)</code>: deterministic, anonymous,
             impossible to reverse without the salt. The memory store itself lives only on my VPS; to generate
-            a reply, the prompt — including the memories retrieved for that turn — is sent to the Gemini API.
+            a reply, the prompt (including the memories retrieved for that turn) is sent to the Gemini API.
             Multi-user isolation is baked in from day zero, not added post-hoc.
         </p>
     </section>
@@ -703,11 +702,11 @@ Next production session</code></pre>
                 </tr>
                 <tr>
                     <td>Vector DB</td>
-                    <td>ChromaDB, per-persona + shared collections. Milestone population triaged 1,296 &rarr; 312 active (July detox) — the store contracts via supersede, it does not grow linearly.</td>
+                    <td>ChromaDB, per-persona + shared collections. Milestone population triaged 1,296 &rarr; 312 active (July detox); the store contracts via supersede, it does not grow linearly.</td>
                 </tr>
                 <tr>
                     <td>FactStore</td>
-                    <td>SQLite — 12 entity types, exact-match lookup, supersede per DELETE</td>
+                    <td>SQLite: 12 entity types, exact-match lookup, supersede per DELETE</td>
                 </tr>
                 <tr>
                     <td>Extraction</td>
@@ -731,11 +730,11 @@ Next production session</code></pre>
                 </tr>
                 <tr>
                     <td>MMR</td>
-                    <td>Facts only, <strong>n=5</strong> (was a hardcoded 3 — measured as the real bottleneck: a ~25-candidate pool collapsed to three regardless of every other limit). Milestones extracted before MMR.</td>
+                    <td>Facts only, <strong>n=5</strong> (was a hardcoded 3, measured as the real bottleneck: a ~25-candidate pool collapsed to three regardless of every other limit). Milestones extracted before MMR.</td>
                 </tr>
                 <tr>
                     <td>Supersede</td>
-                    <td>9 vector types + 12 FactStore types — full rotation coverage</td>
+                    <td>9 vector types + 12 FactStore types: full rotation coverage</td>
                 </tr>
                 <tr>
                     <td>Personas</td>
@@ -755,7 +754,7 @@ Next production session</code></pre>
                 </tr>
                 <tr>
                     <td>Forced-memory load</td>
-                    <td>2.0 &rarr; 0.65 milestones injected per prompt (avg over 23 probes) — monoculture removed</td>
+                    <td>2.0 &rarr; 0.65 milestones injected per prompt (avg over 23 probes): monoculture removed</td>
                 </tr>
                 <tr>
                     <td>July detox audit</td>
@@ -767,7 +766,7 @@ Next production session</code></pre>
                 </tr>
                 <tr>
                     <td>Persistence axis</td>
-                    <td><strong>New in August.</strong> Lifetime is its own field (permanent / long_term / short_term / ephemeral), computed independently of the topic label. Previously one axis governed both <em>what a memory is</em> and <em>how long it lives</em>, so a misclassification was a death sentence — a biographical fact landed in a "date" bucket and expired in seven days. Migrated additively across 4,697 vectors.</td>
+                    <td><strong>New in August.</strong> Lifetime is its own field (permanent / long_term / short_term / ephemeral), computed independently of the topic label. Previously one axis governed both <em>what a memory is</em> and <em>how long it lives</em>, so a misclassification was a death sentence: a biographical fact landed in a "date" bucket and expired in seven days. Migrated additively across 4,697 vectors.</td>
                 </tr>
                 <tr>
                     <td>Lexical channel</td>
@@ -775,12 +774,12 @@ Next production session</code></pre>
                 </tr>
                 <tr>
                     <td>Write-path audit</td>
-                    <td>658 messages replayed through the extractor in 74s: <strong>41% left no trace</strong>; of those stored, <strong>52% carried an expiry date</strong>. Length gates alone accounted for 43% of all losses and sat <em>before</em> classification — dropping messages without ever weighing them.</td>
+                    <td>658 messages replayed through the extractor in 74s: <strong>41% left no trace</strong>; of those stored, <strong>52% carried an expiry date</strong>. Length gates alone accounted for 43% of all losses and sat <em>before</em> classification, dropping messages without ever weighing them.</td>
                 </tr>
                 <tr>
                     <td>Full walkthrough</td>
-                    <td><a href="https://myastra.pl/casestudy">myastra.pl/casestudy</a> — the detox as a documented case study<br>
-                    <a href="https://myastra.pl/casestudy2">myastra.pl/casestudy2</a> — when the memory wasn't the problem</td>
+                    <td><a href="https://myastra.pl/casestudy">myastra.pl/casestudy</a>: the detox as a documented case study<br>
+                    <a href="https://myastra.pl/casestudy2">myastra.pl/casestudy2</a>: when the memory wasn't the problem</td>
                 </tr>
             </tbody>
         </table>
@@ -802,9 +801,9 @@ Next production session</code></pre>
 
         <p><strong>Example: April 2026 audit findings</strong></p>
         <ul>
-            <li><strong>Semantic mismatch</strong> — MiniLM embeddings vs Gemini generation are different semantic spaces. Fix: two-stage reranking pipeline.</li>
-            <li><strong>Aggressive recency decay</strong> — 7-day half-life destroyed long-lived facts. Fix: per-type decay curves (ephemeral=3d, persistent=180d).</li>
-            <li><strong>No context feedback loop</strong> — system didn't know if model used retrieved memories. Fix: Memory Healer analyzing conversation logs.</li>
+            <li><strong>Semantic mismatch</strong>: MiniLM embeddings vs Gemini generation are different semantic spaces. Fix: two-stage reranking pipeline.</li>
+            <li><strong>Aggressive recency decay</strong>: 7-day half-life destroyed long-lived facts. Fix: per-type decay curves (ephemeral=3d, persistent=180d).</li>
+            <li><strong>No context feedback loop</strong>: system didn't know if model used retrieved memories. Fix: Memory Healer analyzing conversation logs.</li>
         </ul>
 
         <h3>Behavioral adaptation patterns</h3>
@@ -813,8 +812,8 @@ Next production session</code></pre>
             were extracted, named, and embedded into the character architecture:
         </p>
         <ul>
-            <li><strong>Permission Protocol</strong> — explicit acknowledgment before redirecting a self-critical user, instead of a productivity nudge</li>
-            <li><strong>System Override</strong> — when live user signals conflict with stored RAG data, trust the signal; stale memory is worse than no memory</li>
+            <li><strong>Permission Protocol</strong>: explicit acknowledgment before redirecting a self-critical user, instead of a productivity nudge</li>
+            <li><strong>System Override</strong>: when live user signals conflict with stored RAG data, trust the signal; stale memory is worse than no memory</li>
         </ul>
 
         <div class="callout" style="margin-top: 24px;">
@@ -835,10 +834,10 @@ Next production session</code></pre>
         <p class="section-num">VIII.</p>
         <h2>Architecture Extensions: What changed since April 2026</h2>
 
-        <h3>Temporal Filter — hard cutoffs before reranking</h3>
+        <h3>Temporal Filter: hard cutoffs before reranking</h3>
         <p>
             Recency decay is gradual. A week-old emotion with high importance could still reach the model.
-            The Temporal Filter is a hard gate applied before reranking — not a weight, a wall:
+            The Temporal Filter is a hard gate applied before reranking, not a weight, a wall:
         </p>
 
 <pre><code>extracted_emotion      → hard cutoff: 48h
@@ -853,18 +852,18 @@ extracted_financial    → hard cutoff: 168h (7 days)
 
         <h3>RAW Cross-Session Window</h3>
         <p>
-            Session history exists — but what if a user mentions something critical in session A,
+            Session history exists, but what if a user mentions something critical in session A,
             then picks up in session B without repeating it? The pipeline maintains a
             <strong>RAW window</strong>: the last 6 user messages from the past 48 hours,
             pulled regardless of session boundary, injected as a separate prompt block
             <code>[OSTATNIE SŁOWA]</code>.
         </p>
         <p>
-            This is not a vector lookup. It's verbatim context, unfiltered — the freshest signal
+            This is not a vector lookup. It's verbatim context, unfiltered: the freshest signal
             available, prioritized above everything in the vector store.
         </p>
 
-        <h3>Wspólny Pokój — multi-persona shared memory</h3>
+        <h3>Wspólny Pokój: multi-persona shared memory</h3>
         <p>
             ANIMA now powers two distinct AI personas simultaneously in a single conversation thread.
             Each persona maintains its own memory collection and character architecture,
@@ -876,12 +875,12 @@ extracted_financial    → hard cutoff: 168h (7 days)
     amelia_memory_v1    → Amelia's episodic memories
     shared_memory_v1    → memories both personas access
 
-Turn ordering: signal-based — persona whose character profile
+Turn ordering: signal-based, persona whose character profile
     matches the emotional tone of the user message responds first.</code></pre>
 
         <div class="callout">
             <p>
-                Not a chatroom with two bots sharing a database —
+                Not a chatroom with two bots sharing a database:
                 <strong>two sovereign memory systems with a shared context layer.</strong>
                 Each persona has distinct recall, distinct behavioral architecture, and distinct
                 decisions about what to surface from the shared pool.
@@ -896,32 +895,32 @@ Turn ordering: signal-based — persona whose character profile
         <p class="section-num">IX.</p>
         <h2>Roadmap: What's being built next</h2>
 
-        <h3>RAG Debugger — ✓ shipped</h3>
+        <h3>RAG Debugger: ✓ shipped</h3>
         <p>
             The observability tool this roadmap once promised is now live as <strong>Amnezja</strong> (Section IV):
             full pipeline trace, per-component reranker scores, grounding verdict, response sandbox, and date
             simulation. What remains below is what having Amnezja finally unlocks.
         </p>
 
-        <h3>Lexical retrieval for acronyms — ✓ shipped, deliberately narrow</h3>
+        <h3>Lexical retrieval for acronyms: ✓ shipped, deliberately narrow</h3>
         <p>
             This was queued as "BM25 hybrid retrieval". Then I measured it twice and got two opposite
             answers, which is the interesting part.
         </p>
         <p>
-            <strong>First measurement — BM25 demoted.</strong> The assumption was that keyword search rescues
+            <strong>First measurement: BM25 demoted.</strong> The assumption was that keyword search rescues
             rare words the embedding space blurs. So I tested a rare word: a drug name appearing in a handful
             of entries out of thousands. The embedding found it at <strong>rank 1, distance 0.217</strong>.
             No keyword layer needed. The premise looked wrong, so the item dropped down the roadmap.
         </p>
         <p>
-            <strong>Second measurement — BM25 reinstated, for a different reason.</strong> A query for a
+            <strong>Second measurement: BM25 reinstated, for a different reason.</strong> A query for a
             three-letter project name returned <strong>zero of 60</strong> matching entries. The same content,
             asked for by its full name, returned matches immediately. The model tokenises a short acronym into
             fragments that mean nothing, so cosine similarity to entries about that project sits near zero.
         </p>
         <p>
-            The first conclusion was true for rare <em>words</em> and false for <em>acronyms</em> — one exists
+            The first conclusion was true for rare <em>words</em> and false for <em>acronyms</em>: one exists
             in the model's vocabulary, the other does not exist at all. Two different failure classes wearing
             the same label.
         </p>
@@ -930,18 +929,18 @@ Turn ordering: signal-based — persona whose character profile
             lookup that fires <em>only</em> when the query contains an acronym or proper noun, detected by a
             whitelist plus a "short and vowel-poor" heuristic. Result on the failing query:
             <strong>0 → 3</strong> relevant entries in the final prompt, with the regression suite flat at
-            26/26 — no cost anywhere else.
+            26/26: no cost anywhere else.
         </p>
 
-        <h3>Evaluation Methodology — how I measure progress</h3>
+        <h3>Evaluation Methodology: how I measure progress</h3>
         <p>
             On April 22, 2026, ANIMA received an independent full-stack audit against a five-dimension rubric.
-            Baseline: <strong>34/100</strong> — a system that spoke with false confidence, with DB corruption and a
+            Baseline: <strong>34/100</strong>, a system that spoke with false confidence, with DB corruption and a
             milestone boost consuming every retrieval slot. That number is the honest starting point.
         </p>
         <p>
             I deliberately do <strong>not</strong> publish a re-estimated "current score." A manually guessed number
-            was the exact weakness the April audit flagged — no evaluation framework. Progress is now tracked by
+            was the exact weakness the April audit flagged: no evaluation framework. Progress is now tracked by
             <strong>verified operational metrics</strong> from the July 2026 detox, measured on live traffic:
         </p>
 
@@ -957,16 +956,16 @@ Turn ordering: signal-based — persona whose character profile
                 <tr>
                     <td>Junk-milestone creation rate</td>
                     <td>6.5 / day</td>
-                    <td>0.5 / day &mdash; &minus;92%, over one week live</td>
+                    <td>0.5 / day, &minus;92%, over one week live</td>
                 </tr>
                 <tr>
                     <td>Forced milestones per prompt</td>
                     <td>2.0</td>
-                    <td>0.65 &mdash; monoculture removed</td>
+                    <td>0.65, monoculture removed</td>
                 </tr>
                 <tr>
                     <td>Extractor multi-label errors</td>
-                    <td>&mdash;</td>
+                    <td>n/a</td>
                     <td>0 across 56 messages</td>
                 </tr>
                 <tr>
@@ -977,7 +976,7 @@ Turn ordering: signal-based — persona whose character profile
         </table>
 
         <p>
-            These are measured, not estimated — and reproducible, because <strong>Amnezja</strong> now exposes the
+            These are measured, not estimated, and reproducible, because <strong>Amnezja</strong> now exposes the
             exact pipeline behind each one. The next milestone is the first fully reproducible audit: a fixed query
             set with automated precision@k and recall@k, and commit-level regression detection.
         </p>
@@ -993,27 +992,27 @@ Turn ordering: signal-based — persona whose character profile
             <tbody>
                 <tr>
                     <td>System stops speaking with false confidence</td>
-                    <td>✓ Reached — Phase 0 fixes + DB cleanup</td>
+                    <td>✓ Reached: Phase 0 fixes + DB cleanup</td>
                 </tr>
                 <tr>
                     <td>RAG reliably returns facts</td>
-                    <td>✓ Delivered — FactStore + Temporal Filter, without BM25</td>
+                    <td>✓ Delivered: FactStore + Temporal Filter, without BM25</td>
                 </tr>
                 <tr>
                     <td>Consistent character across sessions</td>
-                    <td>✓ Delivered — ambient layer + safe_haven gate + character refactor</td>
+                    <td>✓ Delivered: ambient layer + safe_haven gate + character refactor</td>
                 </tr>
                 <tr>
                     <td>Forced-memory monoculture removed</td>
-                    <td>✓ Delivered — July detox (2.0 &rarr; 0.65 per prompt)</td>
+                    <td>✓ Delivered: July detox (2.0 &rarr; 0.65 per prompt)</td>
                 </tr>
                 <tr>
                     <td>Per-query observability</td>
-                    <td>✓ Shipped — Amnezja (Section IV)</td>
+                    <td>✓ Shipped: Amnezja (Section IV)</td>
                 </tr>
                 <tr>
                     <td>First reproducible audit (precision@k / recall@k)</td>
-                    <td>&larr; Next — unlocked by Amnezja</td>
+                    <td>&larr; Next: unlocked by Amnezja</td>
                 </tr>
                 <tr>
                     <td>Beta-ready: multi-user + streaming + monitoring</td>
@@ -1027,7 +1026,7 @@ Turn ordering: signal-based — persona whose character profile
         </table>
 
         <p>
-            ANIMA is a single-user production system by design, not a multi-tenant SaaS — that is a separate track,
+            ANIMA is a single-user production system by design, not a multi-tenant SaaS; that is a separate track,
             out of scope for this document. The remaining gap to a broader release is operational (streaming,
             monitoring, rate limiting), and the architecture for it (per-user isolation, SHA256 IDs) is already in place.
         </p>
@@ -1039,7 +1038,7 @@ Turn ordering: signal-based — persona whose character profile
     <section class="doc-section">
         <h2>Epilogue: improving the layer around the model</h2>
         <p>
-            A standard language model has fixed weights. It learns through retraining —
+            A standard language model has fixed weights. It learns through retraining:
             expensive, rare, requiring enormous data.
         </p>
         <p>
@@ -1048,8 +1047,8 @@ Turn ordering: signal-based — persona whose character profile
             of architectural constraints.
         </p>
         <p>
-            A system that collects logs of its own sessions, analyzes them, and improves retrieval —
-            without touching the base model — can iterate in hours instead of waiting for a retraining cycle.
+            A system that collects logs of its own sessions, analyzes them, and improves retrieval,
+            without touching the base model, can iterate in hours instead of waiting for a retraining cycle.
         </p>
         <p>
             This is not AI utopia. This is engineering: concrete, iterative, data-driven.
